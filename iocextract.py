@@ -6,7 +6,7 @@ Basic ioc extraction to count for some common ioc obfuscation techniques
 """
 
 #get basic url format counting a few obfuscation techniques
-GENERIC_URL_RE = re.compile(r"\b[ht]\w\w?ps?[\:\_]\/\/\S+\b")
+GENERIC_URL_RE = re.compile(r"[ht]\w\w?ps?[\:\_]\/\/\S+(?=\s|$)")
 #get some obfuscated ip addresses
 IP_RE = re.compile(r"(\d{1,3}\[?\.\]?\d{1,3}\[?\.\]?\d{1,3}\[?\.\]?\d{1,3}(?:\/\d{1,3})?)")
 
