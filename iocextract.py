@@ -18,10 +18,10 @@ BRACKET_URL_RE = re.compile(r"\b\S+(?:\x20?\[\x20?\.\x20?\]\x20?\S*)+(?=\s|$)")
 IP_RE = re.compile(r"(\d{1,3}\[?\.\]?\d{1,3}\[?\.\]?\d{1,3}\[?\.\]?\d{1,3}(?:\/\d{1,3})?)")
 
 EMAIL_RE = re.compile(r"([a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+)")
-MD5_RE = re.compile(r"(\b[a-fA-F\d]{32})\b")
-SHA1_RE = re.compile(r"\b([a-fA-F\d]{40})\b")
-SHA256_RE = re.compile(r"\b([a-fA-F\d]{64})\b")
-SHA512_RE = re.compile(r"(\b[a-fA-F\d]{128})\b")
+MD5_RE = re.compile(r"(?:[^a-fA-F\d]|\b)([a-fA-F\d]{32})(?:[^a-fA-F\d]|\b)")
+SHA1_RE = re.compile(r"(?:[^a-fA-F\d]|\b)([a-fA-F\d]{40})(?:[^a-fA-F\d]|\b)")
+SHA256_RE = re.compile(r"(?:[^a-fA-F\d]|\b)([a-fA-F\d]{64})(?:[^a-fA-F\d]|\b)")
+SHA512_RE = re.compile(r"(?:[^a-fA-F\d]|\b)([a-fA-F\d]{128})(?:[^a-fA-F\d]|\b)")
 
 
 def extract_iocs(data):
