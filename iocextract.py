@@ -14,8 +14,8 @@ GENERIC_URL_RE = re.compile(r"[fhstu]\w\w?[px]s?(?::\/\/|__?)\x20?\S+(?:\x20\/\S
 # Get some obfuscated urls, main anchor is brackets around the period
 BRACKET_URL_RE = re.compile(r"\b\S+(?:\x20?\[\x20?\.\x20?\]\x20?\S*)+(?=\s|$)")
 
-# Get some obfuscated ip addresses
-IP_RE = re.compile(r"\b(([1-9]?\d|1\d\d|2[0-4]\d|25[0-5])\[?\.\]?){3}([1-9]?\d|1\d\d|2[0-4]\d|25[0-5])\b")
+# Get some valid obfuscated ip addresses
+IP_RE = re.compile(r"\b(?:(?:[1-9]?\d|1\d\d|2[0-4]\d|25[0-5])\[?\.\]?){3}(?:[1-9]?\d|1\d\d|2[0-4]\d|25[0-5])\b")
 
 EMAIL_RE = re.compile(r"([a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+)")
 MD5_RE = re.compile(r"(?:[^a-fA-F\d]|\b)([a-fA-F\d]{32})(?:[^a-fA-F\d]|\b)")
