@@ -187,3 +187,34 @@ class TestExtractors(unittest.TestCase):
     def test_email_included_in_iocs(self):
         content = 'test@example.com'
         self.assertEquals(list(iocextract.extract_iocs(content))[0], content)
+
+    def test_ipv4_extract(self):
+        content_list = [
+            '127.0.0.1',
+            '192.168.255.255',
+            '1.1.1.1',
+        ]
+
+        for content in content_list:
+            self.assertEquals(list(iocextract.extract_ips(content))[0], content)
+            self.assertEquals(list(iocextract.extract_ips(_wrap_spaces(content)))[0], content)
+            self.assertEquals(list(iocextract.extract_ips(_wrap_tabs(content)))[0], content)
+            self.assertEquals(list(iocextract.extract_ips(_wrap_newlines(content)))[0], content)
+            self.assertEquals(list(iocextract.extract_ips(_wrap_words(content)))[0], content)
+            self.assertEquals(list(iocextract.extract_ips(_wrap_nonwords(content)))[0], content)
+
+        invalid_list = [
+            '192.168.1',
+            '192.168.a.1',
+            '11111.1111.1111.1111',
+        ]
+
+        for content in invalid_list:
+            self.assertEquals(len(list(iocextract.extract_ips(content))), 0)
+            self.assertEquals(len(list(iocextract.extract_ips(_wrap_spaces(content)))), 0)
+            self.assertEquals(len(list(iocextract.extract_ips(_wrap_tabs(content)))), 0)
+            self.assertEquals(len(list(iocextract.extract_ips(_wrap_newlines(content)))), 0)
+
+    def test_ipv4_included_in_iocs(self):
+        content = '127.0.0.1'
+        self.assertEquals(list(iocextract.extract_iocs(content))[0], content)
