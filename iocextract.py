@@ -46,10 +46,10 @@ def extract_urls(data):
     :param str data: Input text
     :rtype: generator
     """
-    for url in GENERIC_URL_RE.findall(data):
-        yield(url)
-    for url in BRACKET_URL_RE.findall(data):
-        yield(url)
+    for url in GENERIC_URL_RE.finditer(data):
+        yield(url.group(0))
+    for url in BRACKET_URL_RE.finditer(data):
+        yield(url.group(0))
 
 def extract_ips(data):
     """Extract IP addresses
@@ -57,8 +57,8 @@ def extract_ips(data):
     :param str data: Input text
     :rtype: generator
     """
-    for ip in IP_RE.findall(data):
-        yield(ip)
+    for ip in IP_RE.finditer(data):
+        yield(ip.group(0))
 
 def extract_emails(data):
     """Extract email addresses
@@ -66,8 +66,8 @@ def extract_emails(data):
     :param str data: Input text
     :rtype: generator
     """
-    for email in EMAIL_RE.findall(data):
-        yield(email)
+    for email in EMAIL_RE.finditer(data):
+        yield(email.group(0))
 
 def extract_hashes(data):
     """Extract MD5/SHA hashes
@@ -91,8 +91,8 @@ def extract_md5_hashes(data):
     :param str data: Input text
     :rtype: generator
     """
-    for md5 in MD5_RE.findall(data):
-        yield(md5)
+    for md5 in MD5_RE.finditer(data):
+        yield(md5.group(1))
 
 def extract_sha1_hashes(data):
     """Extract SHA1 hashes
@@ -100,8 +100,8 @@ def extract_sha1_hashes(data):
     :param str data: Input text
     :rtype: generator
     """
-    for sha1 in SHA1_RE.findall(data):
-        yield(sha1)
+    for sha1 in SHA1_RE.finditer(data):
+        yield(sha1.group(1))
 
 def extract_sha256_hashes(data):
     """Extract SHA256 hashes
@@ -109,8 +109,8 @@ def extract_sha256_hashes(data):
     :param str data: Input text
     :rtype: generator
     """
-    for sha256 in SHA256_RE.findall(data):
-        yield(sha256)
+    for sha256 in SHA256_RE.finditer(data):
+        yield(sha256.group(1))
 
 def extract_sha512_hashes(data):
     """Extract SHA512 hashes
@@ -118,5 +118,5 @@ def extract_sha512_hashes(data):
     :param str data: Input text
     :rtype: generator
     """
-    for sha512 in SHA512_RE.findall(data):
-        yield(sha512)
+    for sha512 in SHA512_RE.finditer(data):
+        yield(sha512.group(1))
