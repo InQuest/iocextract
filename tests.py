@@ -252,6 +252,13 @@ class TestExtractors(unittest.TestCase):
             "https://",
             "hxxps://",
             "tcp://",
+            "ftp://",
+            "http__",
+            "https__",
+            "ftx://",
+            "udp://",
+            "sftp://",
+            "ftps://",
         ]
 
         append_list = [
