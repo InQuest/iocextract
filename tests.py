@@ -198,6 +198,12 @@ class TestExtractors(unittest.TestCase):
             '111[.]111.111[.]111',
             '111[.111.]111[.111',
             '0.0.0.0',
+            '100.100.100.100',
+            '200.200.200.200',
+            '200.201.210.209',
+            '105.105.105.105',
+            '250.250.250.250',
+            '26.26.26.26',
             '255.255.255.255',
         ]
 
@@ -224,3 +230,70 @@ class TestExtractors(unittest.TestCase):
     def test_ipv4_included_in_iocs(self):
         content = '127.0.0.1'
         self.assertEquals(list(iocextract.extract_iocs(content))[0], content)
+
+    def test_url_extract(self):
+        domain_list = [
+            'example.com',
+            'a.a',
+            '192.168.1.1',
+            'a[.]a',
+            'example[.]com',
+            'example[.com',
+            'example',
+            '192[.]168.1.1',
+            '192[.168.1.1',
+            'asda.asdasdas.acasc.example.com',
+            '12.123.asdas.com',
+        ]
+
+        prepend_list = [
+            "http://",
+            "hxxp://",
+            "https://",
+            "hxxps://",
+            "tcp://",
+        ]
+
+        append_list = [
+            '/test.com?asd=qwe%20_#zxc',
+            '/test.com?asd=qwe#zxc',
+            '/test.com',
+            '/test',
+            '/',
+            '//',
+            '/.',
+            '',
+        ]
+
+        content_list = []
+        for domain in domain_list:
+            for prepend in prepend_list:
+                for append in append_list:
+                    content_list.append(prepend + domain + append)
+
+        content_list += [
+            'example[.]com',
+            'example [.] com',
+            'a [.] b [.] example [.] com',
+            'a[.]b[.]example[.]com',
+            'a[.]b [.] example[.]com',
+            'a[.]b[.] example[.]com',
+            'example[.]com/path!#&%?+='
+        ]
+
+        for content in content_list:
+            self.assertEquals(list(iocextract.extract_urls(content))[0], content)
+            self.assertEquals(list(iocextract.extract_urls(_wrap_spaces(content)))[0], content)
+            self.assertEquals(list(iocextract.extract_urls(_wrap_tabs(content)))[0], content)
+            self.assertEquals(list(iocextract.extract_urls(_wrap_newlines(content)))[0], content)
+
+        invalid_list = [
+            # can't differentiate this from e.g. file.pdf
+            'domain.com',
+        ]
+
+        for content in invalid_list:
+            self.assertEquals(len(list(iocextract.extract_urls(content))), 0)
+            self.assertEquals(len(list(iocextract.extract_urls(_wrap_spaces(content)))), 0)
+            self.assertEquals(len(list(iocextract.extract_urls(_wrap_tabs(content)))), 0)
+            self.assertEquals(len(list(iocextract.extract_urls(_wrap_newlines(content)))), 0)
