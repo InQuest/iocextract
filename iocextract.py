@@ -8,8 +8,12 @@ a list, do e.g.::
 import re
 import itertools
 
-# Get basic url format, including a few obfuscation techniques
-GENERIC_URL_RE = re.compile(r"[ht]\w\w?ps?[\:\_]\/\/\S+(?=\s|$)")
+# Get basic url format, including a few obfuscation techniques, main anchor is the uri scheme
+GENERIC_URL_RE = re.compile(r"[ht]\w\w?ps?[:_]{1,2}\/\/\x20?\S+(?:\x20\/\S+)*(?=\s|$)")
+
+# get some obfuscated urls, main anchor is brackets around the period
+BRACKET_URL_RE = re.compile(r"\b\S+(?:\x20?\[\x20?\.\x20?\]\x20?\S*)+(?=\s|$)")
+
 # Get some obfuscated ip addresses
 IP_RE = re.compile(r"(\d{1,3}\[?\.\]?\d{1,3}\[?\.\]?\d{1,3}\[?\.\]?\d{1,3}(?:\/\d{1,3})?)")
 
