@@ -16,7 +16,9 @@ iocextract
 
 Advanced Indicator of Compromise (IOC) extractor.
 
-Extracts URLs, IP addresses, MD5/SHA hashes, and YARA rules from text corpora.
+Overview
+--------
 
-This library performs pre and post-processing on input in order to yield more
-reliable results. It includes obfuscated and "defanged" IOCs in the output.
+This library extracts URLs, IP addresses, MD5/SHA hashes, and YARA rules from
+text corpora. It includes obfuscated and "defanged" IOCs in the output, and
+optionally deobfuscates them.
