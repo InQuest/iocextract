@@ -11,7 +11,7 @@ import itertools
 # Get basic url format, including a few obfuscation techniques, main anchor is the uri scheme
 GENERIC_URL_RE = re.compile(r"[ht]\w\w?ps?[:_]{1,2}\/\/\x20?\S+(?:\x20\/\S+)*(?=\s|$)")
 
-# get some obfuscated urls, main anchor is brackets around the period
+# Get some obfuscated urls, main anchor is brackets around the period
 BRACKET_URL_RE = re.compile(r"\b\S+(?:\x20?\[\x20?\.\x20?\]\x20?\S*)+(?=\s|$)")
 
 # Get some obfuscated ip addresses
