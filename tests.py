@@ -259,6 +259,7 @@ class TestExtractors(unittest.TestCase):
             "udp://",
             "sftp://",
             "ftps://",
+            "http:// ",
         ]
 
         append_list = [
@@ -270,6 +271,7 @@ class TestExtractors(unittest.TestCase):
             '//',
             '/.',
             '',
+            ' /test/path',
         ]
 
         content_list = []
