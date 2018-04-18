@@ -245,6 +245,7 @@ class TestExtractors(unittest.TestCase):
             'asda.asdasdas.acasc.example.com',
             '12.123.asdas.com',
             'example\u1111com',
+            'example .com',
         ]
 
         prepend_list = [
