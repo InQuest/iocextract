@@ -48,6 +48,8 @@ def extract_urls(data):
     """
     for url in GENERIC_URL_RE.findall(data):
         yield(url)
+    for url in BRACKET_URL_RE.findall(data):
+        yield(url)
 
 def extract_ips(data):
     """Extract IP addresses
