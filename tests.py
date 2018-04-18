@@ -197,6 +197,8 @@ class TestExtractors(unittest.TestCase):
             '111[.]111[.]111[.]111',
             '111[.]111.111[.]111',
             '111[.111.]111[.111',
+            '0.0.0.0',
+            '255.255.255.255',
         ]
 
         for content in content_list:
