@@ -9,7 +9,7 @@ class TestExtractors(unittest.TestCase):
         valid_results = open('test_data/valid.txt', 'r').read().splitlines()
         invalid_results = open('test_data/invalid.txt', 'r').read().splitlines()
 
-        out_data = list(iocextract.extract_info(in_data))
+        out_data = list(iocextract.extract_iocs(in_data))
 
         for expected in valid_results:
             self.assertIn(expected, out_data)
