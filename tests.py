@@ -149,3 +149,41 @@ class TestExtractors(unittest.TestCase):
 
         self.assertEquals(len(processed), 4)
         self.assertEquals(processed[0], '68b329da9893e34099c7d8ad5cb9c940')
+
+    def test_email_extract(self):
+        content_list = [
+            'myuser@example.com',
+            'myuser+some@example.com',
+            'my.user@example.com',
+            'my.user.24@example.com',
+            'my.u+ser24@example.com',
+            'myuser@exam.ple.com',
+            'my.u+ser24@exa.mple24.tl',
+            'my_user@example.co',
+            'a@a.co',
+            'a@127.0.0.1',
+        ]
+
+        for content in content_list:
+            self.assertEquals(list(iocextract.extract_emails(content))[0], content)
+            self.assertEquals(list(iocextract.extract_emails(_wrap_spaces(content)))[0], content)
+            self.assertEquals(list(iocextract.extract_emails(_wrap_tabs(content)))[0], content)
+            self.assertEquals(list(iocextract.extract_emails(_wrap_newlines(content)))[0], content)
+
+        invalid_list = [
+            '@a.co',
+            'myuser@',
+            '@',
+            # don't extract non-fqdn emails
+            'a@a',
+        ]
+
+        for content in invalid_list:
+            self.assertEquals(len(list(iocextract.extract_emails(content))), 0)
+            self.assertEquals(len(list(iocextract.extract_emails(_wrap_spaces(content)))), 0)
+            self.assertEquals(len(list(iocextract.extract_emails(_wrap_tabs(content)))), 0)
+            self.assertEquals(len(list(iocextract.extract_emails(_wrap_newlines(content)))), 0)
+
+    def test_email_included_in_iocs(self):
+        content = 'test@example.com'
+        self.assertEquals(list(iocextract.extract_iocs(content))[0], content)
