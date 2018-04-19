@@ -410,3 +410,44 @@ class TestExtractors(unittest.TestCase):
     def test_yara_included_in_iocs(self):
         content = 'rule testRule { condition: true }'
         self.assertEquals(list(iocextract.extract_iocs(content))[0], content)
+
+    def test_refang_ipv4(self):
+        content_list = [
+            '111.111.111.111',
+            '111[.]111[.]111[.]111',
+            '111(.)111(.)111(.)111',
+            '111[.]111[.]111[.]111',
+            '111[.]111.111[.]111',
+            '111[.111.]111[.111',
+        ]
+
+        for content in content_list:
+            self.assertEquals(list(iocextract.extract_ipv4s(content, refang=True))[0], '111.111.111.111')
+            self.assertEquals(iocextract.refang_ipv4(content), '111.111.111.111')
+
+    def test_refang_url(self):
+        content_list = [
+            'http://example.com/test',
+            'http:// example .com /test',
+            'http://example[.]com/test',
+            'http://example[.]com[/]test',
+            'http://example(.)com(/)test',
+            'http://example[dot]com/test',
+            'hxxp://example.com/test',
+            'example [.] com/test',
+            'example(.)com/test',
+            'hxxp://example[.com/test',
+            'hxxp://example.]com/test',
+            'hxxp://exampledot]com/test',
+            'hxxp://example[dotcom/test',
+            'hxxp://example.com[/test',
+        ]
+
+        for content in content_list:
+            self.assertEquals(list(iocextract.extract_urls(content, refang=True))[0], 'http://example.com/test')
+            self.assertEquals(iocextract.refang_url(content), 'http://example.com/test')
+
+        # IPv6 works as expected
+        content = 'http://[2001:db8:85a3:0:0:8a2e:370:7334]:80/test'
+        self.assertEquals(iocextract.refang_url(content), content)
+        self.assertEquals(list(iocextract.extract_urls(content, refang=True))[0], content)

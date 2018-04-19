@@ -14,6 +14,11 @@ setup(
         'iocextract',
     ],
     install_requires=[],
+    extras_require={
+        ':python_version <= "2.7"': [
+            'ipaddress',
+        ],
+    },
     license='BSD',
     description='Advanced Indicator of Compromise (IOC) extractor',
     long_description=README,

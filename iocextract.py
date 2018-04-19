@@ -8,6 +8,11 @@ Each object yielded from the generators will by of type :class:`str`.
 """
 import re
 import itertools
+try:
+    from urllib.parse import urlparse
+except ImportError:
+     from urlparse import urlparse
+import ipaddress
 
 # Get basic url format, including a few obfuscation techniques, main anchor is the uri scheme
 GENERIC_URL_RE = re.compile(r"[fhstu]\w\w?[px]s?(?::\/\/|__?)\x20?\S+(?:\x20[\/\.]\S+)*(?=\s|$)")
@@ -32,55 +37,68 @@ YARA_SPLIT_STR = "\n[\t\s]*\}[\s\t]*(rule[\t\s][^\r\n]+(?:\{|[\r\n][\r\n\s\t]*\{
 YARA_PARSE_RE = re.compile(r"^[\t\s]*(rule[\t\s][^\r\n]+(?:\{|[\r\n][\r\n\s\t]*\{).*?condition:.*?\r?\n?[\t\s]*\})[\s\t]*(?:$|\r?\n)", re.MULTILINE | re.DOTALL)
 
 
-def extract_iocs(data):
+def extract_iocs(data, refang=False):
     """Extract all IOCs.
 
     Results are returned as an itertools.chain iterable object which
     lazily provides the results of the other extract_* generators.
 
     :param data: Input text
+    :param bool refang: Refang output?
     :rtype: :py:func:`itertools.chain`
     """
     return itertools.chain(
-        extract_urls(data),
-        extract_ips(data),
+        extract_urls(data, refang=refang),
+        extract_ips(data, refang=refang),
         extract_emails(data),
         extract_hashes(data),
         extract_yara_rules(data)
     )
 
-def extract_urls(data):
+def extract_urls(data, refang=False):
     """Extract URLs.
 
     :param data: Input text
+    :param bool refang: Refang output?
     :rtype: Iterator[:class:`str`]
     """
     for url in GENERIC_URL_RE.finditer(data):
-        yield(url.group(0))
+        if refang:
+            yield(refang_url(url.group(0)))
+        else:
+            yield(url.group(0))
     for url in BRACKET_URL_RE.finditer(data):
-        yield(url.group(0))
+        if refang:
+            yield(refang_url(url.group(0)))
+        else:
+            yield(url.group(0))
 
-def extract_ips(data):
+def extract_ips(data, refang=False):
     """Extract IP addresses.
 
     Includes both IPv4 and IPv6 addresses.
 
     :param data: Input text
+    :param bool refang: Refang output?
     :rtype: :py:func:`itertools.chain`
     """
     return itertools.chain(
-        extract_ipv4s(data),
+        extract_ipv4s(data, refang=refang),
         extract_ipv6s(data),
     )
 
-def extract_ipv4s(data):
+def extract_ipv4s(data, refang=False):
     """Extract IPv4 addresses.
 
     :param data: Input text
+    :param bool refang: Refang output?
     :rtype: Iterator[:class:`str`]
     """
     for ip in IPV4_RE.finditer(data):
-        yield(ip.group(0))
+        if refang:
+            yield(refang_ipv4(ip.group(0)))
+        else:
+            yield(ip.group(0))
 
 def extract_ipv6s(data):
     """Extract IPv6 addresses.
@@ -164,3 +182,99 @@ def extract_yara_rules(data):
                         re.MULTILINE | re.DOTALL)
     for yara_rule in YARA_PARSE_RE.finditer(yara_rules):
         yield(yara_rule.group(1))
+
+def _is_ipv6_url(url):
+    """URL network location is an IPv6 address, not a domain.
+
+    :param url: String URL
+    :rtype: bool
+    """
+    # fix urlparse exception
+    parsed = urlparse(url)
+
+    # Handle RFC 2732 IPv6 URLs with and without port, as well as non-RFC IPv6 URLs
+    if ']:' in parsed.netloc:
+        ipv6 = ':'.join(parsed.netloc.split(':')[:-1])
+    else:
+        ipv6 = parsed.netloc
+
+    try:
+        ipaddress.IPv6Address(unicode(ipv6.replace('[', '').replace(']', '')))
+    except ValueError:
+        return False
+
+    return True
+
+def _refang_common(ioc):
+    """Remove artifacts from common defangs.
+
+    :param ioc: String IP Address or URL netloc.
+    :rtype: str
+    """
+    return ioc.replace('[dot]', '.').\
+               replace('(dot)', '.').\
+               replace('[.]', '.').\
+               replace('(', '').\
+               replace(')', '').\
+               replace(',', '.').\
+               replace(' ', '').\
+               replace(u'\u30fb', '.')
+
+def refang_url(url):
+    """Refang a URL.
+
+    :param url: String URL
+    :rtype: str
+    """
+    # First fix urlparse errors.
+    # Fix ipv6 parsing exception.
+    if '[.' in url and '[.]' not in url:
+        url = url.replace('[.', '[.]')
+    if '.]' in url and '[.]' not in url:
+        url = url.replace('.]', '[.]')
+    if '[dot' in url and '[dot]' not in url:
+        url = url.replace('[dot', '[.]')
+    if 'dot]' in url and '[dot]' not in url:
+        url = url.replace('dot]', '[.]')
+    if '[/]' in url:
+        url = url.replace('[/]', '/')
+
+    try:
+        _ = urlparse(url)
+    except ValueError:
+        # Last resort on ipv6 fail.
+        url = url.replace('[', '').replace(']', '')
+
+    # Since urlparse expects a scheme, make sure one exists.
+    if '//' not in url:
+        url = 'http://' + url
+
+    # Refang (/), since it's not entirely in the netloc.
+    url = url.replace('(/)', '/')
+
+    # Now use urlparse and continue processing.
+    parsed = urlparse(url)
+
+    # Handle URLs with no scheme / obfuscated scheme.
+    # Note: ParseResult._replace is a public member, this is safe.
+    if parsed.scheme not in ['http', 'https', 'ftp']:
+        parsed = parsed._replace(scheme='http')
+        url = parsed.geturl().replace('http:///', 'http://')
+        parsed = urlparse(url)
+
+    # Remove artifacts from common defangs.
+    parsed = parsed._replace(netloc=_refang_common(parsed.netloc))
+
+    # Fix example[.]com, but keep RFC 2732 URLs intact.
+    if not _is_ipv6_url(url):
+        parsed = parsed._replace(netloc=parsed.netloc.replace('[', '').replace(']', ''))
+
+    return parsed.geturl()
+
+def refang_ipv4(ip):
+    """Refang an IPv4 address.
+
+    :param ip: String IPv4 address.
+    :rtype: str
+    """
+    return _refang_common(ip).replace('[', '').replace(']', '')
