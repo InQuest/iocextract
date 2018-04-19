@@ -15,7 +15,6 @@ http://ex4mple.com
 http://exa-mple.com
 http://example.com
 http://example.com/
-http://example.com/[.
 http://example.com:80/path
 http://example.com[/]test
 http://example[.]com
@@ -37,7 +36,6 @@ example[.]com/
 http://example(.)com/
 http://example,com/
 http://example.com/
-http://example.com/[.
 http://example[.]com/
 http://example[.]com/[.]
 http://example[.com/
