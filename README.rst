@@ -116,6 +116,26 @@ over the IOCs more than once, you will have to save the results as a list::
     >>> list(iocextract.extract_urls(content))
     ['hxxp://example.com/bad/url', 'tcp://example[.]com:8989/bad', 'example[.]com', 'tcp://example[.]com:8989/bad']
 
+A command-line tool is also included::
+
+    $ iocextract -h
+    usage: iocextract [-h] [--input INPUT] [--output OUTPUT] [--extract-ips]
+                      [--extract-urls] [--extract-yara-rules] [--extract-hashes]
+                      [--refang]
+
+    Advanced Indicator of Compromise (IOC) extractor. If no arguments are
+    specified, the default behavior is to extract all IOCs.
+
+    optional arguments:
+      -h, --help            show this help message and exit
+      --input INPUT         default: stdin
+      --output OUTPUT       default: stdout
+      --extract-ips
+      --extract-urls
+      --extract-yara-rules
+      --extract-hashes
+      --refang              default: no
+
 Only URLs and IPv4 addresses can be "refanged".
 
 Contriuting
