@@ -138,8 +138,8 @@ A command-line tool is also included::
 
 Only URLs and IPv4 addresses can be "refanged".
 
-Contriuting
------------
+Contributing
+------------
 
 If you have a defang technique that doesn't make it through the extractor, or
 if you find any bugs, PRs and Issues_ are always welcome. The library is
