@@ -199,7 +199,7 @@ def _is_ipv6_url(url):
         ipv6 = parsed.netloc
 
     try:
-        ipaddress.IPv6Address(unicode(ipv6.replace('[', '').replace(']', '')))
+        ipaddress.IPv6Address(ipv6.replace('[', '').replace(']', '').decode('utf-8'))
     except ValueError:
         return False
 
