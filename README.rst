@@ -26,6 +26,56 @@ This library extracts URLs, IP addresses, MD5/SHA hashes, and YARA rules from
 text corpora. It includes obfuscated and "defanged" IOCs in the output, and
 optionally deobfuscates them.
 
+The Problem
+-----------
+
+It is common practice for malware analysts or endpoint software to "defang" IOCs
+such as URLs and IP addresses, in order to prevent accidental exposure to live
+malicious content. Being able to extract and aggregate these IOCs is often valuable
+for analysts. Unfortunately, existing "IOC extraction" tools often pass right by them,
+as they are not caught by standard REGEX.
+
+For example, the simple defanging technique of surrounding periods with brackets::
+
+    127[.]0[.]0[.]1
+
+Existing tools that use a simple IP address REGEX will ignore this IOC entirely.
+
+The Solution
+------------
+
+By combining specially crafted REGEX with some custom postprocessing, we are
+able to both detect and deobfuscate "defanged" IOCs. This saves time and effort
+for the analyst, who might otherwise have to manually find and convert IOCs into
+machine-readable format.
+
+A Simple Use Case
+-----------------
+
+Many Twitter users post C2s or other valuable IOC information with defanged URLs.
+For example, `this tweet from @InQuest`_::
+
+    Recommended reading and great work from @unit42_intel:
+    https://researchcenter.paloaltonetworks.com/2018/02/unit42-sofacy-attacks-multiple-government-entities/ ...
+    InQuest customers have had detection for threats delivered from hotfixmsupload[.]com
+    since 6/3/2017 and cdnverify[.]net since 2/1/18.
+
+If we run this through the extractor, we can easily pull out the URLs::
+
+   https://researchcenter.paloaltonetworks.com/2018/02/unit42-sofacy-attacks-multiple-government-entities/
+   hotfixmsupload[.]com
+   cdnverify[.]net
+
+Passing in ``refang=True`` at extraction time would remove the obfuscation, but
+since these are real IOCs, let's leave them defanged in our documentation. :)
+
+Installation
+------------
+
+Just get it from pip::
+
+    pip install iocextract
+
 Usage
 -----
 
@@ -65,3 +115,15 @@ over the IOCs more than once, you will have to save the results as a list::
 
     >>> list(iocextract.extract_urls(content))
     ['hxxp://example.com/bad/url', 'tcp://example[.]com:8989/bad', 'example[.]com', 'tcp://example[.]com:8989/bad']
+
+Only URLs and IPv4 addresses can be "refanged".
+
+Contriuting
+-----------
+
+If you have a defang technique that doesn't make it through the extractor, or
+if you find any bugs, PRs and Issues_ are always welcome. The library is
+released under a "BSD-New" (aka "BSD 3-Clause") license.
+
+.. _Issues: https://github.com/inquest/python-iocextract/issues
+.. _`this tweet from @InQuest`: https://twitter.com/InQuest/status/969469856931287041
