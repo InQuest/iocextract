@@ -10,7 +10,6 @@ install:
   - "pip install nose"
   - "pip install codacy-coverage"
 script:
-  - nosetests --with-coverage --cover-package=iocextract
+  - nosetests --with-coverage --cover-package=iocextract --cover-xml
 after_success:
-  - coverage xml
   - python-codacy-coverage
