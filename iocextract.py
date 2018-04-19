@@ -9,9 +9,12 @@ Each object yielded from the generators will by of type :class:`str`.
 import re
 import itertools
 try:
+    # python3
     from urllib.parse import urlparse
+    unicode = str
 except ImportError:
-     from urlparse import urlparse
+    from urlparse import urlparse
+
 import ipaddress
 
 # Get basic url format, including a few obfuscation techniques, main anchor is the uri scheme
@@ -199,7 +202,7 @@ def _is_ipv6_url(url):
         ipv6 = parsed.netloc
 
     try:
-        ipaddress.IPv6Address(ipv6.replace('[', '').replace(']', '').decode('utf-8'))
+        ipaddress.IPv6Address(unicode(ipv6.replace('[', '').replace(']', '')))
     except ValueError:
         return False
 
