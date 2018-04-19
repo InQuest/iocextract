@@ -8,11 +8,9 @@ python:
   - "3.6"
 install:
   - "pip install nose"
-  - "pip install coveralls"
   - "pip install codacy-coverage"
 script:
   - nosetests --with-coverage --cover-package=iocextract
 after_success:
-  - coveralls
   - coverage xml
   - python-codacy-coverage
