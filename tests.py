@@ -462,6 +462,7 @@ class TestExtractors(unittest.TestCase):
         self.assertEquals(list(iocextract.extract_urls('http://example.com?'))[0], 'http://example.com')
         self.assertEquals(list(iocextract.extract_urls('http://example.com.'))[0], 'http://example.com')
         self.assertEquals(list(iocextract.extract_urls('http://example.com/?q=test???'))[0], 'http://example.com/?q=test')
+        self.assertEquals(list(iocextract.extract_urls('http://example.com/ ...'))[0], 'http://example.com/')
 
         self.assertEquals(list(iocextract.extract_urls('example[.]com!'))[0], 'example[.]com')
         self.assertEquals(list(iocextract.extract_urls('example[.]com!!!!'))[0], 'example[.]com')
@@ -473,3 +474,4 @@ class TestExtractors(unittest.TestCase):
         self.assertEquals(list(iocextract.extract_urls('example[.]com?'))[0], 'example[.]com')
         self.assertEquals(list(iocextract.extract_urls('example[.]com.'))[0], 'example[.]com')
         self.assertEquals(list(iocextract.extract_urls('example[.]com/?q=test???'))[0], 'example[.]com/?q=test')
+        self.assertEquals(list(iocextract.extract_urls('example[.]com/ ...'))[0], 'example[.]com/')

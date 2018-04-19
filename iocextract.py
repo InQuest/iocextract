@@ -20,7 +20,7 @@ except ImportError:
 import ipaddress
 
 # Get basic url format, including a few obfuscation techniques, main anchor is the uri scheme
-GENERIC_URL_RE = re.compile(r"([fhstu]\w\w?[px]s?(?::\/\/|__?)\x20?\S+?(?:\x20[\/\.]\S+?)*)[\.\?>\"!]*(?=\s|$)")
+GENERIC_URL_RE = re.compile(r"([fhstu]\w\w?[px]s?(?::\/\/|__?)\x20?\S+?(?:\x20[\/\.][^\.\/\s]\S*?)*)[\.\?>\"!]*(?=\s|$)")
 
 # Get some obfuscated urls, main anchor is brackets around the period
 BRACKET_URL_RE = re.compile(r"\b(\S+(?:\x20?[\(\[]\x20?\.\x20?[\]\)]\x20?\S*?)+)[\.\?>\"!]*(?=\s|$)")
