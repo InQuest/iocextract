@@ -27,6 +27,10 @@ SHA1_RE = re.compile(r"(?:[^a-fA-F\d]|\b)([a-fA-F\d]{40})(?:[^a-fA-F\d]|\b)")
 SHA256_RE = re.compile(r"(?:[^a-fA-F\d]|\b)([a-fA-F\d]{64})(?:[^a-fA-F\d]|\b)")
 SHA512_RE = re.compile(r"(?:[^a-fA-F\d]|\b)([a-fA-F\d]{128})(?:[^a-fA-F\d]|\b)")
 
+# YARA regex
+YARA_SPLIT_STR = "\n[\t\s]*\}[\s\t]*(rule[\t\s][^\r\n]+(?:\{|[\r\n][\r\n\s\t]*\{))"
+YARA_PARSE_RE = re.compile(r"^[\t\s]*(rule[\t\s][^\r\n]+(?:\{|[\r\n][\r\n\s\t]*\{).*?condition:.*?\r?\n?[\t\s]*\})[\s\t]*(?:$|\r?\n)", re.MULTILINE | re.DOTALL)
+
 
 def extract_iocs(data):
     """Extract all IOCs.
@@ -41,7 +45,8 @@ def extract_iocs(data):
         extract_urls(data),
         extract_ips(data),
         extract_emails(data),
-        extract_hashes(data)
+        extract_hashes(data),
+        extract_yara_rules(data)
     )
 
 def extract_urls(data):
@@ -148,3 +153,14 @@ def extract_sha512_hashes(data):
     """
     for sha512 in SHA512_RE.finditer(data):
         yield(sha512.group(1))
+
+def extract_yara_rules(data):
+    """Extract YARA rules.
+
+    :param data: Input text
+    :rtype: Iterator[:class:`str`]
+    """
+    yara_rules = re.sub(YARA_SPLIT_STR, "}\r\n\\1", data,
+                        re.MULTILINE | re.DOTALL)
+    for yara_rule in YARA_PARSE_RE.finditer(yara_rules):
+        yield(yara_rule.group(1))

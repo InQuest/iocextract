@@ -365,3 +365,48 @@ class TestExtractors(unittest.TestCase):
     def test_ipv6_included_in_iocs(self):
         content = '2001:0db8:85a3:0000:0000:8a2e:0370:7334'
         self.assertEquals(list(iocextract.extract_iocs(content))[0], content)
+
+    def test_yara_extract(self):
+
+        content_list = [
+            'rule testRule { condition: true }',
+            'rule testRule {\r\n    condition: true\r\n}',
+            'rule testRule {\r\n\r\n    condition: true\r\n\r\n\r\n}',
+            """rule silent_banker : banker
+            {
+                meta:
+                    description = "This is just an example"
+                    thread_level = 3
+                    in_the_wild = true
+                strings:
+                    $a = {6A 40 68 00 30 00 00 6A 14 8D 91}
+                    $b = {8D 4D B0 2B C1 83 C0 27 99 6A 4E 59 F7 F9}
+                    $c = "UVODFRYSIHLNWPEJXQZAKCBGMT"
+                condition:
+                    $a or $b or $c
+            }""",
+        ]
+
+        for content in content_list:
+            self.assertEquals(list(iocextract.extract_yara_rules(content))[0], content)
+            self.assertEquals(list(iocextract.extract_yara_rules(_wrap_spaces(content)))[0], content)
+            self.assertEquals(list(iocextract.extract_yara_rules(_wrap_tabs(content)))[0], content)
+            self.assertEquals(list(iocextract.extract_yara_rules(_wrap_newlines(content)))[0], content)
+
+        invalid_list = [
+            'rule testRule { conditio: true }',
+            'rule testRule { condition true }',
+            'rule testRule { condition: true ',
+            'ule testRule { condition: true }',
+            'rule testRule  condition: true }',
+        ]
+
+        for content in invalid_list:
+            self.assertEquals(len(list(iocextract.extract_yara_rules(content))), 0)
+            self.assertEquals(len(list(iocextract.extract_yara_rules(_wrap_spaces(content)))), 0)
+            self.assertEquals(len(list(iocextract.extract_yara_rules(_wrap_tabs(content)))), 0)
+            self.assertEquals(len(list(iocextract.extract_yara_rules(_wrap_newlines(content)))), 0)
+
+    def test_yara_included_in_iocs(self):
+        content = 'rule testRule { condition: true }'
+        self.assertEquals(list(iocextract.extract_iocs(content))[0], content)
