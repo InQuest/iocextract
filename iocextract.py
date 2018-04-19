@@ -57,10 +57,34 @@ def extract_urls(data):
 def extract_ips(data):
     """Extract IP addresses
 
+    Includes both IPv4 and IPv6 addresses.
+
+    :param str data: Input text
+    :rtype: itertools.chain
+    """
+    return itertools.chain(
+        extract_ipv4s(data),
+        extract_ipv6s(data),
+    )
+
+def extract_ipv4s(data):
+    """Extract IPv4 addresses
+
     :param str data: Input text
     :rtype: generator
     """
     for ip in IPV4_RE.finditer(data):
+        yield(ip.group(0))
+
+def extract_ipv6s(data):
+    """Extract IPv6 addresses
+
+    Not guaranteed to catch all valid IPv6 addresses.
+
+    :param str data: Input text
+    :rtype: generator
+    """
+    for ip in IPV6_RE.finditer(data):
         yield(ip.group(0))
 
 def extract_emails(data):

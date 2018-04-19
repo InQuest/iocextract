@@ -208,12 +208,12 @@ class TestExtractors(unittest.TestCase):
         ]
 
         for content in content_list:
-            self.assertEquals(list(iocextract.extract_ips(content))[0], content)
-            self.assertEquals(list(iocextract.extract_ips(_wrap_spaces(content)))[0], content)
-            self.assertEquals(list(iocextract.extract_ips(_wrap_tabs(content)))[0], content)
-            self.assertEquals(list(iocextract.extract_ips(_wrap_newlines(content)))[0], content)
-            self.assertEquals(list(iocextract.extract_ips(_wrap_words(content)))[0], content)
-            self.assertEquals(list(iocextract.extract_ips(_wrap_nonwords(content)))[0], content)
+            self.assertEquals(list(iocextract.extract_ipv4s(content))[0], content)
+            self.assertEquals(list(iocextract.extract_ipv4s(_wrap_spaces(content)))[0], content)
+            self.assertEquals(list(iocextract.extract_ipv4s(_wrap_tabs(content)))[0], content)
+            self.assertEquals(list(iocextract.extract_ipv4s(_wrap_newlines(content)))[0], content)
+            self.assertEquals(list(iocextract.extract_ipv4s(_wrap_words(content)))[0], content)
+            self.assertEquals(list(iocextract.extract_ipv4s(_wrap_nonwords(content)))[0], content)
 
         invalid_list = [
             '192.168.1',
@@ -222,10 +222,14 @@ class TestExtractors(unittest.TestCase):
         ]
 
         for content in invalid_list:
-            self.assertEquals(len(list(iocextract.extract_ips(content))), 0)
-            self.assertEquals(len(list(iocextract.extract_ips(_wrap_spaces(content)))), 0)
-            self.assertEquals(len(list(iocextract.extract_ips(_wrap_tabs(content)))), 0)
-            self.assertEquals(len(list(iocextract.extract_ips(_wrap_newlines(content)))), 0)
+            self.assertEquals(len(list(iocextract.extract_ipv4s(content))), 0)
+            self.assertEquals(len(list(iocextract.extract_ipv4s(_wrap_spaces(content)))), 0)
+            self.assertEquals(len(list(iocextract.extract_ipv4s(_wrap_tabs(content)))), 0)
+            self.assertEquals(len(list(iocextract.extract_ipv4s(_wrap_newlines(content)))), 0)
+
+    def test_ipv4_included_in_ips(self):
+        content = '127.0.0.1'
+        self.assertEquals(list(iocextract.extract_ips(content))[0], content)
 
     def test_ipv4_included_in_iocs(self):
         content = '127.0.0.1'
@@ -311,4 +315,50 @@ class TestExtractors(unittest.TestCase):
 
     def test_url_included_in_iocs(self):
         content = 'http://domain.com/test'
+        self.assertEquals(list(iocextract.extract_iocs(content))[0], content)
+
+    def test_ipv6_extract(self):
+
+        content_list = [
+            '2001:0db8:85a3:0000:0000:8a2e:0370:7334',
+            '2001:db8:85a3:0:0:8a2e:370:7334',
+            '2001:db8:85a3::8a2e:370:7334',
+            '2001:db8::1',
+            '2001:0db8::0001',
+            '2001:db8:0:0:0:0:2:1',
+            '2001:db8::2:1',
+            '2001:db8:0000:1:1:1:1:1',
+            '2001:db8:0:1:1:1:1:1',
+            '2001:db8::1:0:0:1',
+            '2001:db8:1234:0000:0000:0000:0000:0000',
+            '2001:db8:1234:ffff:ffff:ffff:ffff:ffff',
+            'fe80::1ff:fe23:4567:890a',
+        ]
+
+        for content in content_list:
+            self.assertEquals(list(iocextract.extract_ipv6s(content))[0], content)
+            self.assertEquals(list(iocextract.extract_ipv6s(_wrap_spaces(content)))[0], content)
+            self.assertEquals(list(iocextract.extract_ipv6s(_wrap_tabs(content)))[0], content)
+            self.assertEquals(list(iocextract.extract_ipv6s(_wrap_newlines(content)))[0], content)
+            self.assertEquals(list(iocextract.extract_ipv6s(_wrap_nonwords(content)))[0], content)
+
+        invalid_list = [
+            '192.168.1',
+            # Not caught
+            '::1',
+            '::',
+        ]
+
+        for content in invalid_list:
+            self.assertEquals(len(list(iocextract.extract_ipv6s(content))), 0)
+            self.assertEquals(len(list(iocextract.extract_ipv6s(_wrap_spaces(content)))), 0)
+            self.assertEquals(len(list(iocextract.extract_ipv6s(_wrap_tabs(content)))), 0)
+            self.assertEquals(len(list(iocextract.extract_ipv6s(_wrap_newlines(content)))), 0)
+
+    def test_ipv6_included_in_ips(self):
+        content = '2001:0db8:85a3:0000:0000:8a2e:0370:7334'
+        self.assertEquals(list(iocextract.extract_ips(content))[0], content)
+
+    def test_ipv6_included_in_iocs(self):
+        content = '2001:0db8:85a3:0000:0000:8a2e:0370:7334'
         self.assertEquals(list(iocextract.extract_iocs(content))[0], content)
