@@ -1,9 +1,10 @@
-"""Advanced Indicitor of Compromise (IOC) extractor
+"""Extract and optionallly defang Indicators of Compromise (IOCs) from text.
 
-All methods return iterable objects, not lists. If for some reason you need
-a list, do e.g.::
+All methods return iterator objects, not lists. If for some reason you need
+a list, do e.g.: ``list(extract_iocs(my_data))``.
 
-    >>> list(extract_iocs(my_data))
+Otherwise, you can iterate over the objects (e.g. in a ``for`` loop) normally.
+Each object yielded from the generators will by of type :class:`str`.
 """
 import re
 import itertools
@@ -28,13 +29,13 @@ SHA512_RE = re.compile(r"(?:[^a-fA-F\d]|\b)([a-fA-F\d]{128})(?:[^a-fA-F\d]|\b)")
 
 
 def extract_iocs(data):
-    """Extract all IOCs
+    """Extract all IOCs.
 
     Results are returned as an itertools.chain iterable object which
     lazily provides the results of the other extract_* generators.
 
-    :param str data: Input text
-    :rtype: itertools.chain
+    :param data: Input text
+    :rtype: :py:func:`itertools.chain`
     """
     return itertools.chain(
         extract_urls(data),
@@ -44,10 +45,10 @@ def extract_iocs(data):
     )
 
 def extract_urls(data):
-    """Extract URLs
+    """Extract URLs.
 
-    :param str data: Input text
-    :rtype: generator
+    :param data: Input text
+    :rtype: Iterator[:class:`str`]
     """
     for url in GENERIC_URL_RE.finditer(data):
         yield(url.group(0))
@@ -55,12 +56,12 @@ def extract_urls(data):
         yield(url.group(0))
 
 def extract_ips(data):
-    """Extract IP addresses
+    """Extract IP addresses.
 
     Includes both IPv4 and IPv6 addresses.
 
-    :param str data: Input text
-    :rtype: itertools.chain
+    :param data: Input text
+    :rtype: :py:func:`itertools.chain`
     """
     return itertools.chain(
         extract_ipv4s(data),
@@ -68,21 +69,21 @@ def extract_ips(data):
     )
 
 def extract_ipv4s(data):
-    """Extract IPv4 addresses
+    """Extract IPv4 addresses.
 
-    :param str data: Input text
-    :rtype: generator
+    :param data: Input text
+    :rtype: Iterator[:class:`str`]
     """
     for ip in IPV4_RE.finditer(data):
         yield(ip.group(0))
 
 def extract_ipv6s(data):
-    """Extract IPv6 addresses
+    """Extract IPv6 addresses.
 
     Not guaranteed to catch all valid IPv6 addresses.
 
-    :param str data: Input text
-    :rtype: generator
+    :param data: Input text
+    :rtype: Iterator[:class:`str`]
     """
     for ip in IPV6_RE.finditer(data):
         yield(ip.group(0))
@@ -90,20 +91,20 @@ def extract_ipv6s(data):
 def extract_emails(data):
     """Extract email addresses
 
-    :param str data: Input text
-    :rtype: generator
+    :param data: Input text
+    :rtype: Iterator[:class:`str`]
     """
     for email in EMAIL_RE.finditer(data):
         yield(email.group(0))
 
 def extract_hashes(data):
-    """Extract MD5/SHA hashes
+    """Extract MD5/SHA hashes.
 
     Results are returned as an itertools.chain iterable object which
     lazily provides the results of the other extract_*_hashes generators.
 
-    :param str data: Input text
-    :rtype: itertools.chain
+    :param data: Input text
+    :rtype: :py:func:`itertools.chain`
     """
     return itertools.chain(
         extract_md5_hashes(data),
@@ -113,37 +114,37 @@ def extract_hashes(data):
     )
 
 def extract_md5_hashes(data):
-    """Extract MD5 hashes
+    """Extract MD5 hashes.
 
-    :param str data: Input text
-    :rtype: generator
+    :param data: Input text
+    :rtype: Iterator[:class:`str`]
     """
     for md5 in MD5_RE.finditer(data):
         yield(md5.group(1))
 
 def extract_sha1_hashes(data):
-    """Extract SHA1 hashes
+    """Extract SHA1 hashes.
 
-    :param str data: Input text
-    :rtype: generator
+    :param data: Input text
+    :rtype: Iterator[:class:`str`]
     """
     for sha1 in SHA1_RE.finditer(data):
         yield(sha1.group(1))
 
 def extract_sha256_hashes(data):
-    """Extract SHA256 hashes
+    """Extract SHA256 hashes.
 
-    :param str data: Input text
-    :rtype: generator
+    :param data: Input text
+    :rtype: Iterator[:class:`str`]
     """
     for sha256 in SHA256_RE.finditer(data):
         yield(sha256.group(1))
 
 def extract_sha512_hashes(data):
-    """Extract SHA512 hashes
+    """Extract SHA512 hashes.
 
-    :param str data: Input text
-    :rtype: generator
+    :param data: Input text
+    :rtype: Iterator[:class:`str`]
     """
     for sha512 in SHA512_RE.finditer(data):
         yield(sha512.group(1))
