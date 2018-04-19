@@ -19,6 +19,11 @@ setup(
             'ipaddress',
         ],
     },
+    entry_points={
+          'console_scripts': [
+              'iocextract = iocextract:main'
+          ]
+    },
     license='BSD',
     description='Advanced Indicator of Compromise (IOC) extractor',
     long_description=README,

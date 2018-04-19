@@ -7,7 +7,9 @@ Otherwise, you can iterate over the objects (e.g. in a ``for`` loop) normally.
 Each object yielded from the generators will by of type :class:`str`.
 """
 import re
+import sys
 import itertools
+import argparse
 try:
     # python3
     from urllib.parse import urlparse
@@ -281,3 +283,40 @@ def refang_ipv4(ip):
     :rtype: str
     """
     return _refang_common(ip).replace('[', '').replace(']', '')
+
+def main():
+    """Run as a commandline utility."""
+    parser = argparse.ArgumentParser(description="""Advanced Indicator of Compromise (IOC) extractor.
+                                                 If no arguments are specified, the default behavior is to extract all
+                                                 IOCs.""")
+    parser.add_argument('--input', type=argparse.FileType('r'),
+                        default=sys.stdin, help="default: stdin")
+    parser.add_argument('--output', type=argparse.FileType('w'),
+                        default=sys.stdout, help="default: stdout")
+    parser.add_argument('--extract-ips', action='store_true')
+    parser.add_argument('--extract-urls', action='store_true')
+    parser.add_argument('--extract-yara-rules', action='store_true')
+    parser.add_argument('--extract-hashes', action='store_true')
+    parser.add_argument('--refang', action='store_true', help="default: no")
+    args = parser.parse_args()
+
+    # By default, extract all
+    if not (args.extract_ips or args.extract_urls or args.extract_yara_rules or args.extract_hashes):
+        for ioc in extract_iocs(args.input.read(), refang=args.refang):
+            args.output.write("{ioc}\r\n".format(ioc=ioc))
+    else:
+        if args.extract_ips:
+            for ioc in extract_ips(args.input.read(), refang=args.refang):
+                args.output.write("{ioc}\r\n".format(ioc=ioc))
+        if args.extract_urls:
+            for ioc in extract_ips(args.input.read(), refang=args.refang):
+                args.output.write("{ioc}\r\n".format(ioc=ioc))
+        if args.extract_yara_rules:
+            for ioc in extract_yara_rules(args.input.read()):
+                args.output.write("{ioc}\r\n".format(ioc=ioc))
+        if args.extract_hashes:
+            for ioc in extract_hashes(args.input.read()):
+                args.output.write("{ioc}\r\n".format(ioc=ioc))
+
+if __name__ == "__main__":
+    main()
