@@ -308,3 +308,7 @@ class TestExtractors(unittest.TestCase):
             self.assertEquals(len(list(iocextract.extract_urls(_wrap_spaces(content)))), 0)
             self.assertEquals(len(list(iocextract.extract_urls(_wrap_tabs(content)))), 0)
             self.assertEquals(len(list(iocextract.extract_urls(_wrap_newlines(content)))), 0)
+
+    def test_url_included_in_iocs(self):
+        content = 'http://domain.com/test'
+        self.assertEquals(list(iocextract.extract_iocs(content))[0], content)
