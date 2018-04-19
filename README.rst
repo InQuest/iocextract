@@ -4,11 +4,11 @@ iocextract
 .. image:: https://travis-ci.org/InQuest/python-iocextract.svg?branch=master
     :target: https://travis-ci.org/InQuest/python-iocextract
     :alt: Build Status
-.. image:: https://api.codacy.com/project/badge/Grade/8b426dc1be7647ba8c51f4ccbd7b85bf
-    :target: https://www.codacy.com/app/rshipp/python-iocextract
+.. image:: https://api.codacy.com/project/badge/Grade/920894593bde451c9277c56b7d9ab3e1
+    :target: https://app.codacy.com/app/InQuest/python-iocextract
     :alt: Code Health
-.. image:: https://api.codacy.com/project/badge/Coverage/8b426dc1be7647ba8c51f4ccbd7b85bf
-    :target: https://www.codacy.com/app/rshipp/python-iocextract
+.. image:: https://api.codacy.com/project/badge/Coverage/920894593bde451c9277c56b7d9ab3e1
+    :target: https://app.codacy.com/app/InQuest/python-iocextract
     :alt: Test Coverage
 .. image:: http://img.shields.io/pypi/v/iocextract.svg
     :target: https://pypi.python.org/pypi/iocextract
