@@ -12,10 +12,10 @@ import itertools
 GENERIC_URL_RE = re.compile(r"[fhstu]\w\w?[px]s?(?::\/\/|__?)\x20?\S+(?:\x20[\/\.]\S+)*(?=\s|$)")
 
 # Get some obfuscated urls, main anchor is brackets around the period
-BRACKET_URL_RE = re.compile(r"\b\S+(?:\x20?\[\x20?\.\x20?\]\x20?\S*)+(?=\s|$)")
+BRACKET_URL_RE = re.compile(r"\b\S+(?:\x20?[\(\[]\x20?\.\x20?[\]\)]\x20?\S*)+(?=\s|$)")
 
 # Get some valid obfuscated ip addresses
-IPV4_RE = re.compile(r"(?:^|(?![^\d\.]))(?:(?:[1-9]?\d|1\d\d|2[0-4]\d|25[0-5])\[?\.\]?){3}(?:[1-9]?\d|1\d\d|2[0-4]\d|25[0-5])(?:(?=[^\d\.])|$)")
+IPV4_RE = re.compile(r"(?:^|(?![^\d\.]))(?:(?:[1-9]?\d|1\d\d|2[0-4]\d|25[0-5])[\[\(]?\.[\]\)]?){3}(?:[1-9]?\d|1\d\d|2[0-4]\d|25[0-5])(?:(?=[^\d\.])|$)")
 
 # Experimental IPV6 regex, will not catch everything but should be sufficent for now
 IPV6_RE = re.compile(r"\b(?:[a-f0-9]{1,4}:|:){2,7}(?:[a-f0-9]{1,4}|:)\b")

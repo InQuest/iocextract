@@ -194,6 +194,7 @@ class TestExtractors(unittest.TestCase):
             '192.168.255.255',
             '1.1.1.1',
             '1[.]1[.]1[.]1',
+            '1(.)1(.)1(.)1',
             '111[.]111[.]111[.]111',
             '111[.]111.111[.]111',
             '111[.111.]111[.111',
@@ -294,6 +295,8 @@ class TestExtractors(unittest.TestCase):
             'a[.]b [.] example[.]com',
             'a[.]b[.] example[.]com',
             'example[.]com/path!#&%?+='
+            'example(.)com/test',
+            'example (.) com/test',
         ]
 
         for content in content_list:
