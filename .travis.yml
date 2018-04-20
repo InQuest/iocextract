@@ -10,8 +10,10 @@ install:
   - "pip install nose"
   - "pip install coverage"
   - "pip install codacy-coverage"
+  - "pip install collective.checkdocs"
   - "python setup.py install"
 script:
   - nosetests --with-coverage --cover-package=iocextract --cover-xml
+  - python setup.py checkdocs
 after_success:
   - python-codacy-coverage
