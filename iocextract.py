@@ -20,7 +20,7 @@ except ImportError:
 import ipaddress
 
 # Get basic url format, including a few obfuscation techniques, main anchor is the uri scheme
-GENERIC_URL_RE = re.compile(r"([fhstu]\w\w?[px]s?(?::\/\/|__?)\x20?\S+?(?:\x20[\/\.][^\.\/\s]\S*?)*)[\.\?>\"!]*(?=\s|$)")
+GENERIC_URL_RE = re.compile(r"([fhstu]\w\w?[px]s?(?::\/\/|__?)\x20?\S+?(?:\x20[\/\.][^\.\/\s]\S*?)*)[\.\?>\"!]*(?=\s|$)", re.IGNORECASE)
 
 # Get some obfuscated urls, main anchor is brackets around the period
 BRACKET_URL_RE = re.compile(r"\b(\S+(?:\x20?[\(\[]\x20?\.\x20?[\]\)]\x20?\S*?)+)[\.\?>\"!]*(?=\s|$)")
@@ -29,7 +29,7 @@ BRACKET_URL_RE = re.compile(r"\b(\S+(?:\x20?[\(\[]\x20?\.\x20?[\]\)]\x20?\S*?)+)
 IPV4_RE = re.compile(r"(?:^|(?![^\d\.]))(?:(?:[1-9]?\d|1\d\d|2[0-4]\d|25[0-5])[\[\(]?\.[\]\)]?){3}(?:[1-9]?\d|1\d\d|2[0-4]\d|25[0-5])(?:(?=[^\d\.])|$)")
 
 # Experimental IPV6 regex, will not catch everything but should be sufficent for now
-IPV6_RE = re.compile(r"\b(?:[a-f0-9]{1,4}:|:){2,7}(?:[a-f0-9]{1,4}|:)\b")
+IPV6_RE = re.compile(r"\b(?:[a-f0-9]{1,4}:|:){2,7}(?:[a-f0-9]{1,4}|:)\b", re.IGNORECASE)
 
 EMAIL_RE = re.compile(r"([a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+)")
 MD5_RE = re.compile(r"(?:[^a-fA-F\d]|\b)([a-fA-F\d]{32})(?:[^a-fA-F\d]|\b)")

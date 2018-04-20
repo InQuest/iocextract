@@ -267,6 +267,7 @@ class TestExtractors(unittest.TestCase):
             "sftp://",
             "ftps://",
             "http:// ",
+            "HXXP://",
         ]
 
         append_list = [
