@@ -10,6 +10,7 @@ import re
 import sys
 import itertools
 import argparse
+import binascii
 try:
     # python3
     from urllib.parse import urlparse
@@ -83,7 +84,7 @@ def extract_urls(data, refang=False):
             yield url.group(1)
     for url in HEXENCODED_URL_RE.finditer(data):
         if refang:
-            yield url.group(1).decode('hex')
+            yield binascii.unhexlify(url.group(1))
         else:
             yield url.group(1)
 
