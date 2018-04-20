@@ -252,7 +252,12 @@ def refang_url(url):
 
     # Since urlparse expects a scheme, make sure one exists.
     if '//' not in url:
-        url = 'http://' + url
+        if '__' in url[:7]:
+            # Support http__domain.
+            url = url.replace('__', '://', 1)
+        else:
+            # Support no-protocol.
+            url = 'http://' + url
 
     # Refang (/), since it's not entirely in the netloc.
     url = url.replace('(/)', '/')

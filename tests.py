@@ -440,6 +440,7 @@ class TestExtractors(unittest.TestCase):
             'hxxp://exampledot]com/test',
             'hxxp://example[dotcom/test',
             'hxxp://example.com[/test',
+            'http__example.com/test',
         ]
 
         for content in content_list:
