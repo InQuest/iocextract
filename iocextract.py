@@ -84,7 +84,7 @@ def extract_urls(data, refang=False):
             yield url.group(1)
     for url in HEXENCODED_URL_RE.finditer(data):
         if refang:
-            yield binascii.unhexlify(url.group(1))
+            yield binascii.unhexlify(url.group(1)).decode('utf-8')
         else:
             yield url.group(1)
 

@@ -1,3 +1,4 @@
+import sys
 import unittest
 import binascii
 
@@ -484,15 +485,20 @@ class TestExtractors(unittest.TestCase):
         self.assertEquals(list(iocextract.extract_urls('example[.]com/\''))[0], 'example[.]com/')
 
     def test_hex_url_extraction(self):
-        self.assertEquals(list(iocextract.extract_urls(binascii.hexlify('http://example.com/pa_th.doc?q=a#b'),
+        if sys.version_info[0] == 3:
+            hexconvert = lambda x: str(binascii.hexlify(bytes(x, 'ascii')), 'ascii')
+        else:
+            hexconvert = lambda x: binascii.hexlify(x)
+
+        self.assertEquals(list(iocextract.extract_urls(hexconvert('http://example.com/pa_th.doc?q=a#b'),
                         refang=True))[0], 'http://example.com/pa_th.doc?q=a#b')
-        self.assertEquals(list(iocextract.extract_urls(binascii.hexlify(_wrap_spaces('http://example.com/pa_th.doc?q=a#b')),
+        self.assertEquals(list(iocextract.extract_urls(hexconvert(_wrap_spaces('http://example.com/pa_th.doc?q=a#b')),
                         refang=True))[0], 'http://example.com/pa_th.doc?q=a#b')
-        self.assertEquals(list(iocextract.extract_urls(binascii.hexlify(_wrap_newlines('http://example.com/pa_th.doc?q=a#b')),
+        self.assertEquals(list(iocextract.extract_urls(hexconvert(_wrap_newlines('http://example.com/pa_th.doc?q=a#b')),
                         refang=True))[0], 'http://example.com/pa_th.doc?q=a#b')
-        self.assertEquals(list(iocextract.extract_urls(binascii.hexlify(_wrap_tabs('http://example.com/pa_th.doc?q=a#b')),
+        self.assertEquals(list(iocextract.extract_urls(hexconvert(_wrap_tabs('http://example.com/pa_th.doc?q=a#b')),
                         refang=True))[0], 'http://example.com/pa_th.doc?q=a#b')
-        self.assertEquals(list(iocextract.extract_urls(binascii.hexlify('wordshttp://example.com/pa_th.doc?q=a#b words'),
+        self.assertEquals(list(iocextract.extract_urls(hexconvert('wordshttp://example.com/pa_th.doc?q=a#b words'),
                         refang=True))[0], 'http://example.com/pa_th.doc?q=a#b')
-        self.assertEquals(list(iocextract.extract_urls(binascii.hexlify('http://example.com/pa_th.doc?q=a#b').upper(),
+        self.assertEquals(list(iocextract.extract_urls(hexconvert('http://example.com/pa_th.doc?q=a#b').upper(),
                         refang=True))[0], 'http://example.com/pa_th.doc?q=a#b')
