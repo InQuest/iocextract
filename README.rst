@@ -148,7 +148,7 @@ This library currently supports the following IOCs:
     * IPv6 partially supported
 * URLs
     * With protocol specifier: http, https, tcp, udp, ftp, sftp, ftps
-    * With ``[.]`` defang
+    * With ``[.]`` anchor, even with no protocol specifier
     * IPv4 and IPv6 (RFC2732) URLs are supported
 * Emails
     * Partially supported, anchoring on ``@``
