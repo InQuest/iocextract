@@ -38,7 +38,7 @@ SHA256_RE = re.compile(r"(?:[^a-fA-F\d]|\b)([a-fA-F\d]{64})(?:[^a-fA-F\d]|\b)")
 SHA512_RE = re.compile(r"(?:[^a-fA-F\d]|\b)([a-fA-F\d]{128})(?:[^a-fA-F\d]|\b)")
 
 # YARA regex
-YARA_SPLIT_STR = "\n[\t\s]*\}[\s\t]*(rule[\t\s][^\r\n]+(?:\{|[\r\n][\r\n\s\t]*\{))"
+YARA_SPLIT_STR = r"\n[\t\s]*\}[\s\t]*(rule[\t\s][^\r\n]+(?:\{|[\r\n][\r\n\s\t]*\{))"
 YARA_PARSE_RE = re.compile(r"^[\t\s]*(rule[\t\s][^\r\n]+(?:\{|[\r\n][\r\n\s\t]*\{).*?condition:.*?\r?\n?[\t\s]*\})[\s\t]*(?:$|\r?\n)", re.MULTILINE | re.DOTALL)
 
 
@@ -69,14 +69,14 @@ def extract_urls(data, refang=False):
     """
     for url in GENERIC_URL_RE.finditer(data):
         if refang:
-            yield(refang_url(url.group(1)))
+            yield refang_url(url.group(1))
         else:
-            yield(url.group(1))
+            yield url.group(1)
     for url in BRACKET_URL_RE.finditer(data):
         if refang:
-            yield(refang_url(url.group(1)))
+            yield refang_url(url.group(1))
         else:
-            yield(url.group(1))
+            yield url.group(1)
 
 def extract_ips(data, refang=False):
     """Extract IP addresses.
@@ -99,11 +99,11 @@ def extract_ipv4s(data, refang=False):
     :param bool refang: Refang output?
     :rtype: Iterator[:class:`str`]
     """
-    for ip in IPV4_RE.finditer(data):
+    for ip_address in IPV4_RE.finditer(data):
         if refang:
-            yield(refang_ipv4(ip.group(0)))
+            yield refang_ipv4(ip_address.group(0))
         else:
-            yield(ip.group(0))
+            yield ip_address.group(0)
 
 def extract_ipv6s(data):
     """Extract IPv6 addresses.
@@ -113,8 +113,8 @@ def extract_ipv6s(data):
     :param data: Input text
     :rtype: Iterator[:class:`str`]
     """
-    for ip in IPV6_RE.finditer(data):
-        yield(ip.group(0))
+    for ip_address in IPV6_RE.finditer(data):
+        yield ip_address.group(0)
 
 def extract_emails(data):
     """Extract email addresses
@@ -123,7 +123,7 @@ def extract_emails(data):
     :rtype: Iterator[:class:`str`]
     """
     for email in EMAIL_RE.finditer(data):
-        yield(email.group(0))
+        yield email.group(0)
 
 def extract_hashes(data):
     """Extract MD5/SHA hashes.
@@ -148,7 +148,7 @@ def extract_md5_hashes(data):
     :rtype: Iterator[:class:`str`]
     """
     for md5 in MD5_RE.finditer(data):
-        yield(md5.group(1))
+        yield md5.group(1)
 
 def extract_sha1_hashes(data):
     """Extract SHA1 hashes.
@@ -157,7 +157,7 @@ def extract_sha1_hashes(data):
     :rtype: Iterator[:class:`str`]
     """
     for sha1 in SHA1_RE.finditer(data):
-        yield(sha1.group(1))
+        yield sha1.group(1)
 
 def extract_sha256_hashes(data):
     """Extract SHA256 hashes.
@@ -166,7 +166,7 @@ def extract_sha256_hashes(data):
     :rtype: Iterator[:class:`str`]
     """
     for sha256 in SHA256_RE.finditer(data):
-        yield(sha256.group(1))
+        yield sha256.group(1)
 
 def extract_sha512_hashes(data):
     """Extract SHA512 hashes.
@@ -175,7 +175,7 @@ def extract_sha512_hashes(data):
     :rtype: Iterator[:class:`str`]
     """
     for sha512 in SHA512_RE.finditer(data):
-        yield(sha512.group(1))
+        yield sha512.group(1)
 
 def extract_yara_rules(data):
     """Extract YARA rules.
@@ -186,7 +186,7 @@ def extract_yara_rules(data):
     yara_rules = re.sub(YARA_SPLIT_STR, "}\r\n\\1", data,
                         re.MULTILINE | re.DOTALL)
     for yara_rule in YARA_PARSE_RE.finditer(yara_rules):
-        yield(yara_rule.group(1))
+        yield yara_rule.group(1)
 
 def _is_ipv6_url(url):
     """URL network location is an IPv6 address, not a domain.
@@ -281,19 +281,20 @@ def refang_url(url):
 
     return parsed.geturl()
 
-def refang_ipv4(ip):
+def refang_ipv4(ip_address):
     """Refang an IPv4 address.
 
-    :param ip: String IPv4 address.
+    :param ip_address: String IPv4 address.
     :rtype: str
     """
-    return _refang_common(ip).replace('[', '').replace(']', '')
+    return _refang_common(ip_address).replace('[', '').replace(']', '')
 
 def main():
     """Run as a commandline utility."""
-    parser = argparse.ArgumentParser(description="""Advanced Indicator of Compromise (IOC) extractor.
-                                                 If no arguments are specified, the default behavior is to extract all
-                                                 IOCs.""")
+    parser = argparse.ArgumentParser(
+        description="""Advanced Indicator of Compromise (IOC) extractor.
+                       If no arguments are specified, the default behavior is
+                       to extract all IOCs.""")
     parser.add_argument('--input', type=argparse.FileType('r'),
                         default=sys.stdin, help="default: stdin")
     parser.add_argument('--output', type=argparse.FileType('w'),
