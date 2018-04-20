@@ -138,6 +138,67 @@ A command-line tool is also included::
 
 Only URLs and IPv4 addresses can be "refanged".
 
+More Details
+------------
+
+This library currently supports the following IOCs:
+
+* IP Addresses
+    * IPv4 fully supported
+    * IPv6 partially supported
+* URLs
+    * With protocol specifier: http, https, tcp, udp, ftp, sftp, ftps
+    * With ``[.]`` defang
+    * IPv4 and IPv6 (RFC2732) URLs are supported
+* Emails
+    * Partially supported, anchoring on ``@``
+* YARA rules
+* Hashes
+    * MD5
+    * SHA1
+    * SHA256
+    * SHA512
+
+For IPv4 addresses, the following defang techniques are supported:
+
++-----------------+---------------+-----------+
+| Technique       | Defanged      | Refanged  |
++=================+===============+===========+
+| ``. -> [.]``    | 1[.]1[.]1[.]1 | 1.1.1.1   |
++-----------------+---------------+-----------+
+| ``. -> (.)``    | 1(.)1(.)1(.)1 | 1.1.1.1   |
++-----------------+---------------+-----------+
+| Partial         | 1[.1[.1.]1    | 1.1.1.1   |
++-----------------+---------------+-----------+
+| Any combination | 1.)1[.1.)1    | 1.1.1.1   |
++-----------------+---------------+-----------+
+
+For URLs, the following defang techniques are supported:
+
++-----------------+-----------------------------------+-----------------------------+
+| Technique       | Defanged                          | Refanged                    |
++=================+===================================+=============================+
+| ``. -> [.]``    | ``example[.]com/path``            | ``http://example.com/path`` |
++-----------------+-----------------------------------+-----------------------------+
+| ``. -> (.)``    | ``example(.)com/path``            | ``http://example.com/path`` |
++-----------------+-----------------------------------+-----------------------------+
+| Partial         | ``http://example[.com/path``      | ``http://example.com/path`` |
++-----------------+-----------------------------------+-----------------------------+
+| ``/ -> [/]``    | ``http://example.com[/]path``     | ``http://example.com/path`` |
++-----------------+-----------------------------------+-----------------------------+
+| `Cisco ESA`_    | ``http:// example .com /path``    | ``http://example.com/path`` |
++-----------------+-----------------------------------+-----------------------------+
+| ``:// -> __``   | ``http__example.com/path``        | ``http://example.com/path`` |
++-----------------+-----------------------------------+-----------------------------+
+| ``hxxp``        | ``hxxp://example.com/path``       | ``http://example.com/path`` |
++-----------------+-----------------------------------+-----------------------------+
+| Any combination | ``hxxp__ example( .com[/]path``   | ``http://example.com/path`` |
++-----------------+-----------------------------------+-----------------------------+
+
+Note that the table above is not exhaustive, and other URL/defang patterns may
+also be extracted correctly. If you notice something missing or not working
+correctly, feel free to let us know via the GitHub Issues_.
+
 Contributing
 ------------
 
@@ -146,4 +207,5 @@ if you find any bugs, PRs and Issues_ are always welcome. The library is
 released under a "BSD-New" (aka "BSD 3-Clause") license.
 
 .. _Issues: https://github.com/inquest/python-iocextract/issues
-.. _`this tweet from @InQuest`: https://twitter.com/InQuest/status/969469856931287041
+.. _this tweet from @InQuest: https://twitter.com/InQuest/status/969469856931287041
+.. _Cisco ESA: https://www.cisco.com/c/en/us/support/docs/security/email-security-appliance/118775-technote-esa-00.html
