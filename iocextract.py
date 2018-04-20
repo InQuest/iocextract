@@ -25,6 +25,10 @@ GENERIC_URL_RE = re.compile(r"([fhstu]\w\w?[px]s?(?::\/\/|__?)\x20?\S+?(?:\x20[\
 # Get some obfuscated urls, main anchor is brackets around the period
 BRACKET_URL_RE = re.compile(r"\b(\S+(?:\x20?[\(\[]\x20?\.\x20?[\]\)]\x20?\S*?)+)[\.\?>\"'\)!]*(?=\s|$)")
 
+# Get hex-encoded urls
+HEXENCODED_URL_RE = re.compile(r"([46][86](?:[57]4)?[57]4[57]0(?:[57]3)?3a2f2f(?:2[356def]|3[0-9adf]|[46][0-9a-f]|[57][0-9af])+)(?:[046]0|2[0-2489a-c]|3[bce]|[57][b-e]|[8-f][0-9a-f]|0a|0d|09|[\x5b-\x5d\x7b\x7d\x0a\x0d\x20]|$)",
+                               re.IGNORECASE)
+
 # Get some valid obfuscated ip addresses
 IPV4_RE = re.compile(r"(?:^|(?![^\d\.]))(?:(?:[1-9]?\d|1\d\d|2[0-4]\d|25[0-5])[\[\(]?\.[\]\)]?){3}(?:[1-9]?\d|1\d\d|2[0-4]\d|25[0-5])(?:(?=[^\d\.])|$)")
 
@@ -75,6 +79,11 @@ def extract_urls(data, refang=False):
     for url in BRACKET_URL_RE.finditer(data):
         if refang:
             yield refang_url(url.group(1))
+        else:
+            yield url.group(1)
+    for url in HEXENCODED_URL_RE.finditer(data):
+        if refang:
+            yield url.group(1).decode('hex')
         else:
             yield url.group(1)
 

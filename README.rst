@@ -108,6 +108,18 @@ IOCs::
     http://example.com
     http://example.com:8989/bad
 
+You can even extract and decode hex-encoded URLs::
+
+    >>> content = '612062756e6368206f6620776f72647320687474703a2f2f6578616d706c652e636f6d2f70617468206d6f726520776f726473'
+    >>> for url in iocextract.extract_urls(content):
+    ...     print url
+    ...
+    687474703a2f2f6578616d706c652e636f6d2f70617468
+    >>> for url in iocextract.extract_urls(content, refang=True):
+    ...     print url
+    ...
+    http://example.com/path
+
 All ``extract_*`` functions in this library return iterators, not lists. The
 benefit of this behavior is that ``iocextract`` can process extremely large
 inputs, with a very low overhead. However, if for some reason you need to iterate
@@ -150,6 +162,7 @@ This library currently supports the following IOCs:
     * With protocol specifier: http, https, tcp, udp, ftp, sftp, ftps
     * With ``[.]`` anchor, even with no protocol specifier
     * IPv4 and IPv6 (RFC2732) URLs are supported
+    * Hex-encoded URLs with protocol specifier: http, https, ftp
 * Emails
     * Partially supported, anchoring on ``@``
 * YARA rules
@@ -193,6 +206,8 @@ For URLs, the following defang techniques are supported:
 | ``hxxp``        | ``hxxp://example.com/path``       | ``http://example.com/path`` |
 +-----------------+-----------------------------------+-----------------------------+
 | Any combination | ``hxxp__ example( .com[/]path``   | ``http://example.com/path`` |
++-----------------+-----------------------------------+-----------------------------+
+| Hex encoded     | ``687474703a2f2f6578616d706c652e636f6d2f70617468`` | ``http://example.com/path`` |
 +-----------------+-----------------------------------+-----------------------------+
 
 Note that the table above is not exhaustive, and other URL/defang patterns may

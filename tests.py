@@ -481,3 +481,17 @@ class TestExtractors(unittest.TestCase):
         self.assertEquals(list(iocextract.extract_urls('example[.]com/ ...'))[0], 'example[.]com/')
         self.assertEquals(list(iocextract.extract_urls('example[.]com/)'))[0], 'example[.]com/')
         self.assertEquals(list(iocextract.extract_urls('example[.]com/\''))[0], 'example[.]com/')
+
+    def test_hex_url_extraction(self):
+        self.assertEquals(list(iocextract.extract_urls('http://example.com/pa_th.doc?q=a#b'.encode('hex'),
+                        refang=True))[0], 'http://example.com/pa_th.doc?q=a#b')
+        self.assertEquals(list(iocextract.extract_urls(_wrap_spaces('http://example.com/pa_th.doc?q=a#b').encode('hex'),
+                        refang=True))[0], 'http://example.com/pa_th.doc?q=a#b')
+        self.assertEquals(list(iocextract.extract_urls(_wrap_newlines('http://example.com/pa_th.doc?q=a#b').encode('hex'),
+                        refang=True))[0], 'http://example.com/pa_th.doc?q=a#b')
+        self.assertEquals(list(iocextract.extract_urls(_wrap_tabs('http://example.com/pa_th.doc?q=a#b').encode('hex'),
+                        refang=True))[0], 'http://example.com/pa_th.doc?q=a#b')
+        self.assertEquals(list(iocextract.extract_urls('wordshttp://example.com/pa_th.doc?q=a#b words'.encode('hex'),
+                        refang=True))[0], 'http://example.com/pa_th.doc?q=a#b')
+        self.assertEquals(list(iocextract.extract_urls('http://example.com/pa_th.doc?q=a#b'.encode('hex').upper(),
+                        refang=True))[0], 'http://example.com/pa_th.doc?q=a#b')
