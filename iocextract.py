@@ -325,7 +325,7 @@ def main():
             for ioc in extract_ips(args.input.read(), refang=args.refang):
                 args.output.write("{ioc}\r\n".format(ioc=ioc))
         if args.extract_urls:
-            for ioc in extract_ips(args.input.read(), refang=args.refang):
+            for ioc in extract_urls(args.input.read(), refang=args.refang):
                 args.output.write("{ioc}\r\n".format(ioc=ioc))
         if args.extract_yara_rules:
             for ioc in extract_yara_rules(args.input.read()):
