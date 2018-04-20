@@ -20,10 +20,10 @@ except ImportError:
 import ipaddress
 
 # Get basic url format, including a few obfuscation techniques, main anchor is the uri scheme
-GENERIC_URL_RE = re.compile(r"([fhstu]\w\w?[px]s?(?::\/\/|__?)\x20?\S+?(?:\x20[\/\.][^\.\/\s]\S*?)*)[\.\?>\"!]*(?=\s|$)", re.IGNORECASE)
+GENERIC_URL_RE = re.compile(r"([fhstu]\w\w?[px]s?(?::\/\/|__?)\x20?\S+?(?:\x20[\/\.][^\.\/\s]\S*?)*)[\.\?>\"'\)!]*(?=\s|$)", re.IGNORECASE)
 
 # Get some obfuscated urls, main anchor is brackets around the period
-BRACKET_URL_RE = re.compile(r"\b(\S+(?:\x20?[\(\[]\x20?\.\x20?[\]\)]\x20?\S*?)+)[\.\?>\"!]*(?=\s|$)")
+BRACKET_URL_RE = re.compile(r"\b(\S+(?:\x20?[\(\[]\x20?\.\x20?[\]\)]\x20?\S*?)+)[\.\?>\"'\)!]*(?=\s|$)")
 
 # Get some valid obfuscated ip addresses
 IPV4_RE = re.compile(r"(?:^|(?![^\d\.]))(?:(?:[1-9]?\d|1\d\d|2[0-4]\d|25[0-5])[\[\(]?\.[\]\)]?){3}(?:[1-9]?\d|1\d\d|2[0-4]\d|25[0-5])(?:(?=[^\d\.])|$)")
