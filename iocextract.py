@@ -306,8 +306,12 @@ def refang_url(url):
     # Handle URLs with no scheme / obfuscated scheme.
     # Note: ParseResult._replace is a public member, this is safe.
     if parsed.scheme not in ['http', 'https', 'ftp']:
-        parsed = parsed._replace(scheme='http')
-        url = parsed.geturl().replace('http:///', 'http://')
+        if parsed.scheme.strip('s') in ['ftx', 'fxp']:
+            parsed = parsed._replace(scheme='ftp')
+            url = parsed.geturl().replace('ftp:///', 'ftp://')
+        else:
+            parsed = parsed._replace(scheme='http')
+            url = parsed.geturl().replace('http:///', 'http://')
         parsed = urlparse(url)
 
     # Remove artifacts from common defangs.

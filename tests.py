@@ -451,6 +451,8 @@ class TestExtractors(unittest.TestCase):
             self.assertEquals(list(iocextract.extract_urls(content, refang=True))[0], 'http://example.com/test')
             self.assertEquals(iocextract.refang_url(content), 'http://example.com/test')
 
+        self.assertEquals(iocextract.refang_url('ftx://example.com/test'), 'ftp://example.com/test')
+
         # IPv6 works as expected
         content = 'http://[2001:db8:85a3:0:0:8a2e:370:7334]:80/test'
         self.assertEquals(iocextract.refang_url(content), content)
