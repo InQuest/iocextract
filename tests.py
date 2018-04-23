@@ -512,3 +512,9 @@ class TestExtractors(unittest.TestCase):
                 'http%3A%2F%2Fexample%2Ecom')
         self.assertEquals(list(iocextract.extract_urls('http%3A%2F%2Fexa-mple%2Ecom',
                         refang=True))[0], 'http://exa-mple.com')
+
+    def test_url_strip(self):
+        self.assertEquals(list(iocextract.extract_urls('http://schemas.openxmlformats.org/drawingml/2006/main"><a:graphicData',
+                        strip=True))[0], 'http://schemas.openxmlformats.org/drawingml/2006/main')
+        self.assertEquals(list(iocextract.extract_urls("http://127.0.0.1:%u/')%%IMPORT%%Command",
+                        strip=True))[0], "http://127.0.0.1:%u/")

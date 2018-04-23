@@ -24,6 +24,9 @@ import ipaddress
 # Get basic url format, including a few obfuscation techniques, main anchor is the uri scheme
 GENERIC_URL_RE = re.compile(r"([fhstu]\w\w?[px]s?(?::\/\/|__?)\x20?\S+?(?:\x20[\/\.][^\.\/\s]\S*?)*)[\.\?>\"'\)!,}:;]*(?=\s|$)", re.IGNORECASE)
 
+# Split URLs on some characters that may be valid, but may also be garbage
+URL_SPLIT_STR = r"[>\"'\),};]"
+
 # Get some obfuscated urls, main anchor is brackets around the period
 BRACKET_URL_RE = re.compile(r"\b(\S+(?:\x20?[\(\[]\x20?\.\x20?[\]\)]\x20?\S*?)+)[\.\?>\"'\)!]*(?=\s|$)")
 
@@ -52,7 +55,7 @@ YARA_SPLIT_STR = r"\n[\t\s]*\}[\s\t]*(rule[\t\s][^\r\n]+(?:\{|[\r\n][\r\n\s\t]*\
 YARA_PARSE_RE = re.compile(r"^[\t\s]*(rule[\t\s][^\r\n]+(?:\{|[\r\n][\r\n\s\t]*\{).*?condition:.*?\r?\n?[\t\s]*\})[\s\t]*(?:$|\r?\n)", re.MULTILINE | re.DOTALL)
 
 
-def extract_iocs(data, refang=False):
+def extract_iocs(data, refang=False, strip=False):
     """Extract all IOCs.
 
     Results are returned as an itertools.chain iterable object which
@@ -60,38 +63,53 @@ def extract_iocs(data, refang=False):
 
     :param data: Input text
     :param bool refang: Refang output?
+    :param bool strip: Strip possible garbage from the end of URLs
     :rtype: :py:func:`itertools.chain`
     """
     return itertools.chain(
-        extract_urls(data, refang=refang),
+        extract_urls(data, refang=refang, strip=strip),
         extract_ips(data, refang=refang),
         extract_emails(data),
         extract_hashes(data),
         extract_yara_rules(data)
     )
 
-def extract_urls(data, refang=False):
+def extract_urls(data, refang=False, strip=False):
     """Extract URLs.
 
     :param data: Input text
     :param bool refang: Refang output?
+    :param bool strip: Strip possible garbage from the end of URLs
     :rtype: Iterator[:class:`str`]
     """
     for url in GENERIC_URL_RE.finditer(data):
         if refang:
-            yield refang_url(url.group(1))
+            url =  refang_url(url.group(1))
         else:
-            yield url.group(1)
+            url = url.group(1)
+
+        if strip:
+            url = re.split(URL_SPLIT_STR, url)[0]
+
+        yield url
+
     for url in BRACKET_URL_RE.finditer(data):
         if refang:
-            yield refang_url(url.group(1))
+            url = refang_url(url.group(1))
         else:
-            yield url.group(1)
+            url = url.group(1)
+
+        if strip:
+            url = re.split(URL_SPLIT_STR, url)[0]
+
+        yield url
+
     for url in HEXENCODED_URL_RE.finditer(data):
         if refang:
             yield binascii.unhexlify(url.group(1)).decode('utf-8')
         else:
             yield url.group(1)
+
     for url in URLENCODED_URL_RE.finditer(data):
         if refang:
             yield unquote(url.group(1))
@@ -324,23 +342,19 @@ def main():
     parser.add_argument('--extract-yara-rules', action='store_true')
     parser.add_argument('--extract-hashes', action='store_true')
     parser.add_argument('--refang', action='store_true', help="default: no")
-    parser.add_argument('--strip-urls', action='store_true', help="remove params from the end of urls. default: no")
+    parser.add_argument('--strip-urls', action='store_true', help="remove possible garbage from the end of urls. default: no")
     args = parser.parse_args()
 
     # By default, extract all
     if not (args.extract_ips or args.extract_urls or args.extract_yara_rules or args.extract_hashes):
-        for ioc in extract_iocs(args.input.read(), refang=args.refang):
-            if args.strip_urls:
-                ioc = ioc.split('?')[0]
+        for ioc in extract_iocs(args.input.read(), refang=args.refang, strip=args.strip_urls):
             args.output.write("{ioc}\n".format(ioc=ioc))
     else:
         if args.extract_ips:
             for ioc in extract_ips(args.input.read(), refang=args.refang):
                 args.output.write("{ioc}\n".format(ioc=ioc))
         if args.extract_urls:
-            for ioc in extract_urls(args.input.read(), refang=args.refang):
-                if args.strip_urls:
-                    ioc = ioc.split('?')[0]
+            for ioc in extract_urls(args.input.read(), refang=args.refang, strip=args.strip_urls):
                 args.output.write("{ioc}\n".format(ioc=ioc))
         if args.extract_yara_rules:
             for ioc in extract_yara_rules(args.input.read()):
