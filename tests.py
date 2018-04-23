@@ -310,6 +310,7 @@ class TestExtractors(unittest.TestCase):
         invalid_list = [
             # can't differentiate this from e.g. file.pdf
             'domain.com',
+            'ship_Element',
         ]
 
         for content in invalid_list:

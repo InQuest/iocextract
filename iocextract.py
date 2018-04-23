@@ -22,7 +22,7 @@ except ImportError:
 import ipaddress
 
 # Get basic url format, including a few obfuscation techniques, main anchor is the uri scheme
-GENERIC_URL_RE = re.compile(r"([fhstu]\w\w?[px]s?(?::\/\/|__?)\x20?\S+?(?:\x20[\/\.][^\.\/\s]\S*?)*)[\.\?>\"'\)!,}:;]*(?=\s|$)", re.IGNORECASE)
+GENERIC_URL_RE = re.compile(r"([fhstu]\w\w?[px]s?(?::\/\/|__)\x20?\S+?(?:\x20[\/\.][^\.\/\s]\S*?)*)[\.\?>\"'\)!,}:;]*(?=\s|$)", re.IGNORECASE)
 
 # Split URLs on some characters that may be valid, but may also be garbage
 URL_SPLIT_STR = r"[>\"'\),};]"
