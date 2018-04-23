@@ -133,7 +133,7 @@ A command-line tool is also included::
     $ iocextract -h
     usage: iocextract [-h] [--input INPUT] [--output OUTPUT] [--extract-ips]
                       [--extract-urls] [--extract-yara-rules] [--extract-hashes]
-                      [--refang]
+                      [--refang] [--strip-urls]
 
     Advanced Indicator of Compromise (IOC) extractor. If no arguments are
     specified, the default behavior is to extract all IOCs.
@@ -147,6 +147,8 @@ A command-line tool is also included::
       --extract-yara-rules
       --extract-hashes
       --refang              default: no
+      --strip-urls          remove possible garbage from the end of urls. default:
+                            no
 
 Only URLs and IPv4 addresses can be "refanged".
 
