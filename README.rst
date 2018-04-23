@@ -210,7 +210,7 @@ For URLs, the following defang techniques are supported:
 +-----------------+----------------------------------------------------+-----------------------------+
 | Hex encoded     | ``687474703a2f2f6578616d706c652e636f6d2f70617468`` | ``http://example.com/path`` |
 +-----------------+----------------------------------------------------+-----------------------------+
-| URL encoded     | ``http%3A%2F%2fexample.com%2Fpath``                | ``http://example.com/path`` |
+| URL encoded     | ``http%3A%2F%2fexample%2Ecom%2Fpath``              | ``http://example.com/path`` |
 +-----------------+----------------------------------------------------+-----------------------------+
 
 Note that the table above is not exhaustive, and other URL/defang patterns may
