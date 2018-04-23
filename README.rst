@@ -219,6 +219,12 @@ Note that the table above is not exhaustive, and other URL/defang patterns may
 also be extracted correctly. If you notice something missing or not working
 correctly, feel free to let us know via the GitHub Issues_.
 
+Changelog
+---------
+
+New features, improvements, and bugfixes for each release can be found in the
+`GitHub releases`_.
+
 Contributing
 ------------
 
@@ -229,3 +235,4 @@ released under a "BSD-New" (aka "BSD 3-Clause") license.
 .. _Issues: https://github.com/inquest/python-iocextract/issues
 .. _this tweet from @InQuest: https://twitter.com/InQuest/status/969469856931287041
 .. _Cisco ESA: https://www.cisco.com/c/en/us/support/docs/security/email-security-appliance/118775-technote-esa-00.html
+.. _GitHub releases: https://github.com/InQuest/python-iocextract/releases
