@@ -502,3 +502,13 @@ class TestExtractors(unittest.TestCase):
                         refang=True))[0], 'http://example.com/pa_th.doc?q=a#b')
         self.assertEquals(list(iocextract.extract_urls(hexconvert('http://example.com/pa_th.doc?q=a#b').upper(),
                         refang=True))[0], 'http://example.com/pa_th.doc?q=a#b')
+
+    def test_urlencoded_url_extraction(self):
+        self.assertEquals(list(iocextract.extract_urls('rget="http%3A%2F%2Fexample%2Ecom%2Fwhite%2Ehta"/>',
+                        refang=True))[0], 'http://example.com/white.hta')
+        self.assertEquals(list(iocextract.extract_urls('http%3A%2F%2Fexample%2Ecom',
+                        refang=True))[0], 'http://example.com')
+        self.assertEquals(list(iocextract.extract_urls('http%3A%2F%2Fexample%2Ecom'))[0],
+                'http%3A%2F%2Fexample%2Ecom')
+        self.assertEquals(list(iocextract.extract_urls('http%3A%2F%2Fexa-mple%2Ecom',
+                        refang=True))[0], 'http://exa-mple.com')
