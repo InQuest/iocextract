@@ -319,20 +319,20 @@ def main():
     # By default, extract all
     if not (args.extract_ips or args.extract_urls or args.extract_yara_rules or args.extract_hashes):
         for ioc in extract_iocs(args.input.read(), refang=args.refang):
-            args.output.write("{ioc}\r\n".format(ioc=ioc))
+            args.output.write("{ioc}\n".format(ioc=ioc))
     else:
         if args.extract_ips:
             for ioc in extract_ips(args.input.read(), refang=args.refang):
-                args.output.write("{ioc}\r\n".format(ioc=ioc))
+                args.output.write("{ioc}\n".format(ioc=ioc))
         if args.extract_urls:
             for ioc in extract_urls(args.input.read(), refang=args.refang):
-                args.output.write("{ioc}\r\n".format(ioc=ioc))
+                args.output.write("{ioc}\n".format(ioc=ioc))
         if args.extract_yara_rules:
             for ioc in extract_yara_rules(args.input.read()):
-                args.output.write("{ioc}\r\n".format(ioc=ioc))
+                args.output.write("{ioc}\n".format(ioc=ioc))
         if args.extract_hashes:
             for ioc in extract_hashes(args.input.read()):
-                args.output.write("{ioc}\r\n".format(ioc=ioc))
+                args.output.write("{ioc}\n".format(ioc=ioc))
 
 if __name__ == "__main__":
     main()
