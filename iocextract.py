@@ -314,11 +314,14 @@ def main():
     parser.add_argument('--extract-yara-rules', action='store_true')
     parser.add_argument('--extract-hashes', action='store_true')
     parser.add_argument('--refang', action='store_true', help="default: no")
+    parser.add_argument('--strip-urls', action='store_true', help="remove params from the end of urls. default: no")
     args = parser.parse_args()
 
     # By default, extract all
     if not (args.extract_ips or args.extract_urls or args.extract_yara_rules or args.extract_hashes):
         for ioc in extract_iocs(args.input.read(), refang=args.refang):
+            if args.strip_urls:
+                ioc = ioc.split('?')[0]
             args.output.write("{ioc}\n".format(ioc=ioc))
     else:
         if args.extract_ips:
@@ -326,6 +329,8 @@ def main():
                 args.output.write("{ioc}\n".format(ioc=ioc))
         if args.extract_urls:
             for ioc in extract_urls(args.input.read(), refang=args.refang):
+                if args.strip_urls:
+                    ioc = ioc.split('?')[0]
                 args.output.write("{ioc}\n".format(ioc=ioc))
         if args.extract_yara_rules:
             for ioc in extract_yara_rules(args.input.read()):
