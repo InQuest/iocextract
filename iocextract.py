@@ -137,7 +137,7 @@ def extract_urls(data, refang=False, strip=False):
     """
     for url in GENERIC_URL_RE.finditer(data):
         if refang:
-            url =  refang_url(url.group(1))
+            url = refang_url(url.group(1))
         else:
             url = url.group(1)
 
