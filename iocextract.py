@@ -41,7 +41,7 @@ URL_SPLIT_STR = r"[>\"'\),};]"
 BRACKET_URL_RE = re.compile(r"""
         \b
         (
-            \S+
+            [\:\/\\\w\[\]\(\)-]+
             (?:
                 \x20?
                 [\(\[]

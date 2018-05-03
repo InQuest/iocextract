@@ -528,3 +528,7 @@ class TestExtractors(unittest.TestCase):
             iocextract.refang_url('CDATA[^h00ps://test.com/]]>')
         except ValueError as e:
             self.fail('Unhandled parsing error in refang: {e}'.format(e=e))
+
+    def test_url_bracket_regex_tight_edge_cases(self):
+        self.assertEquals(list(iocextract.extract_urls('CDATA[^h00ps://test(.)com/]]>'))[1],
+                'h00ps://test(.)com/')
