@@ -40,8 +40,18 @@ URL_SPLIT_STR = r"[>\"'\),};]"
 # Get some obfuscated urls, main anchor is brackets around the period
 BRACKET_URL_RE = re.compile(r"""
         \b
-        (\S+
-            (?:\x20?[\(\[]\x20?\.\x20?[\]\)]\x20?\S*?)+
+        (
+            \S+
+            (?:
+                \x20?
+                [\(\[]
+                \x20?
+                \.
+                \x20?
+                [\]\)]
+                \x20?
+                \S*?
+            )+
         )
         [\.\?>\"'\)!,}:;\]]*
         (?=\s|$)
