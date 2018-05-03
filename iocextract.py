@@ -279,7 +279,7 @@ def extract_yara_rules(data):
     :rtype: Iterator[:class:`str`]
     """
     yara_rules = re.sub(YARA_SPLIT_STR, "}\r\n\\1", data,
-                        re.MULTILINE | re.DOTALL)
+                        re.MULTILINE | re.DOTALL | re.VERBOSE)
     for yara_rule in YARA_PARSE_RE.finditer(yara_rules):
         yield yara_rule.group(1)
 
