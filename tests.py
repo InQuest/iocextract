@@ -532,3 +532,7 @@ class TestExtractors(unittest.TestCase):
     def test_url_bracket_regex_tight_edge_cases(self):
         self.assertEquals(list(iocextract.extract_urls('CDATA[^h00ps://test(.)com/]]>'))[1],
                 'h00ps://test(.)com/')
+
+    def test_refang_removes_some_backslash_escaped_characters(self):
+        self.assertEquals(iocextract.refang_url('https://example\(.)com/'), 'https://example.com/')
+        self.assertEquals(iocextract.refang_url('https://example\(.\)com/test\.html'), 'https://example.com/test.html')

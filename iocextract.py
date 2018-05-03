@@ -350,6 +350,13 @@ def refang_url(url):
     # Refang (/), since it's not entirely in the netloc.
     url = url.replace('(/)', '/')
 
+    # Refang some backslash-escaped characters.
+    url = url.replace('\.', '.').\
+              replace('\(', '(').\
+              replace('\[', '[').\
+              replace('\)', ')').\
+              replace('\]', ']')
+
     try:
         _ = urlparse(url)
     except ValueError:
