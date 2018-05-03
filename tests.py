@@ -521,3 +521,10 @@ class TestExtractors(unittest.TestCase):
                         strip=True))[0], 'http://schemas.openxmlformats.org/drawingml/2006/main')
         self.assertEquals(list(iocextract.extract_urls("http://127.0.0.1:%u/')%%IMPORT%%Command",
                         strip=True))[0], "http://127.0.0.1:%u/")
+
+    def test_refang_never_excepts_from_urlparse(self):
+        try:
+            iocextract.refang_url('hxxp__test]')
+            iocextract.refang_url('CDATA[^h00ps://test.com/]]>')
+        except ValueError as e:
+            self.fail('Unhandled parsing error in refang: {e}'.format(e=e))

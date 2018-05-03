@@ -282,12 +282,6 @@ def refang_url(url):
     if '[/]' in url:
         url = url.replace('[/]', '/')
 
-    try:
-        _ = urlparse(url)
-    except ValueError:
-        # Last resort on ipv6 fail.
-        url = url.replace('[', '').replace(']', '')
-
     # Since urlparse expects a scheme, make sure one exists.
     if '//' not in url:
         if '__' in url[:7]:
@@ -299,6 +293,12 @@ def refang_url(url):
 
     # Refang (/), since it's not entirely in the netloc.
     url = url.replace('(/)', '/')
+
+    try:
+        _ = urlparse(url)
+    except ValueError:
+        # Last resort on ipv6 fail.
+        url = url.replace('[', '').replace(']', '')
 
     # Now use urlparse and continue processing.
     parsed = urlparse(url)
@@ -312,6 +312,13 @@ def refang_url(url):
         else:
             parsed = parsed._replace(scheme='http')
             url = parsed.geturl().replace('http:///', 'http://')
+
+        try:
+            _ = urlparse(url)
+        except ValueError:
+            # Last resort on ipv6 fail.
+            url = url.replace('[', '').replace(']', '')
+
         parsed = urlparse(url)
 
     # Remove artifacts from common defangs.
