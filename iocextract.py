@@ -406,7 +406,8 @@ def main():
     parser.add_argument('--extract-yara-rules', action='store_true')
     parser.add_argument('--extract-hashes', action='store_true')
     parser.add_argument('--refang', action='store_true', help="default: no")
-    parser.add_argument('--strip-urls', action='store_true', help="remove possible garbage from the end of urls. default: no")
+    parser.add_argument('--strip-urls', action='store_true',
+                        help="remove possible garbage from the end of urls. default: no")
     args = parser.parse_args()
 
     # By default, extract all
