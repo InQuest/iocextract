@@ -135,18 +135,11 @@ def extract_urls(data, refang=False, strip=False):
     :param bool strip: Strip possible garbage from the end of URLs
     :rtype: Iterator[:class:`str`]
     """
-    for url in GENERIC_URL_RE.finditer(data):
-        if refang:
-            url = refang_url(url.group(1))
-        else:
-            url = url.group(1)
-
-        if strip:
-            url = re.split(URL_SPLIT_STR, url)[0]
-
-        yield url
-
-    for url in BRACKET_URL_RE.finditer(data):
+    unencoded_urls = itertools.chain(
+        GENERIC_URL_RE.finditer(data),
+        BRACKET_URL_RE.finditer(data),
+    )
+    for url in unencoded_urls:
         if refang:
             url = refang_url(url.group(1))
         else:
