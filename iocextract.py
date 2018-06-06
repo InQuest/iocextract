@@ -59,6 +59,34 @@ BRACKET_URL_RE = re.compile(r"""
         (?=\s|$)
     """, re.VERBOSE)
 
+# Get some obfuscated urls, main anchor is backslash before a period
+BACKSLASH_URL_RE = re.compile(r"""
+        \b
+        (
+            [\:\/\\\w\[\]\(\)-]+
+            (?:
+                \x20?
+                \\?\.
+                \x20?
+                \S*?
+            )*?
+            (?:
+                \x20?
+                \\\.
+                \x20?
+                \S*?
+            )
+            (?:
+                \x20?
+                \\?\.
+                \x20?
+                \S*?
+            )*
+        )
+        [\.\?>\"'\)!,}:;\]]*
+        (?=\s|$)
+    """, re.VERBOSE)
+
 # Get hex-encoded urls
 HEXENCODED_URL_RE = re.compile(r"""
         (
@@ -86,7 +114,7 @@ IPV4_RE = re.compile(r"""
         )
         (?:
             (?:[1-9]?\d|1\d\d|2[0-4]\d|25[0-5])
-            [\[\(]*?\.[\]\)]*?
+            [\[\(\\]*?\.[\]\)]*?
         ){3}
         (?:[1-9]?\d|1\d\d|2[0-4]\d|25[0-5])
         (?:(?=[^\d\.])|$)
@@ -150,6 +178,7 @@ def extract_urls(data, refang=False, strip=False):
     unencoded_urls = itertools.chain(
         GENERIC_URL_RE.finditer(data),
         BRACKET_URL_RE.finditer(data),
+        BACKSLASH_URL_RE.finditer(data),
     )
     for url in unencoded_urls:
         if refang:
@@ -401,7 +430,9 @@ def refang_ipv4(ip_address):
     :param ip_address: String IPv4 address.
     :rtype: str
     """
-    return _refang_common(ip_address).replace('[', '').replace(']', '')
+    return _refang_common(ip_address).replace('[', '').\
+                                      replace(']', '').\
+                                      replace('\\', '')
 
 def main():
     """Run as a commandline utility."""

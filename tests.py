@@ -548,3 +548,21 @@ class TestExtractors(unittest.TestCase):
         self.assertEquals(list(iocextract.extract_ips('10.10.10[[[.10', refang=True))[0], '10.10.10.10')
         self.assertEquals(list(iocextract.extract_ips('10[[[[.]]]]10[[[.]]10[.10', refang=True))[0], '10.10.10.10')
         self.assertEquals(list(iocextract.extract_ips('10(((.]]]]10([[.)10.)10', refang=True))[0], '10.10.10.10')
+
+    def test_ip_regex_allows_backslash_escape(self):
+        self.assertEquals(list(iocextract.extract_ips('10.10.10\.10', refang=True))[0], '10.10.10.10')
+        self.assertEquals(list(iocextract.extract_ips('10.10.10\\\\\\\\.10', refang=True))[0], '10.10.10.10')
+        self.assertEquals(list(iocextract.extract_ips('10\.10\.10\.10', refang=True))[0], '10.10.10.10')
+        self.assertEquals(list(iocextract.extract_ips('10\\\\\\\\\.10\\.10\.10', refang=True))[0], '10.10.10.10')
+        self.assertEquals(list(iocextract.extract_ips('10[.]10(.10\.10', refang=True))[0], '10.10.10.10')
+
+    def test_backslash_url_extraction(self):
+        self.assertEquals(list(iocextract.extract_urls('example\.com', refang=True))[0], 'http://example.com')
+        self.assertEquals(list(iocextract.extract_urls('test\.example\.com', refang=True))[0], 'http://test.example.com')
+        self.assertEquals(list(iocextract.extract_urls('test \. example \. com', refang=True))[0], 'http://test.example.com')
+        self.assertEquals(list(iocextract.extract_urls('test\.example \. com', refang=True))[0], 'http://test.example.com')
+        self.assertEquals(list(iocextract.extract_urls('http://test \. example \. com', refang=True))[1], 'http://test.example.com')
+        self.assertEquals(list(iocextract.extract_urls('test.example\.com', refang=True))[0], 'http://test.example.com')
+        self.assertEquals(list(iocextract.extract_urls('test\.example.com', refang=True))[0], 'http://test.example.com')
+        self.assertEquals(list(iocextract.extract_urls('a.b.c.test\.example.com', refang=True))[0], 'http://a.b.c.test.example.com')
+        self.assertEquals(list(iocextract.extract_urls('a\.b.c.test\.example.com', refang=True))[0], 'http://a.b.c.test.example.com')
