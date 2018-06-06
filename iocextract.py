@@ -419,24 +419,31 @@ def main():
     parser.add_argument('--refang', action='store_true', help="default: no")
     parser.add_argument('--strip-urls', action='store_true',
                         help="remove possible garbage from the end of urls. default: no")
+    parser.add_argument('--wide', action='store_true',
+                        help="preprocess input to allow wide-encoded character matches. default: no")
     args = parser.parse_args()
 
-    # By default, extract all
+    # Read input.
+    data = args.input.read()
+    if args.wide:
+        data = data.replace('\x00', '')
+
+    # By default, extract all.
     if not (args.extract_ips or args.extract_urls or args.extract_yara_rules or args.extract_hashes):
-        for ioc in extract_iocs(args.input.read(), refang=args.refang, strip=args.strip_urls):
+        for ioc in extract_iocs(data, refang=args.refang, strip=args.strip_urls):
             args.output.write("{ioc}\n".format(ioc=ioc))
     else:
         if args.extract_ips:
-            for ioc in extract_ips(args.input.read(), refang=args.refang):
+            for ioc in extract_ips(data, refang=args.refang):
                 args.output.write("{ioc}\n".format(ioc=ioc))
         if args.extract_urls:
-            for ioc in extract_urls(args.input.read(), refang=args.refang, strip=args.strip_urls):
+            for ioc in extract_urls(data, refang=args.refang, strip=args.strip_urls):
                 args.output.write("{ioc}\n".format(ioc=ioc))
         if args.extract_yara_rules:
-            for ioc in extract_yara_rules(args.input.read()):
+            for ioc in extract_yara_rules(data):
                 args.output.write("{ioc}\n".format(ioc=ioc))
         if args.extract_hashes:
-            for ioc in extract_hashes(args.input.read()):
+            for ioc in extract_hashes(data):
                 args.output.write("{ioc}\n".format(ioc=ioc))
 
 if __name__ == "__main__":

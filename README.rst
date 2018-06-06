@@ -149,6 +149,9 @@ A command-line tool is also included::
       --refang              default: no
       --strip-urls          remove possible garbage from the end of urls. default:
                             no
+      --wide                preprocess input to allow wide-encoded character
+                            matches. default: no
+
 
 Only URLs and IPv4 addresses can be "refanged".
 
