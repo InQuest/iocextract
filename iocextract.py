@@ -8,7 +8,6 @@ Each object yielded from the generators will by of type :class:`str`.
 """
 import io
 import re
-import sys
 import itertools
 import argparse
 import binascii
