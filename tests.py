@@ -541,3 +541,10 @@ class TestExtractors(unittest.TestCase):
     def test_refang_removes_some_backslash_escaped_characters(self):
         self.assertEquals(iocextract.refang_url('https://example\(.)com/'), 'https://example.com/')
         self.assertEquals(iocextract.refang_url('https://example\(.\)com/test\.html'), 'https://example.com/test.html')
+
+    def test_ip_regex_allows_multiple_brackets(self):
+        self.assertEquals(list(iocextract.extract_ips('10.10.10.]]]10', refang=True))[0], '10.10.10.10')
+        self.assertEquals(list(iocextract.extract_ips('10.10.10.)))10', refang=True))[0], '10.10.10.10')
+        self.assertEquals(list(iocextract.extract_ips('10.10.10[[[.10', refang=True))[0], '10.10.10.10')
+        self.assertEquals(list(iocextract.extract_ips('10[[[[.]]]]10[[[.]]10[.10', refang=True))[0], '10.10.10.10')
+        self.assertEquals(list(iocextract.extract_ips('10(((.]]]]10([[.)10.)10', refang=True))[0], '10.10.10.10')
