@@ -1,4 +1,4 @@
-"""Extract and optionallly defang Indicators of Compromise (IOCs) from text.
+"""Extract and optionallly refang Indicators of Compromise (IOCs) from text.
 
 All methods return iterator objects, not lists. If for some reason you need
 a list, do e.g.: ``list(extract_iocs(my_data))``.
