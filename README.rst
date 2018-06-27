@@ -82,7 +82,7 @@ Just get it from pip::
 Usage
 -----
 
-Try extracting some defanged URLS::
+Try extracting some defanged URLs::
 
     >>> content = """
     ... I really love example[.]com!
@@ -192,7 +192,7 @@ For IPv4 addresses, the following defang techniques are supported:
    +-----------------+---------------+-----------+
    | ``. -> (.)``    | 1(.)1(.)1(.)1 | 1.1.1.1   |
    +-----------------+---------------+-----------+
-   | ``. -> \.``     | 1\.1\.1\.1    | 1.1.1.1   |
+   | ``. -> \.``     | ``1\.1\.1\.1``| 1.1.1.1   |
    +-----------------+---------------+-----------+
    | Partial         | 1[.1[.1.]1    | 1.1.1.1   |
    +-----------------+---------------+-----------+
