@@ -1,6 +1,9 @@
 iocextract
 ==========
 
+.. image:: https://inquest.net/images/inquest-badge.svg
+    :target: https://inquest.net/
+    :alt: Developed by InQuest
 .. image:: https://travis-ci.org/InQuest/python-iocextract.svg?branch=master
     :target: https://travis-ci.org/InQuest/python-iocextract
     :alt: Build Status
