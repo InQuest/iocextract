@@ -20,7 +20,7 @@
 # -- Project information -----------------------------------------------------
 
 project = u'iocextract'
-copyright = u'2018, InQuest Labs'
+copyright = u'2018 InQuest, LLC'
 author = u'InQuest Labs'
 
 # The short X.Y version
