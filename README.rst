@@ -36,18 +36,18 @@ It is common practice for malware analysts or endpoint software to "defang" IOCs
 such as URLs and IP addresses, in order to prevent accidental exposure to live
 malicious content. Being able to extract and aggregate these IOCs is often valuable
 for analysts. Unfortunately, existing "IOC extraction" tools often pass right by them,
-as they are not caught by standard REGEX.
+as they are not caught by standard regex.
 
 For example, the simple defanging technique of surrounding periods with brackets::
 
     127[.]0[.]0[.]1
 
-Existing tools that use a simple IP address REGEX will ignore this IOC entirely.
+Existing tools that use a simple IP address regex will ignore this IOC entirely.
 
 The Solution
 ------------
 
-By combining specially crafted REGEX with some custom postprocessing, we are
+By combining specially crafted regex with some custom postprocessing, we are
 able to both detect and deobfuscate "defanged" IOCs. This saves time and effort
 for the analyst, who might otherwise have to manually find and convert IOCs into
 machine-readable format.
@@ -98,7 +98,7 @@ Try extracting some defanged URLs::
     example[.]com
     tcp://example[.]com:8989/bad
 
-Note that some URLs may show up twice if they are caught by multiple REGEXes.
+Note that some URLs may show up twice if they are caught by multiple regexes.
 
 If you want, you can also "refang", or remove common obfuscation methods from
 IOCs::
