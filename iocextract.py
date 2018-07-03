@@ -439,10 +439,10 @@ def main():
         description="""Advanced Indicator of Compromise (IOC) extractor.
                        If no arguments are specified, the default behavior is
                        to extract all IOCs.""")
-    parser.add_argument('--input', type=lambda x: io.open(x, 'r', encoding='utf-8'),
-                        default=io.open(0, 'r', encoding='utf-8'), help="default: stdin")
-    parser.add_argument('--output', type=lambda x: io.open(x, 'w', encoding='utf-8'),
-                        default=io.open(1, 'w', encoding='utf-8'), help="default: stdout")
+    parser.add_argument('--input', type=lambda x: io.open(x, 'r', encoding='utf-8', errors='ignore'),
+                        default=io.open(0, 'r', encoding='utf-8', errors='ignore'), help="default: stdin")
+    parser.add_argument('--output', type=lambda x: io.open(x, 'w', encoding='utf-8', errors='ignore'),
+                        default=io.open(1, 'w', encoding='utf-8', errors='ignore'), help="default: stdout")
     parser.add_argument('--extract-ips', action='store_true')
     parser.add_argument('--extract-urls', action='store_true')
     parser.add_argument('--extract-yara-rules', action='store_true')
