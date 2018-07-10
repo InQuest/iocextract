@@ -25,7 +25,7 @@ setup(
           ]
     },
     license='BSD',
-    description='Advanced Indicator of Compromise (IOC) extractor',
+    description='Advanced Indicator of Compromise (IOC) extractor.',
     long_description=README,
     url='https://github.com/InQuest/python-iocextract',
     author='InQuest Labs',
