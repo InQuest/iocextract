@@ -7,7 +7,7 @@ Otherwise, you can iterate over the objects (e.g. in a ``for`` loop) normally.
 Each object yielded from the generators will by of type :class:`str`.
 """
 import io
-import re
+import regex as re
 import itertools
 import argparse
 import binascii

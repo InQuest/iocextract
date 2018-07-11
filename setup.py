@@ -13,7 +13,9 @@ setup(
     py_modules=[
         'iocextract',
     ],
-    install_requires=[],
+    install_requires=[
+        'regex',
+    ],
     extras_require={
         ':python_version <= "2.7"': [
             'ipaddress',

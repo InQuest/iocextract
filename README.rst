@@ -75,9 +75,19 @@ since these are real IOCs, let's leave them defanged in our documentation. :)
 Installation
 ------------
 
-Just get it from pip::
+You may need to install the Python development headers in order to install the
+``regex`` dependency. On Ubuntu/Debian-based systems, try::
+
+    sudo apt-get install python-dev
+
+Then install ``iocextract`` from pip::
 
     pip install iocextract
+
+If you have problems installing on Windows, try installing ``regex`` directly
+by downloading the `appropriate wheel from PyPI`_ and running e.g.::
+
+    pip install regex-2018.06.21-cp27-none-win_amd64.whl
 
 Usage
 -----
@@ -250,3 +260,4 @@ released under a "BSD-New" (aka "BSD 3-Clause") license.
 .. _this tweet from @InQuest: https://twitter.com/InQuest/status/969469856931287041
 .. _Cisco ESA: https://www.cisco.com/c/en/us/support/docs/security/email-security-appliance/118775-technote-esa-00.html
 .. _GitHub releases: https://github.com/InQuest/python-iocextract/releases
+.. _appropriate wheel from PyPI: https://pypi.org/project/regex/#files
