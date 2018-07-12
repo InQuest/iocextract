@@ -8,7 +8,7 @@ iocextract
     :target: https://travis-ci.org/InQuest/python-iocextract
     :alt: Build Status
 .. image:: https://readthedocs.org/projects/iocextract/badge/?version=latest
-    :target: http://iocextract.readthedocs.io/en/latest/?badge=latest
+    :target: http://inquest.readthedocs.io/projects/iocextract/en/latest/?badge=latest
     :alt: Documentation Status
 .. image:: https://api.codacy.com/project/badge/Grade/920894593bde451c9277c56b7d9ab3e1
     :target: https://app.codacy.com/app/InQuest/python-iocextract
