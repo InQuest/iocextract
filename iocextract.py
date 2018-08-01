@@ -31,7 +31,7 @@ GENERIC_URL_RE = re.compile(r"""
             \S+?
             (?:\x20[\/\.][^\.\/\s]\S*?)*
         )
-        [\.\?>\"'\)!,}:;\]]*
+        [\.\?>\"'\)!,}:;\u201d\u2019\uff1e\uff1c\]]*
         (?=\s|$)
     """, re.IGNORECASE | re.VERBOSE)
 
@@ -54,7 +54,7 @@ BRACKET_URL_RE = re.compile(r"""
                 \S*?
             )+
         )
-        [\.\?>\"'\)!,}:;\]]*
+        [\.\?>\"'\)!,}:;\u201d\u2019\uff1e\uff1c\]]*
         (?=\s|$)
     """, re.VERBOSE)
 
@@ -82,7 +82,7 @@ BACKSLASH_URL_RE = re.compile(r"""
                 \S*?
             )*
         )
-        [\.\?>\"'\)!,}:;\]]*
+        [\.\?>\"'\)!,}:;\u201d\u2019\uff1e\uff1c\]]*
         (?=\s|$)
     """, re.VERBOSE)
 
