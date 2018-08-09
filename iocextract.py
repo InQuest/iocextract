@@ -434,7 +434,7 @@ def refang_ipv4(ip_address):
                                       replace('\\', '')
 
 def defang(ioc):
-    """Refang a URL, domain, or IPv4 address.
+    """Defang a URL, domain, or IPv4 address.
 
     :param ioc: String URL, domain, or IPv4 address.
     :rtype: str
