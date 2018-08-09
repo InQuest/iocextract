@@ -433,6 +433,31 @@ def refang_ipv4(ip_address):
                                       replace(']', '').\
                                       replace('\\', '')
 
+def defang(ioc):
+    """Refang a URL, domain, or IPv4 address.
+
+    :param ioc: String URL, domain, or IPv4 address.
+    :rtype: str
+    """
+    # If it's a url, defang just the scheme and netloc.
+    try:
+        parsed = urlparse(ioc)
+        if parsed.netloc:
+            parsed = parsed._replace(netloc=parsed.netloc.replace('.', '[.]'),
+                                     scheme=parsed.scheme.replace('t', 'x'))
+            return parsed.geturl()
+    except ValueError:
+        pass
+
+    # If it's a domain or IP, defang up to the first slash.
+    split_list = ioc.split('/')
+    defanged = split_list[0].replace('.', '[.]')
+    # Include everything after the first slash without modification.
+    if len(split_list) > 1:
+        defanged = '/'.join([defanged] + split_list[1:])
+
+    return defanged
+
 def main():
     """Run as a commandline utility."""
     parser = argparse.ArgumentParser(

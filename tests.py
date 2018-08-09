@@ -566,3 +566,16 @@ class TestExtractors(unittest.TestCase):
         self.assertEquals(list(iocextract.extract_urls('test\.example.com', refang=True))[0], 'http://test.example.com')
         self.assertEquals(list(iocextract.extract_urls('a.b.c.test\.example.com', refang=True))[0], 'http://a.b.c.test.example.com')
         self.assertEquals(list(iocextract.extract_urls('a\.b.c.test\.example.com', refang=True))[0], 'http://a.b.c.test.example.com')
+
+    def test_defang(self):
+        self.assertEquals(iocextract.defang('http://example.com/some/lo.ng/path.ext/'),
+                                            'hxxp://example[.]com/some/lo.ng/path.ext/')
+        self.assertEquals(iocextract.defang('http://example.com/path.ext'), 'hxxp://example[.]com/path.ext')
+        self.assertEquals(iocextract.defang('http://127.0.0.1/path.ext'), 'hxxp://127[.]0[.]0[.]1/path.ext')
+        self.assertEquals(iocextract.defang('http://example.com/'), 'hxxp://example[.]com/')
+        self.assertEquals(iocextract.defang('https://example.com/'), 'hxxps://example[.]com/')
+        self.assertEquals(iocextract.defang('ftp://example.com/'), 'fxp://example[.]com/')
+        self.assertEquals(iocextract.defang('example.com'), 'example[.]com')
+        self.assertEquals(iocextract.defang('example.com/'), 'example[.]com/')
+        self.assertEquals(iocextract.defang('example.com/some/lo.ng/path.ext/'), 'example[.]com/some/lo.ng/path.ext/')
+        self.assertEquals(iocextract.defang('127.0.0.1'), '127[.]0[.]0[.]1')
