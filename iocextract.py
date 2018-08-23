@@ -21,6 +21,25 @@ except ImportError:
 
 import ipaddress
 
+BRACKET_EMAIL_RE = re.compile(r"""
+        \b
+        (
+            [\w]+[\s]*@[\s]*[\w]+
+            (?:
+                \x20?
+                [\(\[]
+                \x20?
+                \.
+                \x20?
+                [\]\)]
+                \x20?
+                \S*?
+            )+
+        )
+        [\.\?>\"'\)!,}:;\]]*
+        (?=\s|$)
+    """, re.VERBOSE)
+
 # Get basic url format, including a few obfuscation techniques, main anchor is the uri scheme
 GENERIC_URL_RE = re.compile(r"""
         (
@@ -124,7 +143,6 @@ IPV6_RE = re.compile(r"""
         \b(?:[a-f0-9]{1,4}:|:){2,7}(?:[a-f0-9]{1,4}|:)\b
     """, re.IGNORECASE | re.VERBOSE)
 
-EMAIL_RE = re.compile(r"([a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+)")
 MD5_RE = re.compile(r"(?:[^a-fA-F\d]|\b)([a-fA-F\d]{32})(?:[^a-fA-F\d]|\b)")
 SHA1_RE = re.compile(r"(?:[^a-fA-F\d]|\b)([a-fA-F\d]{40})(?:[^a-fA-F\d]|\b)")
 SHA256_RE = re.compile(r"(?:[^a-fA-F\d]|\b)([a-fA-F\d]{64})(?:[^a-fA-F\d]|\b)")
@@ -161,7 +179,7 @@ def extract_iocs(data, refang=False, strip=False):
     return itertools.chain(
         extract_urls(data, refang=refang, strip=strip),
         extract_ips(data, refang=refang),
-        extract_emails(data),
+        extract_emails(data, refang=refang),
         extract_hashes(data),
         extract_yara_rules(data)
     )
@@ -240,14 +258,20 @@ def extract_ipv6s(data):
     for ip_address in IPV6_RE.finditer(data):
         yield ip_address.group(0)
 
-def extract_emails(data):
+def extract_emails(data, refang=False, strip=False):
     """Extract email addresses
 
     :param data: Input text
     :rtype: Iterator[:class:`str`]
     """
-    for email in EMAIL_RE.finditer(data):
-        yield email.group(0)
+
+    for email in BRACKET_EMAIL_RE.finditer(data):
+        if refang:
+            email = _refang_common(email.group(0))
+        else:
+            email = email.group(0)
+
+        yield email
 
 def extract_hashes(data):
     """Extract MD5/SHA hashes.
@@ -416,6 +440,7 @@ def refang_url(url):
 
     # Remove artifacts from common defangs.
     parsed = parsed._replace(netloc=_refang_common(parsed.netloc))
+    parsed = parsed._replace(path=_refang_common(parsed.path))
 
     # Fix example[.]com, but keep RFC 2732 URLs intact.
     if not _is_ipv6_url(url):
