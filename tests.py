@@ -625,7 +625,6 @@ class TestExtractors(unittest.TestCase):
         content_list = [
             'http://example.com/test[.]htm',
             'http://example[.]com/test[.]htm',
-            'http://example.com/test(.)htm',
         ]
 
         for content in content_list:

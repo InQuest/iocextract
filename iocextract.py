@@ -455,7 +455,7 @@ def refang_url(url):
 
     # Remove artifacts from common defangs.
     parsed = parsed._replace(netloc=_refang_common(parsed.netloc))
-    parsed = parsed._replace(path=_refang_common(parsed.path))
+    parsed = parsed._replace(path=parsed.path.replace('[.]', '.'))
 
     # Fix example[.]com, but keep RFC 2732 URLs intact.
     if not _is_ipv6_url(url):
