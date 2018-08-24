@@ -616,3 +616,14 @@ class TestExtractors(unittest.TestCase):
         for content in content_list:
             self.assertEqual(list(iocextract.extract_emails(content, refang=True))[0], 'myuser@example.com.tld')
             self.assertEqual(iocextract.refang_email(content), 'myuser@example.com.tld')
+
+    def test_path_refang(self):
+        content_list = [
+            'http://example.com/test[.]htm',
+            'http://example[.]com/test[.]htm',
+            'http://example.com/test(.)htm',
+        ]
+
+        for content in content_list:
+            self.assertEqual(list(iocextract.extract_urls(content, refang=True))[0], 'http://example.com/test.htm')
+            self.assertEqual(iocextract.refang_url(content), 'http://example.com/test.htm')
