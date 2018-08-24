@@ -614,6 +614,7 @@ class TestExtractors(unittest.TestCase):
             'myuser@example [.] com.tld',
             'myuser@example [.] com [.] tld',
             'myuser@example [.] com [.tld',
+            'myuser@example   [[[  . ])] com [.tld',
         ]
 
         for content in content_list:
