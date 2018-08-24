@@ -164,6 +164,17 @@ class TestExtractors(unittest.TestCase):
             'my_user@example.co',
             'a@a.co',
             'a@127.0.0.1',
+            'myuser@example[.]com',
+            'myuser@example [.] com',
+            'myuser@example[.]com[.]tld',
+            'myuser@example(.)com[.tld',
+            'myuser@example[.]com.tld',
+            'myuser@example [.] com.tld',
+            'myuser@example [.] com [.] tld',
+            'myuser@example [.] com [.tld',
+            'myuser@example  [  .  ]   com',
+            'myuser@example  [  .  ]   com    [   .tld',
+            'myuser@example  [[[[ [ [ [ . )]) com',
         ]
 
         for content in content_list:
@@ -178,6 +189,8 @@ class TestExtractors(unittest.TestCase):
             '@',
             # don't extract non-fqdn emails
             'a@a',
+            'myuser@example . com',
+            'myuser@example .]com',
         ]
 
         for content in invalid_list:
@@ -185,6 +198,19 @@ class TestExtractors(unittest.TestCase):
             self.assertEqual(len(list(iocextract.extract_emails(_wrap_spaces(content)))), 0)
             self.assertEqual(len(list(iocextract.extract_emails(_wrap_tabs(content)))), 0)
             self.assertEqual(len(list(iocextract.extract_emails(_wrap_newlines(content)))), 0)
+
+        expected = 'myuser@example [.] com'
+        partial_list = [
+            'myuser@example [.] com. tld',
+            'myuser@example [.] com . tld',
+            'myuser@example [.] com!!!???',
+        ]
+
+        for content in partial_list:
+            self.assertEqual(list(iocextract.extract_emails(content))[0], expected)
+            self.assertEqual(list(iocextract.extract_emails(_wrap_spaces(content)))[0], expected)
+            self.assertEqual(list(iocextract.extract_emails(_wrap_tabs(content)))[0], expected)
+            self.assertEqual(list(iocextract.extract_emails(_wrap_newlines(content)))[0], expected)
 
     def test_email_included_in_iocs(self):
         content = 'test@example.com'
@@ -579,3 +605,29 @@ class TestExtractors(unittest.TestCase):
         self.assertEqual(iocextract.defang('example.com/'), 'example[.]com/')
         self.assertEqual(iocextract.defang('example.com/some/lo.ng/path.ext/'), 'example[.]com/some/lo.ng/path.ext/')
         self.assertEqual(iocextract.defang('127.0.0.1'), '127[.]0[.]0[.]1')
+
+    def test_email_refang(self):
+        content_list = [
+            'myuser@example[.]com[.]tld',
+            'myuser@example(.)com[.tld',
+            'myuser@example[.]com.tld',
+            'myuser@example [.] com.tld',
+            'myuser@example [.] com [.] tld',
+            'myuser@example [.] com [.tld',
+            'myuser@example   [[[  . ])] com [.tld',
+        ]
+
+        for content in content_list:
+            self.assertEqual(list(iocextract.extract_emails(content, refang=True))[0], 'myuser@example.com.tld')
+            self.assertEqual(iocextract.refang_email(content), 'myuser@example.com.tld')
+
+    def test_path_refang(self):
+        content_list = [
+            'http://example.com/test[.]htm',
+            'http://example[.]com/test[.]htm',
+            'http://example.com/test(.)htm',
+        ]
+
+        for content in content_list:
+            self.assertEqual(list(iocextract.extract_urls(content, refang=True))[0], 'http://example.com/test.htm')
+            self.assertEqual(iocextract.refang_url(content), 'http://example.com/test.htm')
