@@ -132,15 +132,15 @@ EMAIL_RE = re.compile(r"""
             [a-zA-Z0-9-]+
             (?:
                 (?:
-                    \x20?
+                    \x20*
                     [\(\[]
-                    \x20?
+                    \x20*
                 )*
                 \.
                 (?:
-                    \x20?
+                    \x20*
                     [\]\)]
-                    \x20?
+                    \x20*
                 )*
                 [a-zA-Z0-9-]+?
             )+
@@ -367,7 +367,7 @@ def _is_ipv6_url(url):
 def _refang_common(ioc):
     """Remove artifacts from common defangs.
 
-    :param ioc: String IP Address or URL netloc.
+    :param ioc: String IP/Email Address or URL netloc.
     :rtype: str
     """
     return ioc.replace('[dot]', '.').\
@@ -386,9 +386,7 @@ def refang_email(email):
     :rtype: str
     """
     return _refang_common(email).replace('[', '').\
-                                 replace(']', '').\
-                                 replace('(', '').\
-                                 replace(')', '')
+                                 replace(']', '')
 
 def refang_url(url):
     """Refang a URL.
