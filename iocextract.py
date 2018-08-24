@@ -21,25 +21,6 @@ except ImportError:
 
 import ipaddress
 
-BRACKET_EMAIL_RE = re.compile(r"""
-        \b
-        (
-            [\w]+[\s]*@[\s]*[\w]+
-            (?:
-                \x20?
-                [\(\[]
-                \x20?
-                \.
-                \x20?
-                [\]\)]
-                \x20?
-                \S*?
-            )+
-        )
-        [\.\?>\"'\)!,}:;\]]*
-        (?=\s|$)
-    """, re.VERBOSE)
-
 # Get basic url format, including a few obfuscation techniques, main anchor is the uri scheme
 GENERIC_URL_RE = re.compile(r"""
         (
@@ -142,6 +123,31 @@ IPV4_RE = re.compile(r"""
 IPV6_RE = re.compile(r"""
         \b(?:[a-f0-9]{1,4}:|:){2,7}(?:[a-f0-9]{1,4}|:)\b
     """, re.IGNORECASE | re.VERBOSE)
+
+# Capture email addresses including common defangs
+EMAIL_RE = re.compile(r"""
+        (
+            [a-zA-Z0-9_.+-]+
+            @
+            [a-zA-Z0-9-]+
+            (?:
+                (?:
+                    \x20?
+                    [\(\[]
+                    \x20?
+                )*
+                \.
+                (?:
+                    \x20?
+                    [\]\)]
+                    \x20?
+                )*
+                [a-zA-Z0-9-]+?
+            )+
+        )
+        [\.\?>\"'\)!,}:;\u201d\u2019\uff1e\uff1c\]]*
+        (?=\s|$)
+    """, re.VERBOSE)
 
 MD5_RE = re.compile(r"(?:[^a-fA-F\d]|\b)([a-fA-F\d]{32})(?:[^a-fA-F\d]|\b)")
 SHA1_RE = re.compile(r"(?:[^a-fA-F\d]|\b)([a-fA-F\d]{40})(?:[^a-fA-F\d]|\b)")
@@ -258,18 +264,18 @@ def extract_ipv6s(data):
     for ip_address in IPV6_RE.finditer(data):
         yield ip_address.group(0)
 
-def extract_emails(data, refang=False, strip=False):
+def extract_emails(data, refang=False):
     """Extract email addresses
 
     :param data: Input text
+    :param bool refang: Refang output?
     :rtype: Iterator[:class:`str`]
     """
-
-    for email in BRACKET_EMAIL_RE.finditer(data):
+    for email in EMAIL_RE.finditer(data):
         if refang:
-            email = _refang_common(email.group(0))
+            email = _refang_common(email.group(1))
         else:
-            email = email.group(0)
+            email = email.group(1)
 
         yield email
 

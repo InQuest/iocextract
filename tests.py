@@ -164,9 +164,16 @@ class TestExtractors(unittest.TestCase):
             'my_user@example.co',
             'a@a.co',
             'a@127.0.0.1',
+            'myuser@example[.]com[.]tld',
+            'myuser@example(.)com[.tld',
+            'myuser@example[.]com.tld',
+            'myuser@example [.] com.tld',
+            'myuser@example [.] com [.] tld',
+            'myuser@example [.] com [.tld',
         ]
 
         for content in content_list:
+            print content
             self.assertEqual(list(iocextract.extract_emails(content))[0], content)
             self.assertEqual(list(iocextract.extract_emails(_wrap_spaces(content)))[0], content)
             self.assertEqual(list(iocextract.extract_emails(_wrap_tabs(content)))[0], content)
@@ -178,6 +185,8 @@ class TestExtractors(unittest.TestCase):
             '@',
             # don't extract non-fqdn emails
             'a@a',
+            'myuser@example . com',
+            'myuser@example .]com',
         ]
 
         for content in invalid_list:
@@ -185,6 +194,19 @@ class TestExtractors(unittest.TestCase):
             self.assertEqual(len(list(iocextract.extract_emails(_wrap_spaces(content)))), 0)
             self.assertEqual(len(list(iocextract.extract_emails(_wrap_tabs(content)))), 0)
             self.assertEqual(len(list(iocextract.extract_emails(_wrap_newlines(content)))), 0)
+
+        expected = 'myuser@example [.] com'
+        partial_list = [
+            'myuser@example [.] com. tld',
+            'myuser@example [.] com . tld',
+            'myuser@example [.] com!!!???',
+        ]
+
+        for content in partial_list:
+            self.assertEqual(list(iocextract.extract_emails(content))[0], expected)
+            self.assertEqual(list(iocextract.extract_emails(_wrap_spaces(content)))[0], expected)
+            self.assertEqual(list(iocextract.extract_emails(_wrap_tabs(content)))[0], expected)
+            self.assertEqual(list(iocextract.extract_emails(_wrap_newlines(content)))[0], expected)
 
     def test_email_included_in_iocs(self):
         content = 'test@example.com'
