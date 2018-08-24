@@ -273,7 +273,7 @@ def extract_emails(data, refang=False):
     """
     for email in EMAIL_RE.finditer(data):
         if refang:
-            email = _refang_common(email.group(1))
+            email = refang_email(email.group(1))
         else:
             email = email.group(1)
 
@@ -378,6 +378,17 @@ def _refang_common(ioc):
                replace(',', '.').\
                replace(' ', '').\
                replace(u'\u30fb', '.')
+
+def refang_email(email):
+    """Refang an email address.
+
+    :param email: String email address.
+    :rtype: str
+    """
+    return _refang_common(email).replace('[', '').\
+                                 replace(']', '').\
+                                 replace('(', '').\
+                                 replace(')', '')
 
 def refang_url(url):
     """Refang a URL.
