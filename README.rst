@@ -25,9 +25,9 @@ Advanced Indicator of Compromise (IOC) extractor.
 Overview
 --------
 
-This library extracts URLs, IP addresses, MD5/SHA hashes, and YARA rules from
-text corpora. It includes obfuscated and "defanged" IOCs in the output, and
-optionally deobfuscates them.
+This library extracts URLs, IP addresses, MD5/SHA hashes, email addresses, and
+YARA rules from text corpora. It includes obfuscated and "defanged" IOCs in the
+output, and optionally deobfuscates them.
 
 The Problem
 -----------
@@ -166,7 +166,7 @@ A command-line tool is also included::
                             matches. default: no
 
 
-Only URLs and IPv4 addresses can be "refanged".
+Only URLs, emails, and IPv4 addresses can be "refanged".
 
 More Details
 ------------
@@ -208,6 +208,24 @@ For IPv4 addresses, the following defang techniques are supported:
    +-----------------+---------------+-----------+
    | Any combination | 1\.)1[.1.)1   | 1.1.1.1   |
    +-----------------+---------------+-----------+
+
+For email addresses, the following defang techniques are supported:
+
+.. container:: responsive-table
+
+   +-----------------+--------------------+----------------+
+   | Technique       | Defanged           | Refanged       |
+   +=================+====================+================+
+   | ``. -> [.]``    | me@example[.]com   | me@example.com |
+   +-----------------+--------------------+----------------+
+   | ``. -> (.)``    | me@example(.)com   | me@example.com |
+   +-----------------+--------------------+----------------+
+   | Partial         | me@example[.com    | me@example.com |
+   +-----------------+--------------------+----------------+
+   | Added spaces    | me@example [.] com | me@example.com |
+   +-----------------+--------------------+----------------+
+   | Any combination | me@example [.)com  | me@example.com |
+   +-----------------+--------------------+----------------+
 
 For URLs, the following defang techniques are supported:
 
