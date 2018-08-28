@@ -128,7 +128,7 @@ IPV6_RE = re.compile(r"""
 EMAIL_RE = re.compile(r"""
         (
             [a-zA-Z0-9_.+-]+
-            @
+            \x20?@\x20?
             [a-zA-Z0-9-]+
             (?:
                 (?:

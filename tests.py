@@ -164,7 +164,11 @@ class TestExtractors(unittest.TestCase):
             'my_user@example.co',
             'a@a.co',
             'a@127.0.0.1',
-            'myuser@example[.]com',
+            'myuser @example[.]com',
+            'myuser@ example[.]com',
+            'myuser @ example[.]com',
+            'myuser @ example [ . ] com',
+            'myuser @ example.com',
             'myuser@example [.] com',
             'myuser@example[.]com[.]tld',
             'myuser@example(.)com[.tld',
@@ -189,6 +193,9 @@ class TestExtractors(unittest.TestCase):
             '@',
             # don't extract non-fqdn emails
             'a@a',
+            'myuser @ word more words',
+            'myuser @ word more words.period',
+            'myuser @ words. Sentence',
             'myuser@example . com',
             'myuser@example .]com',
         ]
@@ -609,6 +616,8 @@ class TestExtractors(unittest.TestCase):
     def test_email_refang(self):
         content_list = [
             'myuser@example[.]com[.]tld',
+            'myuser @example[.]com[.]tld',
+            'myuser @ example.com.tld',
             'myuser@example(.)com[.tld',
             'myuser@example[.]com.tld',
             'myuser@example [.] com.tld',
