@@ -224,7 +224,7 @@ For email addresses, the following defang techniques are supported:
    +-----------------+--------------------+----------------+
    | Added spaces    | me@example [.] com | me@example.com |
    +-----------------+--------------------+----------------+
-   | Any combination | me@example [.)com  | me@example.com |
+   | Any combination | me @example [.)com | me@example.com |
    +-----------------+--------------------+----------------+
 
 For URLs, the following defang techniques are supported:
