@@ -1,6 +1,7 @@
 import sys
 import unittest
 import binascii
+import base64
 
 import iocextract
 
@@ -639,3 +640,53 @@ class TestExtractors(unittest.TestCase):
         for content in content_list:
             self.assertEqual(list(iocextract.extract_urls(content, refang=True))[0], 'http://example.com/test.htm')
             self.assertEqual(iocextract.refang_url(content), 'http://example.com/test.htm')
+
+    def test_b64_url_extraction_just_url(self):
+        content_list = [
+            base64.b64encode(b'http://example.com').decode('ascii'),
+            base64.b64encode(b'http://example.com/some/url').decode('ascii'),
+            base64.b64encode(b'http://example.com/some/url').decode('ascii'),
+            base64.b64encode(b'FtP://example.com/some/url').decode('ascii'),
+        ]
+
+        for content in content_list:
+            self.assertEqual(list(iocextract.extract_urls(content))[0], content)
+            self.assertEqual(list(iocextract.extract_urls(_wrap_spaces(content)))[0], content)
+            self.assertEqual(list(iocextract.extract_urls(_wrap_tabs(content)))[0], content)
+            self.assertEqual(list(iocextract.extract_urls(_wrap_newlines(content)))[0], content)
+            self.assertEqual(list(iocextract.extract_urls(_wrap_nonwords(content)))[0], content)
+
+    def test_b64_url_extraction_with_wrappers(self):
+        content_list = [
+            base64.b64encode(b'  http://example.com/test ').decode('ascii'),
+            base64.b64encode(b'words in front  http://example.com/test ').decode('ascii'),
+            base64.b64encode(b'  http://example.com/test words after').decode('ascii'),
+            base64.b64encode(b'  http://example.com/test\x99\x80 ').decode('ascii'),
+            base64.b64encode(b'sadasdasdasdhttp://example.com/test ').decode('ascii'),
+            base64.b64encode(b'adasdasdasdhttp://example.com/test ').decode('ascii'),
+            base64.b64encode(b'dasdasdasdhttp://example.com/test ').decode('ascii'),
+            base64.b64encode(b'asdasdasdhttp://example.com/test ').decode('ascii'),
+            base64.b64encode(b'sdasdasdhttp://example.com/test ').decode('ascii'),
+            base64.b64encode(b'reallylongreallylongreallylongreallylongreallylongreallylongreallylonghttp://example.com/test reallylong').decode('ascii'),
+        ]
+
+        for content in content_list:
+            self.assertEqual(list(iocextract.extract_urls(content, refang=True))[0], 'http://example.com/test')
+
+    def test_b64_url_extraction_bad_pad(self):
+        content_list = [
+            # good
+            'aHR0cDovL2V4YW1wbGUuY29t',
+            'aHR0cDovL2V4YW1wbGUuY29tIA==',
+            'aHR0cDovL2V4YW1wbGUuY29tICA=',
+            'aHR0cDovL2V4YW1wbGUuY29tICAg',
+            # bad
+            'aHR0cDovL2V4YW1wbGUuY29t=',
+            'aHR0cDovL2V4YW1wbGUuY29tIA=',
+            'aHR0cDovL2V4YW1wbGUuY29tICA',
+            'aHR0cDovL2V4YW1wbGUuY29tI',
+            'aHR0cDovL2V4YW1wbGUuY29tba',
+        ]
+
+        for content in content_list:
+            self.assertEqual(list(iocextract.extract_urls(content, refang=True))[0], 'http://example.com')

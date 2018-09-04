@@ -11,6 +11,7 @@ import regex as re
 import itertools
 import argparse
 import binascii
+import base64
 try:
     # python3
     from urllib.parse import urlparse, unquote
@@ -105,6 +106,28 @@ HEXENCODED_URL_RE = re.compile(r"""
 URLENCODED_URL_RE = re.compile(r"""
         (s?[hf]t?tps?%3A%2F%2F\w[\w%-]*?)(?:[^\w%-]|$)
     """, re.IGNORECASE | re.VERBOSE)
+
+# Get base64-encoded urls
+B64ENCODED_URL_RE = re.compile(r"""
+        (
+            # b64re '([hH][tT][tT][pP][sS]|[hH][tT][tT][pP]|[fF][tT][pP])://'
+            # modified to ignore whitespace
+            (?:
+                [\x2b\x2f-\x39A-Za-z]\s*[\x2b\x2f-\x39A-Za-z]\s*[\x31\x35\x39BFJNRVZdhlptx]\s*[Gm]\s*[Vd]\s*[FH]\s*[A]\s*\x36\s*L\s*y\s*[\x2b\x2f\x38-\x39]\s*|
+                [\x2b\x2f-\x39A-Za-z]\s*[\x2b\x2f-\x39A-Za-z]\s*[\x31\x35\x39BFJNRVZdhlptx]\s*[Io]\s*[Vd]\s*[FH]\s*[R]\s*[Qw]\s*[O]\s*i\s*\x38\s*v\s*[\x2b\x2f-\x39A-Za-z]\s*|
+                [\x2b\x2f-\x39A-Za-z]\s*[\x2b\x2f-\x39A-Za-z]\s*[\x31\x35\x39BFJNRVZdhlptx]\s*[Io]\s*[Vd]\s*[FH]\s*[R]\s*[Qw]\s*[Uc]\s*[z]\s*o\s*v\s*L\s*[\x2b\x2f-\x39w-z]\s*|
+                [\x2b\x2f-\x39A-Za-z]\s*[\x30\x32EGUWkm]\s*[Z]\s*[\x30U]\s*[Uc]\s*[D]\s*o\s*v\s*L\s*[\x2b\x2f-\x39w-z]\s*|
+                [\x2b\x2f-\x39A-Za-z]\s*[\x30\x32EGUWkm]\s*[h]\s*[\x30U]\s*[Vd]\s*[FH]\s*[A]\s*\x36\s*L\s*y\s*[\x2b\x2f\x38-\x39]\s*|
+                [\x2b\x2f-\x39A-Za-z]\s*[\x30\x32EGUWkm]\s*[h]\s*[\x30U]\s*[Vd]\s*[FH]\s*[B]\s*[Tz]\s*[O]\s*i\s*\x38\s*v\s*[\x2b\x2f-\x39A-Za-z]\s*|
+                [RZ]\s*[ln]\s*[R]\s*[Qw]\s*[O]\s*i\s*\x38\s*v\s*[\x2b\x2f-\x39A-Za-z]\s*|
+                [Sa]\s*[FH]\s*[R]\s*[\x30U]\s*[Uc]\s*[D]\s*o\s*v\s*L\s*[\x2b\x2f-\x39w-z]\s*|
+                [Sa]\s*[FH]\s*[R]\s*[\x30U]\s*[Uc]\s*[FH]\s*[M]\s*\x36\s*L\s*y\s*[\x2b\x2f\x38-\x39]\s*
+            )
+            # up to 260 characters (pre-encoding, reasonable URL length)
+            [A-Za-z0-9+/=\s]{1,357}
+        )
+        (?=[^A-Za-z0-9+/=\s]|$)
+    """, re.VERBOSE)
 
 # Get some valid obfuscated ip addresses
 IPV4_RE = re.compile(r"""
@@ -225,6 +248,26 @@ def extract_urls(data, refang=False, strip=False):
             yield unquote(url.group(1))
         else:
             yield url.group(1)
+
+    for url in B64ENCODED_URL_RE.finditer(data):
+        url = url.group(1)
+
+        # Truncate the string if it's not a multiple of 3 bytes long.
+        # We don't care about the end of the string since it's probably garbage.
+        if len(url) % 4:
+            url = url[:-(len(url) % 4)]
+
+        if refang:
+            # Stop at the first whitespace or non-unicode character.
+            url = base64.b64decode(url).decode('utf-8', 'replace').\
+                                        split(u'\ufffd')[0].\
+                                        split()[0]
+
+            # Remove the first 1-2 bytes if we got back extra leading characters from the base64.
+            # The only valid starts are "http" or "ftp", so look for h/f case insensitive.
+            url = url[re.search('[hHfF]', url).start():]
+
+        yield url
 
 def extract_ips(data, refang=False):
     """Extract IP addresses.

@@ -26,8 +26,8 @@ Overview
 --------
 
 This library extracts URLs, IP addresses, MD5/SHA hashes, email addresses, and
-YARA rules from text corpora. It includes obfuscated and "defanged" IOCs in the
-output, and optionally deobfuscates them.
+YARA rules from text corpora. It includes some encoded and "defanged" IOCs in the
+output, and optionally decodes/defangs them.
 
 The Problem
 -----------
@@ -121,7 +121,7 @@ IOCs::
     http://example.com
     http://example.com:8989/bad
 
-You can even extract and decode hex-encoded URLs::
+You can even extract and decode hex-encoded and base64-encoded URLs::
 
     >>> content = '612062756e6368206f6620776f72647320687474703a2f2f6578616d706c652e636f6d2f70617468206d6f726520776f726473'
     >>> for url in iocextract.extract_urls(content):
@@ -182,6 +182,7 @@ This library currently supports the following IOCs:
     * IPv4 and IPv6 (RFC2732) URLs are supported
     * Hex-encoded URLs with protocol specifier: http, https, ftp
     * URL-encoded URLs with protocol specifier: http, https, ftp, ftps, sftp
+    * Base64-encoded URLs with protocol specifier: http, https, ftp
 * Emails
     * Partially supported, anchoring on ``@``
 * YARA rules
@@ -256,10 +257,14 @@ For URLs, the following defang techniques are supported:
    +-----------------+----------------------------------------------------+-----------------------------+
    | URL encoded     | ``http%3A%2F%2fexample%2Ecom%2Fpath``              | ``http://example.com/path`` |
    +-----------------+----------------------------------------------------+-----------------------------+
+   | Base64 encoded  | ``aHR0cDovL2V4YW1wbGUuY29tL3BhdGgK``               | ``http://example.com/path`` |
+   +-----------------+----------------------------------------------------+-----------------------------+
 
 Note that the table above is not exhaustive, and other URL/defang patterns may
 also be extracted correctly. If you notice something missing or not working
 correctly, feel free to let us know via the GitHub Issues_.
+
+The base64 regex was generated with `@deadpixi`_'s `base64 regex tool`_.
 
 Changelog
 ---------
@@ -279,3 +284,5 @@ released under a "BSD-New" (aka "BSD 3-Clause") license.
 .. _Cisco ESA: https://www.cisco.com/c/en/us/support/docs/security/email-security-appliance/118775-technote-esa-00.html
 .. _GitHub releases: https://github.com/InQuest/python-iocextract/releases
 .. _appropriate wheel from PyPI: https://pypi.org/project/regex/#files
+.. _@deadpixi: https://github.com/deadpixi
+.. _base64 regex tool: http://www.erlang-factory.com/upload/presentations/225/ErlangFactorySFBay2010-RobKing.pdf
