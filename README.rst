@@ -27,7 +27,7 @@ Overview
 
 This library extracts URLs, IP addresses, MD5/SHA hashes, email addresses, and
 YARA rules from text corpora. It includes some encoded and "defanged" IOCs in the
-output, and optionally decodes/defangs them.
+output, and optionally decodes/refangs them.
 
 The Problem
 -----------
