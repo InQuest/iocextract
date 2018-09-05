@@ -22,7 +22,7 @@ except ImportError:
 
 import ipaddress
 
-# Get basic url format, including a few obfuscation techniques, main anchor is the uri scheme
+# Get basic url format, including a few obfuscation techniques, main anchor is the uri scheme.
 GENERIC_URL_RE = re.compile(r"""
         (
             [fhstu]\w\w?[px]s?
@@ -36,10 +36,10 @@ GENERIC_URL_RE = re.compile(r"""
         (?=\s|$)
     """, re.IGNORECASE | re.VERBOSE)
 
-# Split URLs on some characters that may be valid, but may also be garbage
+# Split URLs on some characters that may be valid, but may also be garbage.
 URL_SPLIT_STR = r"[>\"'\),};]"
 
-# Get some obfuscated urls, main anchor is brackets around the period
+# Get some obfuscated urls, main anchor is brackets around the period.
 BRACKET_URL_RE = re.compile(r"""
         \b
         (
@@ -59,7 +59,7 @@ BRACKET_URL_RE = re.compile(r"""
         (?=\s|$)
     """, re.VERBOSE)
 
-# Get some obfuscated urls, main anchor is backslash before a period
+# Get some obfuscated urls, main anchor is backslash before a period.
 BACKSLASH_URL_RE = re.compile(r"""
         \b
         (
@@ -87,7 +87,7 @@ BACKSLASH_URL_RE = re.compile(r"""
         (?=\s|$)
     """, re.VERBOSE)
 
-# Get hex-encoded urls
+# Get hex-encoded urls.
 HEXENCODED_URL_RE = re.compile(r"""
         (
             [46][86]
@@ -102,12 +102,12 @@ HEXENCODED_URL_RE = re.compile(r"""
         ]|$)
     """, re.IGNORECASE | re.VERBOSE)
 
-# Get urlencoded urls
+# Get urlencoded urls.
 URLENCODED_URL_RE = re.compile(r"""
         (s?[hf]t?tps?%3A%2F%2F\w[\w%-]*?)(?:[^\w%-]|$)
     """, re.IGNORECASE | re.VERBOSE)
 
-# Get base64-encoded urls
+# Get base64-encoded urls.
 B64ENCODED_URL_RE = re.compile(r"""
         (
             # b64re '([hH][tT][tT][pP][sS]|[hH][tT][tT][pP]|[fF][tT][pP])://'
@@ -129,7 +129,7 @@ B64ENCODED_URL_RE = re.compile(r"""
         (?=[^A-Za-z0-9+/=\s]|$)
     """, re.VERBOSE)
 
-# Get some valid obfuscated ip addresses
+# Get some valid obfuscated ip addresses.
 IPV4_RE = re.compile(r"""
         (?:^|
             (?![^\d\.])
@@ -142,12 +142,12 @@ IPV4_RE = re.compile(r"""
         (?:(?=[^\d\.])|$)
     """, re.VERBOSE)
 
-# Experimental IPV6 regex, will not catch everything but should be sufficent for now
+# Experimental IPv6 regex, will not catch everything but should be sufficent for now.
 IPV6_RE = re.compile(r"""
         \b(?:[a-f0-9]{1,4}:|:){2,7}(?:[a-f0-9]{1,4}|:)\b
     """, re.IGNORECASE | re.VERBOSE)
 
-# Capture email addresses including common defangs
+# Capture email addresses including common defangs.
 EMAIL_RE = re.compile(r"""
         (
             [a-zA-Z0-9_.+-]+
@@ -177,7 +177,7 @@ SHA1_RE = re.compile(r"(?:[^a-fA-F\d]|\b)([a-fA-F\d]{40})(?:[^a-fA-F\d]|\b)")
 SHA256_RE = re.compile(r"(?:[^a-fA-F\d]|\b)([a-fA-F\d]{64})(?:[^a-fA-F\d]|\b)")
 SHA512_RE = re.compile(r"(?:[^a-fA-F\d]|\b)([a-fA-F\d]{128})(?:[^a-fA-F\d]|\b)")
 
-# YARA regex
+# YARA regex.
 YARA_SPLIT_STR = r"""
         \n[\t\s]*\}[\s\t]*(rule[\t\s][^\r\n]+(?:\{|[\r\n][\r\n\s\t]*\{))
 """
@@ -308,7 +308,7 @@ def extract_ipv6s(data):
         yield ip_address.group(0)
 
 def extract_emails(data, refang=False):
-    """Extract email addresses
+    """Extract email addresses.
 
     :param data: Input text
     :param bool refang: Refang output?
