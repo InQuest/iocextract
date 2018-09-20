@@ -146,7 +146,9 @@ A command-line tool is also included::
     $ iocextract -h
     usage: iocextract [-h] [--input INPUT] [--output OUTPUT] [--extract-ips]
                       [--extract-urls] [--extract-yara-rules] [--extract-hashes]
-                      [--refang] [--strip-urls]
+                      [--custom-regex REGEX_FILE] [--refang] [--strip-urls]
+                      [--wide]
+
 
     Advanced Indicator of Compromise (IOC) extractor. If no arguments are
     specified, the default behavior is to extract all IOCs.
