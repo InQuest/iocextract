@@ -279,7 +279,7 @@ a plain text file with one regex string per line, and pass it in with the
 ``--custom-regex`` flag. Be sure each regex string includes exactly one
 `capture group`_. For example:
 
-.. code-block::
+.. code-block:: text
 
     http://(example\.com)/
     (?:https|ftp)://(example\.com)/
@@ -290,20 +290,20 @@ URLs. The ``(?: )`` noncapture group won't be included in matches.
 If you would like to extract the entire match, just put parentheses around your
 entire regex string, like this:
 
-.. code-block::
+.. code-block:: text
 
     (https?://.*?.com)
 
 If your regex is invalid, you'll see an error message like this:
 
-.. code-block::
+.. code-block:: text
 
     Error in custom regex: missing ) at position 5
 
 If your regex does not include a capture group, you'll see an error message
 like this:
 
-.. code-block::
+.. code-block:: text
 
     Error in custom regex: no such group
 
