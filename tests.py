@@ -3,6 +3,8 @@ import unittest
 import binascii
 import base64
 
+import regex as re
+
 import iocextract
 
 # Helper functions
@@ -690,3 +692,39 @@ class TestExtractors(unittest.TestCase):
 
         for content in content_list:
             self.assertEqual(list(iocextract.extract_urls(content, refang=True))[0], 'http://example.com')
+
+    def test_extract_custom_extracts_from_list(self):
+        regex_list = [
+            r'(test\d)',
+            r't(..)t',
+            r'^(str.ng)$',
+        ]
+
+        self.assertEqual(list(iocextract.extract_custom_iocs('test1', regex_list)), ['test1', 'es'])
+        self.assertEqual(list(iocextract.extract_custom_iocs('a test2 string', regex_list)), ['test2', 'es'])
+        self.assertEqual(list(iocextract.extract_custom_iocs('just testing', regex_list)), ['es'])
+        self.assertEqual(list(iocextract.extract_custom_iocs('string', regex_list)), ['string'])
+        self.assertEqual(list(iocextract.extract_custom_iocs('strong', regex_list)), ['strong'])
+        self.assertEqual(list(iocextract.extract_custom_iocs('strange', regex_list)), [])
+        self.assertEqual(list(iocextract.extract_custom_iocs('another one', regex_list)), [])
+
+    def test_extract_custom_iocs_empty_list_extracts_nothing(self):
+        self.assertEqual(list(iocextract.extract_custom_iocs('content', [])), [])
+        self.assertEqual(list(iocextract.extract_custom_iocs('', [])), [])
+
+    def test_extract_custom_iocs_empty_content_extracts_nothing(self):
+        self.assertEqual(list(iocextract.extract_custom_iocs('', [r'egex'])), [])
+
+    def test_extract_custom_iocs_no_match_extracts_nothing(self):
+        self.assertEqual(list(iocextract.extract_custom_iocs('words', [r'egex'])), [])
+
+    def test_extract_custom_iocs_excepts_on_bad_regex(self):
+        # Note: have to use list() here because exceptions are only raised when
+        # the generator is executed.
+        with self.assertRaises(re.error):
+            list(iocextract.extract_custom_iocs('', [r'(mismatched paren']))
+            list(iocextract.extract_custom_iocs('', [r'[mismatched bracket']))
+
+        with self.assertRaises(IndexError):
+            list(iocextract.extract_custom_iocs('', [r'no capture group']))
+            list(iocextract.extract_custom_iocs('', [r'']))

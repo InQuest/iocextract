@@ -7,7 +7,7 @@ Otherwise, you can iterate over the objects (e.g. in a ``for`` loop) normally.
 Each object yielded from the generators will by of type :class:`str`.
 """
 import io
-import regex as re
+import sys
 import itertools
 import argparse
 import binascii
@@ -21,6 +21,7 @@ except ImportError:
     from urllib import unquote
 
 import ipaddress
+import regex as re
 
 # Get basic url format, including a few obfuscation techniques, main anchor is the uri scheme.
 GENERIC_URL_RE = re.compile(r"""
@@ -385,6 +386,50 @@ def extract_yara_rules(data):
     for yara_rule in YARA_PARSE_RE.finditer(yara_rules):
         yield yara_rule.group(1)
 
+def extract_custom_iocs(data, regex_list):
+    """Extract using custom regex strings.
+
+    Will always yield only the first *group* match from each regex.
+
+    Always use a single capture group! Do this::
+
+        [
+            r'(my regex)',  # This yields 'my regex' if the pattern matches.
+            r'my (re)gex',  # This yields 're' if the pattern matches.
+        ]
+
+    NOT this::
+
+        [
+            r'my regex',  # BAD! This doesn't yield anything.
+            r'(my) (re)gex',  # BAD! This yields 'my' if the pattern matches.
+        ]
+
+    For complicated regexes, you can combine capture and non-capture groups,
+    like this::
+
+        [
+            r'(?:my|your) (re)gex',  # This yields 're' if the pattern matches.
+        ]
+
+    Note the (?: ) syntax for noncapture groups vs the ( ) syntax for the capture
+    group.
+
+    :param data: Input text
+    :param regex_list: List of strings to treat as regex and match against data.
+    :rtype: Iterator[:class:`str`]
+    """
+
+    # Compile all the regex strings first, so we can error out quickly.
+    regex_objects = []
+    for regex_string in regex_list:
+        regex_objects.append(re.compile(regex_string))
+
+    # Iterate over regex objects, running each against input data.
+    for regex_object in regex_objects:
+        for ioc in regex_object.finditer(data):
+            yield ioc.group(1)
+
 def _is_ipv6_url(url):
     """URL network location is an IPv6 address, not a domain.
 
@@ -555,6 +600,9 @@ def main():
     parser.add_argument('--extract-urls', action='store_true')
     parser.add_argument('--extract-yara-rules', action='store_true')
     parser.add_argument('--extract-hashes', action='store_true')
+    parser.add_argument('--custom-regex', type=lambda x: io.open(x, 'r', encoding='utf-8', errors='ignore'),
+                        metavar='REGEX_FILE',
+                        help="file with custom regex strings, one per line, with one capture group each")
     parser.add_argument('--refang', action='store_true', help="default: no")
     parser.add_argument('--strip-urls', action='store_true',
                         help="remove possible garbage from the end of urls. default: no")
@@ -568,7 +616,8 @@ def main():
         data = data.replace('\x00', '')
 
     # By default, extract all.
-    if not (args.extract_ips or args.extract_urls or args.extract_yara_rules or args.extract_hashes):
+    if not (args.extract_ips or args.extract_urls or args.extract_yara_rules or args.extract_hashes or
+            args.custom_regex):
         for ioc in extract_iocs(data, refang=args.refang, strip=args.strip_urls):
             args.output.write(u"{ioc}\n".format(ioc=ioc))
     else:
@@ -584,6 +633,16 @@ def main():
         if args.extract_hashes:
             for ioc in extract_hashes(data):
                 args.output.write(u"{ioc}\n".format(ioc=ioc))
+
+        # Custom regex file, one per line.
+        if args.custom_regex:
+            regex_list = [l.strip() for l in args.custom_regex.readlines()]
+
+            try:
+                for ioc in extract_custom_iocs(data, regex_list):
+                    args.output.write(u"{ioc}\n".format(ioc=ioc))
+            except (IndexError, re.error) as e:
+                sys.stderr.write('Error in custom regex: {e}\n'.format(e=e))
 
 if __name__ == "__main__":
     main()

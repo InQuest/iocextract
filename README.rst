@@ -159,6 +159,10 @@ A command-line tool is also included::
       --extract-urls
       --extract-yara-rules
       --extract-hashes
+      --custom-regex REGEX_FILE
+                            file with custom regex strings, one per line, with one
+                            capture group each
+
       --refang              default: no
       --strip-urls          remove possible garbage from the end of urls. default:
                             no
@@ -191,6 +195,7 @@ This library currently supports the following IOCs:
     * SHA1
     * SHA256
     * SHA512
+* Custom regex
 
 For IPv4 addresses, the following defang techniques are supported:
 
@@ -266,6 +271,42 @@ correctly, feel free to let us know via the GitHub Issues_.
 
 The base64 regex was generated with `@deadpixi`_'s `base64 regex tool`_.
 
+Custom Regex
+------------
+
+If you'd like to use the CLI to extract IOCs using your own custom regex, create
+a plain text file with one regex string per line, and pass it in with the
+``--custom-regex`` flag. Be sure each regex string includes exactly one
+`capture group`_. For example:
+
+.. code-block::
+
+    http://(example\.com)/
+    (?:https|ftp)://(example\.com)/
+
+This custom regex file will exctract the domain ``example.com`` from matching
+URLs. The ``(?: )`` noncapture group won't be included in matches.
+
+If you would like to extract the entire match, just put parentheses around your
+entire regex string, like this:
+
+.. code-block::
+
+    (https?://.*?.com)
+
+If your regex is invalid, you'll see an error message like this:
+
+.. code-block::
+
+    Error in custom regex: missing ) at position 5
+
+If your regex does not include a capture group, you'll see an error message
+like this:
+
+.. code-block::
+
+    Error in custom regex: no such group
+
 Changelog
 ---------
 
@@ -286,3 +327,4 @@ released under a "BSD-New" (aka "BSD 3-Clause") license.
 .. _appropriate wheel from PyPI: https://pypi.org/project/regex/#files
 .. _@deadpixi: https://github.com/deadpixi
 .. _base64 regex tool: http://www.erlang-factory.com/upload/presentations/225/ErlangFactorySFBay2010-RobKing.pdf
+.. _capture group: https://www.regular-expressions.info/brackets.html
