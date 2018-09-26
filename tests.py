@@ -182,6 +182,15 @@ class TestExtractors(unittest.TestCase):
             'myuser@example  [  .  ]   com',
             'myuser@example  [  .  ]   com    [   .tld',
             'myuser@example  [[[[ [ [ [ . )]) com',
+            'myuser@example  [[[[ [ [ [ dot )]) com',
+            'myuser at example  [[[[ [ [ [ dot )]) com',
+            'myuser at example [ dot ] com',
+            'myuser at example[ dot ]com',
+            'myuser at example[dot]com',
+            'myuser at example [dot] com',
+            'myuser [at] example dot com',
+            'myuser at example dot com',
+            'myuser AT example DOT com',
         ]
 
         for content in content_list:
@@ -201,6 +210,8 @@ class TestExtractors(unittest.TestCase):
             'myuser @ words. Sentence',
             'myuser@example . com',
             'myuser@example .]com',
+            'myuseratexampledotcom',
+            'myuser at exampledotcom',
         ]
 
         for content in invalid_list:
@@ -627,6 +638,13 @@ class TestExtractors(unittest.TestCase):
             'myuser@example [.] com [.] tld',
             'myuser@example [.] com [.tld',
             'myuser@example   [[[  . ])] com [.tld',
+            'myuser[@]example   [[[  . ])] com [.tld',
+            'myuser [ @ ] example   [[[  . ])] com [.tld',
+            'myuser { @ ) example   [[[  . ])] com [.tld',
+            'myuser { @ ) example {  . ])] com [.tld',
+            'myuser { at ) example {  . ])] com [.tld',
+            'myuser { at ) example {  doT ])] com [dot tld',
+            'myuser At example DOT com DOT tld',
         ]
 
         for content in content_list:
