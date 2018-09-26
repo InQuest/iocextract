@@ -191,6 +191,7 @@ class TestExtractors(unittest.TestCase):
             'myuser [at] example dot com',
             'myuser at example dot com',
             'myuser AT example DOT com',
+            'myuser[@]example.com',
         ]
 
         for content in content_list:
@@ -645,6 +646,7 @@ class TestExtractors(unittest.TestCase):
             'myuser { at ) example {  . ])] com [.tld',
             'myuser { at ) example {  doT ])] com [dot tld',
             'myuser At example DOT com DOT tld',
+            'myuser[@]example[.com[.tld]',
         ]
 
         for content in content_list:
