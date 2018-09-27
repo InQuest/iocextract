@@ -230,7 +230,7 @@ For email addresses, the following defang techniques are supported:
    +-----------------+--------------------+----------------+
    | ``. -> {.}``    | me@example{.}com   | me@example.com |
    +-----------------+--------------------+----------------+
-   | ``. ->  dot ``  | me@example dot com | me@example.com |
+   | ``. -> _dot_``  | me@example dot com | me@example.com |
    +-----------------+--------------------+----------------+
    | ``@ -> [@]``    | me[@]example.com   | me@example.com |
    +-----------------+--------------------+----------------+
@@ -238,7 +238,7 @@ For email addresses, the following defang techniques are supported:
    +-----------------+--------------------+----------------+
    | ``@ -> {@}``    | me{@}example.com   | me@example.com |
    +-----------------+--------------------+----------------+
-   | ``@ ->  at ``   | me at example.com  | me@example.com |
+   | ``@ -> _at_``   | me at example.com  | me@example.com |
    +-----------------+--------------------+----------------+
    | Partial         | me@} example[.com  | me@example.com |
    +-----------------+--------------------+----------------+
