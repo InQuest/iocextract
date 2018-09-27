@@ -228,7 +228,19 @@ For email addresses, the following defang techniques are supported:
    +-----------------+--------------------+----------------+
    | ``. -> (.)``    | me@example(.)com   | me@example.com |
    +-----------------+--------------------+----------------+
-   | Partial         | me@example[.com    | me@example.com |
+   | ``. -> {.}``    | me@example{.}com   | me@example.com |
+   +-----------------+--------------------+----------------+
+   | ``. ->  dot ``  | me@example dot com | me@example.com |
+   +-----------------+--------------------+----------------+
+   | ``@ -> [@]``    | me[@]example.com   | me@example.com |
+   +-----------------+--------------------+----------------+
+   | ``@ -> (@)``    | me(@)example.com   | me@example.com |
+   +-----------------+--------------------+----------------+
+   | ``@ -> {@}``    | me{@}example.com   | me@example.com |
+   +-----------------+--------------------+----------------+
+   | ``@ ->  at ``   | me at example.com  | me@example.com |
+   +-----------------+--------------------+----------------+
+   | Partial         | me@} example[.com  | me@example.com |
    +-----------------+--------------------+----------------+
    | Added spaces    | me@example [.] com | me@example.com |
    +-----------------+--------------------+----------------+
@@ -267,7 +279,7 @@ For URLs, the following defang techniques are supported:
    | Base64 encoded  | ``aHR0cDovL2V4YW1wbGUuY29tL3BhdGgK``               | ``http://example.com/path`` |
    +-----------------+----------------------------------------------------+-----------------------------+
 
-Note that the table above is not exhaustive, and other URL/defang patterns may
+Note that the tables above are not exhaustive, and other URL/defang patterns may
 also be extracted correctly. If you notice something missing or not working
 correctly, feel free to let us know via the GitHub Issues_.
 
