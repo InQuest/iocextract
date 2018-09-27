@@ -152,20 +152,26 @@ IPV6_RE = re.compile(r"""
 EMAIL_RE = re.compile(r"""
         (
             [a-zA-Z0-9_.+-]+
-            \x20?@\x20?
+            [\(\[{\x20]*
+            (?:@|\W[aA][tT]\W)
+            [\)\]}\x20]*
             [a-zA-Z0-9-]+
             (?:
                 (?:
-                    \x20*
-                    [\(\[]
-                    \x20*
-                )*
-                \.
-                (?:
-                    \x20*
-                    [\]\)]
-                    \x20*
-                )*
+                    (?:
+                        \x20*
+                        [\(\[{]
+                        \x20*
+                    )*
+                    \.
+                    (?:
+                        \x20*
+                        [\]\)}]
+                        \x20*
+                    )*
+                    |
+                    \W+[dD][oO][tT]\W+
+                )
                 [a-zA-Z0-9-]+?
             )+
         )
@@ -473,8 +479,16 @@ def refang_email(email):
     :param email: String email address.
     :rtype: str
     """
+    # Check for ' at ' and ' dot ' first.
+    email = re.sub('\W[aA][tT]\W', '@', email.lower())
+    email = re.sub('\W*[dD][oO][tT]\W*', '.', email)
+
+    # Then do other char replaces.
     return _refang_common(email).replace('[', '').\
-                                 replace(']', '')
+                                 replace(']', '').\
+                                 replace('{', '').\
+                                 replace('}', '').\
+                                 replace('{', '')
 
 def refang_url(url):
     """Refang a URL.
