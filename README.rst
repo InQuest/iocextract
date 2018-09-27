@@ -190,7 +190,7 @@ This library currently supports the following IOCs:
     * URL-encoded URLs with protocol specifier: http, https, ftp, ftps, sftp
     * Base64-encoded URLs with protocol specifier: http, https, ftp
 * Emails
-    * Partially supported, anchoring on ``@``
+    * Partially supported, anchoring on ``@`` or ``at``
 * YARA rules
 * Hashes
     * MD5
