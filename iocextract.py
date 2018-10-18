@@ -108,7 +108,7 @@ BACKSLASH_URL_RE = re.compile(r"""
         )
     """ + END_PUNCTUATION + r"""
         (?=\s|$)
-    """, re.VERBOSE)
+    """, re.VERBOSE | re.UNICODE)
 
 # Get hex-encoded urls.
 HEXENCODED_URL_RE = re.compile(r"""
@@ -199,7 +199,7 @@ EMAIL_RE = re.compile(r"""
         )
     """ + END_PUNCTUATION + r"""
         (?=\s|$)
-    """, re.IGNORECASE | re.VERBOSE)
+    """, re.IGNORECASE | re.VERBOSE | re.UNICODE)
 
 MD5_RE = re.compile(r"(?:[^a-fA-F\d]|\b)([a-fA-F\d]{32})(?:[^a-fA-F\d]|\b)")
 SHA1_RE = re.compile(r"(?:[^a-fA-F\d]|\b)([a-fA-F\d]{40})(?:[^a-fA-F\d]|\b)")
