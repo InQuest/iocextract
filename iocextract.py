@@ -173,11 +173,11 @@ IPV6_RE = re.compile(r"""
 # Capture email addresses including common defangs.
 EMAIL_RE = re.compile(r"""
         (
-            [a-zA-Z0-9_.+-]+
+            [a-z0-9_.+-]+
             [\(\[{\x20]*
-            (?:@|\W[aA][tT]\W)
+            (?:@|\Wat\W)
             [\)\]}\x20]*
-            [a-zA-Z0-9-]+
+            [a-z0-9-]+
             (?:
                 (?:
                     (?:
@@ -192,14 +192,14 @@ EMAIL_RE = re.compile(r"""
                         \x20*
                     )*
                     |
-                    \W+[dD][oO][tT]\W+
+                    \W+dot\W+
                 )
-                [a-zA-Z0-9-]+?
+                [a-z0-9-]+?
             )+
         )
     """ + END_PUNCTUATION + r"""
         (?=\s|$)
-    """, re.VERBOSE)
+    """, re.IGNORECASE | re.VERBOSE)
 
 MD5_RE = re.compile(r"(?:[^a-fA-F\d]|\b)([a-fA-F\d]{32})(?:[^a-fA-F\d]|\b)")
 SHA1_RE = re.compile(r"(?:[^a-fA-F\d]|\b)([a-fA-F\d]{40})(?:[^a-fA-F\d]|\b)")
