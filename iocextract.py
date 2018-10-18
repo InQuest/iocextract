@@ -23,22 +23,38 @@ except ImportError:
 import ipaddress
 import regex as re
 
-# Get basic url format, including a few obfuscation techniques, main anchor is the uri scheme.
-GENERIC_URL_RE = re.compile(r"""
-        (
-            [fhstu]\w\w?[px]s?
-            (?::\/\/|__)
-            [\x20\(\[]*
-            \w
-            \S+?
-            (?:\x20[\/\.][^\.\/\s]\S*?)*
-        )
-        [\.\?>\"'\)!,}:;\u201d\u2019\uff1e\uff1c\]]*
-        (?=\s|$)
-    """, re.IGNORECASE | re.VERBOSE)
+# Reusable end punctuation regex.
+END_PUNCTUATION = r"[\.\?>\"'\)!,}:;\u201d\u2019\uff1e\uff1c\]]*"
+
+# Reusable regex for symbols commonly used to defang.
+SEPARATOR_DEFANGS = r"[\x20\(\)\[\]{}<>\\]*"
 
 # Split URLs on some characters that may be valid, but may also be garbage.
 URL_SPLIT_STR = r"[>\"'\),};]"
+
+# Get basic url format, including a few obfuscation techniques, main anchor is the uri scheme.
+GENERIC_URL_RE = re.compile(r"""
+        (
+            # Scheme.
+            [fhstu]\w\w?[px]s?
+
+            # One of these delimiters/defangs.
+            (?:
+                :\/\/|
+                :\\\\|
+                :?__
+            )
+            """ + SEPARATOR_DEFANGS + r"""
+            # Domain/path characters.
+            \w
+            \S+?
+
+            # CISCO ESA style defangs followed by domain/path characters.
+            (?:\x20[\/\.][^\.\/\s]\S*?)*
+        )
+    """ + END_PUNCTUATION + r"""
+        (?=\s|$)
+    """, re.IGNORECASE | re.VERBOSE | re.UNICODE)
 
 # Get some obfuscated urls, main anchor is brackets around the period.
 BRACKET_URL_RE = re.compile(r"""
@@ -56,9 +72,9 @@ BRACKET_URL_RE = re.compile(r"""
                 \S*?
             )+
         )
-        [\.\?>\"'\)!,}:;\u201d\u2019\uff1e\uff1c\]]*
+    """ + END_PUNCTUATION + r"""
         (?=\s|$)
-    """, re.VERBOSE)
+    """, re.VERBOSE | re.UNICODE)
 
 # Get some obfuscated urls, main anchor is backslash before a period.
 BACKSLASH_URL_RE = re.compile(r"""
@@ -84,7 +100,7 @@ BACKSLASH_URL_RE = re.compile(r"""
                 \S*?
             )*
         )
-        [\.\?>\"'\)!,}:;\u201d\u2019\uff1e\uff1c\]]*
+    """ + END_PUNCTUATION + r"""
         (?=\s|$)
     """, re.VERBOSE)
 
@@ -175,7 +191,7 @@ EMAIL_RE = re.compile(r"""
                 [a-zA-Z0-9-]+?
             )+
         )
-        [\.\?>\"'\)!,}:;\u201d\u2019\uff1e\uff1c\]]*
+    """ + END_PUNCTUATION + r"""
         (?=\s|$)
     """, re.VERBOSE)
 
