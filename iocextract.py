@@ -27,7 +27,7 @@ import regex as re
 END_PUNCTUATION = r"[\.\?>\"'\)!,}:;\u201d\u2019\uff1e\uff1c\]]*"
 
 # Reusable regex for symbols commonly used to defang.
-SEPARATOR_DEFANGS = r"[\x20\(\)\[\]{}<>\\]*"
+SEPARATOR_DEFANGS = r"[\(\)\[\]{}<>\\]"
 
 # Split URLs on some characters that may be valid, but may also be garbage.
 URL_SPLIT_STR = r"[>\"'\),};]"
@@ -44,7 +44,13 @@ GENERIC_URL_RE = re.compile(r"""
                 :\\\\|
                 :?__
             )
-            """ + SEPARATOR_DEFANGS + r"""
+
+            # Any number of defang characters.
+            (?:
+                \x20|
+                """ + SEPARATOR_DEFANGS + r"""
+            )*
+
             # Domain/path characters.
             \w
             \S+?
@@ -176,13 +182,13 @@ EMAIL_RE = re.compile(r"""
                 (?:
                     (?:
                         \x20*
-                        [\(\[{]
+                        """ + SEPARATOR_DEFANGS + r"""
                         \x20*
                     )*
                     \.
                     (?:
                         \x20*
-                        [\]\)}]
+                        """ + SEPARATOR_DEFANGS + r"""
                         \x20*
                     )*
                     |
