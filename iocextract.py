@@ -23,22 +23,44 @@ except ImportError:
 import ipaddress
 import regex as re
 
-# Get basic url format, including a few obfuscation techniques, main anchor is the uri scheme.
-GENERIC_URL_RE = re.compile(r"""
-        (
-            [fhstu]\w\w?[px]s?
-            (?::\/\/|__)
-            [\x20\(\[]*
-            \w
-            \S+?
-            (?:\x20[\/\.][^\.\/\s]\S*?)*
-        )
-        [\.\?>\"'\)!,}:;\u201d\u2019\uff1e\uff1c\]]*
-        (?=\s|$)
-    """, re.IGNORECASE | re.VERBOSE)
+# Reusable end punctuation regex.
+END_PUNCTUATION = r"[\.\?>\"'\)!,}:;\u201d\u2019\uff1e\uff1c\]]*"
+
+# Reusable regex for symbols commonly used to defang.
+SEPARATOR_DEFANGS = r"[\(\)\[\]{}<>\\]"
 
 # Split URLs on some characters that may be valid, but may also be garbage.
 URL_SPLIT_STR = r"[>\"'\),};]"
+
+# Get basic url format, including a few obfuscation techniques, main anchor is the uri scheme.
+GENERIC_URL_RE = re.compile(r"""
+        (
+            # Scheme.
+            [fhstu]\S\S?[px]s?
+
+            # One of these delimiters/defangs.
+            (?:
+                :\/\/|
+                :\\\\|
+                :?__
+            )
+
+            # Any number of defang characters.
+            (?:
+                \x20|
+                """ + SEPARATOR_DEFANGS + r"""
+            )*
+
+            # Domain/path characters.
+            \w
+            \S+?
+
+            # CISCO ESA style defangs followed by domain/path characters.
+            (?:\x20[\/\.][^\.\/\s]\S*?)*
+        )
+    """ + END_PUNCTUATION + r"""
+        (?=\s|$)
+    """, re.IGNORECASE | re.VERBOSE | re.UNICODE)
 
 # Get some obfuscated urls, main anchor is brackets around the period.
 BRACKET_URL_RE = re.compile(r"""
@@ -56,9 +78,9 @@ BRACKET_URL_RE = re.compile(r"""
                 \S*?
             )+
         )
-        [\.\?>\"'\)!,}:;\u201d\u2019\uff1e\uff1c\]]*
+    """ + END_PUNCTUATION + r"""
         (?=\s|$)
-    """, re.VERBOSE)
+    """, re.VERBOSE | re.UNICODE)
 
 # Get some obfuscated urls, main anchor is backslash before a period.
 BACKSLASH_URL_RE = re.compile(r"""
@@ -84,9 +106,9 @@ BACKSLASH_URL_RE = re.compile(r"""
                 \S*?
             )*
         )
-        [\.\?>\"'\)!,}:;\u201d\u2019\uff1e\uff1c\]]*
+    """ + END_PUNCTUATION + r"""
         (?=\s|$)
-    """, re.VERBOSE)
+    """, re.VERBOSE | re.UNICODE)
 
 # Get hex-encoded urls.
 HEXENCODED_URL_RE = re.compile(r"""
@@ -151,33 +173,33 @@ IPV6_RE = re.compile(r"""
 # Capture email addresses including common defangs.
 EMAIL_RE = re.compile(r"""
         (
-            [a-zA-Z0-9_.+-]+
+            [a-z0-9_.+-]+
             [\(\[{\x20]*
-            (?:@|\W[aA][tT]\W)
+            (?:@|\Wat\W)
             [\)\]}\x20]*
-            [a-zA-Z0-9-]+
+            [a-z0-9-]+
             (?:
                 (?:
                     (?:
                         \x20*
-                        [\(\[{]
+                        """ + SEPARATOR_DEFANGS + r"""
                         \x20*
                     )*
                     \.
                     (?:
                         \x20*
-                        [\]\)}]
+                        """ + SEPARATOR_DEFANGS + r"""
                         \x20*
                     )*
                     |
-                    \W+[dD][oO][tT]\W+
+                    \W+dot\W+
                 )
-                [a-zA-Z0-9-]+?
+                [a-z0-9-]+?
             )+
         )
-        [\.\?>\"'\)!,}:;\u201d\u2019\uff1e\uff1c\]]*
+    """ + END_PUNCTUATION + r"""
         (?=\s|$)
-    """, re.VERBOSE)
+    """, re.IGNORECASE | re.VERBOSE | re.UNICODE)
 
 MD5_RE = re.compile(r"(?:[^a-fA-F\d]|\b)([a-fA-F\d]{32})(?:[^a-fA-F\d]|\b)")
 SHA1_RE = re.compile(r"(?:[^a-fA-F\d]|\b)([a-fA-F\d]{40})(?:[^a-fA-F\d]|\b)")
@@ -511,9 +533,15 @@ def refang_url(url):
 
     # Since urlparse expects a scheme, make sure one exists.
     if '//' not in url:
-        if '__' in url[:7]:
-            # Support http__domain.
-            url = url.replace('__', '://', 1)
+        if '__' in url[:8]:
+            # Support http__domain and http:__domain
+            if ':__' in url[:8]:
+                url = url.replace(':__', '://', 1)
+            else:
+                url = url.replace('__', '://', 1)
+        elif '\\\\' in url[:8]:
+            # Support http:\\domain
+            url = url.replace('\\\\', '//', 1)
         else:
             # Support no-protocol.
             url = 'http://' + url

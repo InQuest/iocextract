@@ -319,6 +319,8 @@ class TestExtractors(unittest.TestCase):
             "ftp://",
             "http__",
             "https__",
+            "https:__",
+            "http:\\\\",
             "ftx://",
             "udp://",
             "sftp://",
@@ -500,6 +502,8 @@ class TestExtractors(unittest.TestCase):
             'hxxp://example[dotcom/test',
             'hxxp://example.com[/test',
             'http__example.com/test',
+            'http:__example.com/test',
+            'http:\\\\example.com/test',
         ]
 
         for content in content_list:
@@ -755,3 +759,11 @@ class TestExtractors(unittest.TestCase):
         with self.assertRaises(IndexError):
             list(iocextract.extract_custom_iocs('', [r'no capture group']))
             list(iocextract.extract_custom_iocs('', [r'']))
+
+    def test_unicode_space_terminates_urls(self):
+        self.assertEqual(list(iocextract.extract_urls('as\xa0example[.]com/Es3tC0deR3name.exe):')),
+                         ['example[.]com/Es3tC0deR3name.exe'])
+        self.assertEqual(list(iocextract.extract_urls('as\xa0example[.]com\xa0words):')),
+                         ['example[.]com'])
+        self.assertEqual(list(iocextract.extract_urls('as\xa0http://example.com/test\xa0words):')),
+                         ['http://example.com/test'])
