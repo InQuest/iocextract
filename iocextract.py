@@ -535,7 +535,7 @@ def refang_url(url):
     if '//' not in url:
         if '__' in url[:8]:
             # Support http__domain and http:__domain
-            if ':' in url[:8]:
+            if ':__' in url[:8]:
                 url = url.replace(':__', '://', 1)
             else:
                 url = url.replace('__', '://', 1)
