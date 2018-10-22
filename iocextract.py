@@ -533,9 +533,15 @@ def refang_url(url):
 
     # Since urlparse expects a scheme, make sure one exists.
     if '//' not in url:
-        if '__' in url[:7]:
-            # Support http__domain.
-            url = url.replace('__', '://', 1)
+        if '__' in url[:8]:
+            # Support http__domain and http:__domain
+            if ':' in url[:8]:
+                url = url.replace(':__', '://', 1)
+            else:
+                url = url.replace('__', '://', 1)
+        elif '\\\\' in url[:8]:
+            # Support http:\\domain
+            url = url.replace('\\\\', '//', 1)
         else:
             # Support no-protocol.
             url = 'http://' + url

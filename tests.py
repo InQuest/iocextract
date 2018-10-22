@@ -319,6 +319,8 @@ class TestExtractors(unittest.TestCase):
             "ftp://",
             "http__",
             "https__",
+            "https:__",
+            "http:\\\\",
             "ftx://",
             "udp://",
             "sftp://",
@@ -500,6 +502,8 @@ class TestExtractors(unittest.TestCase):
             'hxxp://example[dotcom/test',
             'hxxp://example.com[/test',
             'http__example.com/test',
+            'http:__example.com/test',
+            'http:\\\\example.com/test',
         ]
 
         for content in content_list:
