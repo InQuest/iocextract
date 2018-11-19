@@ -248,6 +248,19 @@ def extract_urls(data, refang=False, strip=False):
     :param data: Input text
     :param bool refang: Refang output?
     :param bool strip: Strip possible garbage from the end of URLs
+    :rtype: :py:func:`itertools.chain`
+    """
+    return itertools.chain(
+        extract_unencoded_urls(data, refang=refang, strip=strip),
+        extract_encoded_urls(data, refang=refang, strip=strip),
+    )
+
+def extract_unencoded_urls(data, refang=False, strip=False):
+    """Extract only unencoded URLs.
+
+    :param data: Input text
+    :param bool refang: Refang output?
+    :param bool strip: Strip possible garbage from the end of URLs
     :rtype: Iterator[:class:`str`]
     """
     unencoded_urls = itertools.chain(
@@ -266,6 +279,14 @@ def extract_urls(data, refang=False, strip=False):
 
         yield url
 
+def extract_encoded_urls(data, refang=False, strip=False):
+    """Extract only encoded URLs.
+
+    :param data: Input text
+    :param bool refang: Refang output?
+    :param bool strip: Strip possible garbage from the end of URLs
+    :rtype: Iterator[:class:`str`]
+    """
     for url in HEXENCODED_URL_RE.finditer(data):
         if refang:
             yield binascii.unhexlify(url.group(1)).decode('utf-8')
@@ -295,6 +316,9 @@ def extract_urls(data, refang=False, strip=False):
             # Remove the first 1-2 bytes if we got back extra leading characters from the base64.
             # The only valid starts are "http" or "ftp", so look for h/f case insensitive.
             url = url[re.search('[hHfF]', url).start():]
+
+        if strip:
+            url = re.split(URL_SPLIT_STR, url)[0]
 
         yield url
 
