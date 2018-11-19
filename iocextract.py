@@ -283,7 +283,7 @@ def extract_encoded_urls(data, refang=False, strip=False):
     """Extract only encoded URLs.
 
     :param data: Input text
-    :param bool refang: Refang output?
+    :param bool refang: Decode output?
     :param bool strip: Strip possible garbage from the end of URLs
     :rtype: Iterator[:class:`str`]
     """
