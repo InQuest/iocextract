@@ -113,11 +113,19 @@ div.documentwrapper {
 /* SIDE BAR LEVEL ----------------------------------------------------------- */
 /* -------------------------------------------------------------------------- */
 
-div.sphinxsidebarwrapper h1.logo {
+/*div.sphinxsidebarwrapper h1.logo {
   background: transparent url(inquest-magnifying-glass@2x.png) left 5px no-repeat;
   padding-left: 40px;
+}*/
+
+div.sphinxsidebarwrapper img.logo {
+  height: 128px;
+  width: 128px;
 }
 
+div.sphinxsidebarwrapper h1.logo-name {
+  text-align: center;
+}
 
 div.sphinxsidebar hr {
   background: #ccc;

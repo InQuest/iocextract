@@ -1,10 +1,5 @@
-.. raw:: html
-
-    <p align="center">
-      <img height="128" src="https://inquest.readthedocs.io/projects/iocextract/en/latest/_static/iocextract.png"  alt="iocextract" title="iocextract">
-    </p>
-
-    <h1 align="center">iocextract</h1>
+iocextract
+==========
 
 .. image:: https://inquest.net/images/inquest-badge.svg
     :target: https://inquest.net/

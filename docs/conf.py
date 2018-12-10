@@ -84,7 +84,7 @@ html_theme = 'alabaster'
 #
 html_theme_options = {
     'fixed_sidebar': 'true',
-#    'logo': 'inquest-logo.svg',
+    'logo': 'iocextract.png',
     'font_family': '"Proxima Nova", "Helvetica Neue", Helvetica, Arial, sans-serif',
     'head_font_family': '"Proxima Nova", "Helvetica Neue", Helvetica, Arial, sans-serif',
     'logo_name': 'true',
