@@ -145,10 +145,10 @@ A command-line tool is also included::
 
     $ iocextract -h
     usage: iocextract [-h] [--input INPUT] [--output OUTPUT] [--extract-ips]
-                      [--extract-urls] [--extract-yara-rules] [--extract-hashes]
+                      [--extract-ipv4s] [--extract-ipv6s] [--extract-urls]
+                      [--extract-yara-rules] [--extract-hashes]
                       [--custom-regex REGEX_FILE] [--refang] [--strip-urls]
                       [--wide]
-
 
     Advanced Indicator of Compromise (IOC) extractor. If no arguments are
     specified, the default behavior is to extract all IOCs.
@@ -158,6 +158,8 @@ A command-line tool is also included::
       --input INPUT         default: stdin
       --output OUTPUT       default: stdout
       --extract-ips
+      --extract-ipv4s
+      --extract-ipv6s
       --extract-urls
       --extract-yara-rules
       --extract-hashes
