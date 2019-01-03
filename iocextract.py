@@ -663,6 +663,8 @@ def main():
     parser.add_argument('--output', type=lambda x: io.open(x, 'w', encoding='utf-8', errors='ignore'),
                         default=io.open(1, 'w', encoding='utf-8', errors='ignore'), help="default: stdout")
     parser.add_argument('--extract-ips', action='store_true')
+    parser.add_argument('--extract-ipv4s', action='store_true')
+    parser.add_argument('--extract-ipv6s', action='store_true')
     parser.add_argument('--extract-urls', action='store_true')
     parser.add_argument('--extract-yara-rules', action='store_true')
     parser.add_argument('--extract-hashes', action='store_true')
@@ -683,12 +685,18 @@ def main():
 
     # By default, extract all.
     if not (args.extract_ips or args.extract_urls or args.extract_yara_rules or args.extract_hashes or
-            args.custom_regex):
+            args.extract_ipv4s or args.extract_ipv6s or args.custom_regex):
         for ioc in extract_iocs(data, refang=args.refang, strip=args.strip_urls):
             args.output.write(u"{ioc}\n".format(ioc=ioc))
     else:
         if args.extract_ips:
             for ioc in extract_ips(data, refang=args.refang):
+                args.output.write(u"{ioc}\n".format(ioc=ioc))
+        if args.extract_ipv4s:
+            for ioc in extract_ipv4s(data, refang=args.refang):
+                args.output.write(u"{ioc}\n".format(ioc=ioc))
+        if args.extract_ipv6s:
+            for ioc in extract_ipv6s(data):
                 args.output.write(u"{ioc}\n".format(ioc=ioc))
         if args.extract_urls:
             for ioc in extract_urls(data, refang=args.refang, strip=args.strip_urls):
