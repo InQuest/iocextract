@@ -8,13 +8,13 @@ os.chdir(os.path.normpath(os.path.join(os.path.abspath(__file__), os.pardir)))
 
 setup(
     name='iocextract',
-    version='1.12.1',
+    version='1.12.2',
     include_package_data=True,
     py_modules=[
         'iocextract',
     ],
     install_requires=[
-        'regex',
+        'regex==2019.02.07',
     ],
     extras_require={
         ':python_version <= "2.7"': [
