@@ -767,3 +767,21 @@ class TestExtractors(unittest.TestCase):
                          ['example[.]com'])
         self.assertEqual(list(iocextract.extract_urls('as\xa0http://example.com/test\xa0words):')),
                          ['http://example.com/test'])
+
+    def test_bracket_url_dots_in_netloc(self):
+        content_list = [
+            'hXXps://192.168.149[.]100/api/info',
+            'hXXps://subdomain.example[.]com/some/path',
+            'h__ps__subdomain.example[.]com/some/path',
+            'http://subdomain.example.com/test[.]doc'
+        ]
+
+        for content in content_list:
+            for extracted in iocextract.extract_urls(content):
+                self.assertEqual(extracted, content)
+
+        # We terminate on any character not in the allowed set of domain +
+        # scheme characters. That means these will show up from the generic regex,
+        # but not the bracket regex. Note the space termination in the second result:
+        self.assertEqual(list(iocextract.extract_urls('hXXps:// 192.168.149[.]100/api/info')),
+                         ['hXXps:// 192.168.149[.]100/api/info', '192.168.149[.]100/api/info'])

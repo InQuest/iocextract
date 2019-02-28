@@ -66,7 +66,7 @@ GENERIC_URL_RE = re.compile(r"""
 BRACKET_URL_RE = re.compile(r"""
         \b
         (
-            [\:\/\\\w\[\]\(\)-]+
+            [\.\:\/\\\w\[\]\(\)-]+
             (?:
                 \x20?
                 [\(\[]
