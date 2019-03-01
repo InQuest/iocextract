@@ -194,6 +194,7 @@ This library currently supports the following IOCs:
 * Emails
     * Partially supported, anchoring on ``@`` or ``at``
 * YARA rules
+    * With imports, includes, and comments
 * Hashes
     * MD5
     * SHA1
