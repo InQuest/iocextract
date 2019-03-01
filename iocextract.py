@@ -207,19 +207,31 @@ SHA256_RE = re.compile(r"(?:[^a-fA-F\d]|\b)([a-fA-F\d]{64})(?:[^a-fA-F\d]|\b)")
 SHA512_RE = re.compile(r"(?:[^a-fA-F\d]|\b)([a-fA-F\d]{128})(?:[^a-fA-F\d]|\b)")
 
 # YARA regex.
-YARA_SPLIT_STR = r"""
-        \n[\t\s]*\}[\s\t]*(rule[\t\s][^\r\n]+(?:\{|[\r\n][\r\n\s\t]*\{))
-"""
-
 YARA_PARSE_RE = re.compile(r"""
-        ^[\t\s]*
+        (?:^|\s)
         (
-            rule[\t\s][^\r\n]+
-            (?:\{|[\r\n][\r\n\s\t]*\{)
-            .*?condition:.*?\r?\n?[\t\s]*\}
+            (?:
+                \s*?import\s+?"[^\r\n]*?[\r\n]+|
+                \s*?include\s+?"[^\r\n]*?[\r\n]+|
+                \s*?//[^\r\n]*[\r\n]+|
+                \s*?/\*.*?\*/\s*?
+            )*
+            (?:
+                \s*?private\s+|
+                \s*?global\s+
+            )*
+            rule\s*?
+            \w+\s*?
+            (?:
+                :[\s\w]+
+            )?
+            \s+\{
+            .*?
+            condition\s*?:
+            .*?
+            \s*\}
         )
-        [\s\t]*
-        (?:$|\r?\n)
+        (?:$|\s)
     """, re.MULTILINE | re.DOTALL | re.VERBOSE)
 
 
@@ -433,10 +445,8 @@ def extract_yara_rules(data):
     :param data: Input text
     :rtype: Iterator[:class:`str`]
     """
-    yara_rules = re.sub(YARA_SPLIT_STR, "}\r\n\\1", data,
-                        re.MULTILINE | re.DOTALL | re.VERBOSE)
-    for yara_rule in YARA_PARSE_RE.finditer(yara_rules):
-        yield yara_rule.group(1)
+    for yara_rule in YARA_PARSE_RE.finditer(data):
+        yield yara_rule.group(1).strip()
 
 def extract_custom_iocs(data, regex_list):
     """Extract using custom regex strings.

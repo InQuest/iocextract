@@ -445,6 +445,39 @@ class TestExtractors(unittest.TestCase):
                 condition:
                     $a or $b or $c
             }""",
+            """private global rule silent_banker : banker
+            {
+                strings:
+                    $a = {6A 40 68 00 30 00 00 6A 14 8D 91}
+                condition:
+                    $a
+            }""",
+            'private rule testRule { condition: true }',
+            'global rule testRule { condition: true }',
+            'include "test.yar"\r\n\r\nrule testRule { condition: true }',
+            'include "test.yar"\r\ninclude "test2.yar"\r\n\r\nrule testRule { condition: true }',
+            'import "pe"\r\nimport "cuckoo"\r\n\r\nrule testRule { condition: true }',
+            'import "pe"\r\ninclude "test.yar"\r\nimport "cuckoo"\r\n\r\nrule testRule { condition: true }',
+            'include "test.yar"\r\nimport "cuckoo"\r\ninclude "test2.yar"\r\n\r\nrule testRule { condition: true }',
+            'include "test.yar"\r\n\r\nprivate rule testRule : Tags { condition: true }',
+            """import "androguard"
+            include "../../../mytest.yar"
+
+            // test
+            /* test
+               */
+            include "tesssssst.yara"
+            import "pe"
+            import "cuckoo"
+
+            private global rule silent_banker : banker
+            {
+                strings:
+                    $a = {6A 40 68 00 30 00 00 6A 14 8D 91}
+                condition:
+                    $a
+            }""",
+            'rule testRule { condition: "}" in string }',
         ]
 
         for content in content_list:
@@ -453,12 +486,24 @@ class TestExtractors(unittest.TestCase):
             self.assertEqual(list(iocextract.extract_yara_rules(_wrap_tabs(content)))[0], content)
             self.assertEqual(list(iocextract.extract_yara_rules(_wrap_newlines(content)))[0], content)
 
+        # seperate combined rules
+        content_block = '\r\n'.join(content_list)
+        parsed_rules = list(iocextract.extract_yara_rules(content_block))
+        self.assertEqual(len(parsed_rules), 15)
+        for content in content_list:
+            self.assertIn(content, parsed_rules)
+
+        # invalid rules
         invalid_list = [
             'rule testRule { conditio: true }',
             'rule testRule { condition true }',
             'rule testRule { condition: true ',
             'ule testRule { condition: true }',
             'rule testRule  condition: true }',
+            'Rule testRule { conditioN: true }',
+            '// the rule keyword\r\ntestRule { condition: true }',
+            '/* rule */ testRule { condition: true }',
+            'a sentence with the word rule in it. Then { a condition: like this? }',
         ]
 
         for content in invalid_list:
@@ -470,6 +515,63 @@ class TestExtractors(unittest.TestCase):
     def test_yara_included_in_iocs(self):
         content = 'rule testRule { condition: true }'
         self.assertEqual(list(iocextract.extract_iocs(content))[0], content)
+
+    def test_yara_inside_other_text_extracted_correctly(self):
+        content = """
+            This is just a paragraph of text. It might have <html> in it. It might have
+            keywords like rule or import or special characters like { .
+
+            import "androguard"
+            include "../../../mytest.yar"
+
+            // test
+            /* test
+               */
+            include "tesssssst.yara"
+            import "pe"
+            import "cuckoo"
+
+            private global rule silent_banker : banker
+            {
+                strings:
+                    $a = {6A 40 68 00 30 00 00 6A 14 8D 91}
+                condition:
+                    $a
+            }
+
+            import "pe"
+            include "mytest.yar"
+
+            // test
+            /* test
+               */
+            import "pe"
+            import "cuckoo"
+
+            private global rule silent_banker : banker
+            {
+                strings:
+                    $a = {6A 40 68 00 30 00 00 6A 14 8D 91}
+                condition:
+                    $a
+            }
+
+            Even if there are more weird words over here } this should just be
+            ignored.
+
+            rule testRule { condition: true }
+
+            And stuff after.
+        """
+
+        parsed_rules = list(iocextract.extract_yara_rules(content))
+        self.assertEqual(len(parsed_rules), 3)
+        self.assertTrue(parsed_rules[0].startswith('import "androguard'))
+        self.assertTrue(parsed_rules[1].startswith('import "pe'))
+        self.assertTrue(parsed_rules[2].startswith('rule test'))
+
+        for rule in parsed_rules:
+            self.assertTrue(rule.endswith('}'))
 
     def test_refang_ipv4(self):
         content_list = [
