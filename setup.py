@@ -14,7 +14,7 @@ setup(
         'iocextract',
     ],
     install_requires=[
-        'regex==2019.02.07',
+        'regex',
     ],
     extras_require={
         ':python_version <= "2.7"': [
