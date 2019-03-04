@@ -20,7 +20,7 @@ iocextract
     :target: https://pypi.python.org/pypi/iocextract
     :alt: PyPi Version
 
-Advanced Indicator of Compromise (IOC) extractor.
+Advanced `Indicator of Compromise`_ (IOC) extractor.
 
 Overview
 --------
@@ -392,6 +392,7 @@ If you have a defang technique that doesn't make it through the extractor, or
 if you find any bugs, PRs and Issues_ are always welcome. The library is
 released under a "BSD-New" (aka "BSD 3-Clause") license.
 
+.. _Indicator of Compromise: https://en.wikipedia.org/wiki/Indicator_of_compromise
 .. _Issues: https://github.com/inquest/python-iocextract/issues
 .. _this tweet from @InQuest: https://twitter.com/InQuest/status/969469856931287041
 .. _Cisco ESA: https://www.cisco.com/c/en/us/support/docs/security/email-security-appliance/118775-technote-esa-00.html
