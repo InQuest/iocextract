@@ -175,6 +175,44 @@ A command-line tool is also included::
 
 Only URLs, emails, and IPv4 addresses can be "refanged".
 
+Should I Use iocextract?
+------------------------
+
+Are you...
+
+**Extracting possibly-defanged IOCs from plain text, like the contents of
+tweets or blog posts?**
+
+Yes! This is exactly what iocextract was designed for, and where it performs
+best. Want to go a step farther and automate extraction and storage? Check out
+`ThreatIngestor`_.
+
+**Extracting URLs that have been hex or base64 encoded?**
+
+Yes, but the CLI might not give you the best results. Try writing a Python
+script and calling ``iocextract.extract_encoded_urls`` directly.
+
+Note that you will most likely end up with extra garbage at the end of URLs.
+
+**Extracting IOCs that have not been defanged, from HTML/XML/RTF?**
+
+Maybe, but you should consider using the ``--strip-urls`` CLI flag (or the
+``strip=True`` parameter in the library), and you may still get some extra
+garbage in your output.
+
+If you're extracting from HTML, consider using something like `Beautiful Soup`_
+to first isolate the text content, and then pass that to iocextract,
+`like this`_.
+
+**Extracting IOCs that have not been defanged, from binary data like
+executables, or very large inputs?**
+
+Probably not. The regex in iocextract is designed to be flexible to catch
+defanged IOCs, so it performs significantly worse than a solution that is
+designed to catch only standard IOCs.
+
+Consider using something like `Cacador`_ instead.
+
 More Details
 ------------
 
@@ -326,6 +364,16 @@ like this:
 
     Error in custom regex: no such group
 
+Related Projects
+----------------
+
+If iocextract doesn't fit your usecase, several similar projects exist. Check
+out the `defang`_  and `indicators-of-compromise`_ tags on GitHub, as well as:
+
+* `Cacador`_ in Go,
+* `ioc-extractor`_ in JS, and
+* `Cyobstract`_ in Python.
+
 Changelog
 ---------
 
@@ -347,3 +395,11 @@ released under a "BSD-New" (aka "BSD 3-Clause") license.
 .. _@deadpixi: https://github.com/deadpixi
 .. _base64 regex tool: http://www.erlang-factory.com/upload/presentations/225/ErlangFactorySFBay2010-RobKing.pdf
 .. _capture group: https://www.regular-expressions.info/brackets.html
+.. _ThreatIngestor: https://github.com/InQuest/ThreatIngestor
+.. _Beautiful Soup: https://www.crummy.com/software/BeautifulSoup/
+.. _like this: https://gist.github.com/rshipp/d399491305c5d293357a800d5a51b0aa
+.. _Cacador: https://github.com/sroberts/cacador
+.. _defang: https://github.com/topics/defang
+.. _indicators-of-compromise: https://github.com/topics/indicators-of-compromise
+.. _ioc-extractor: https://github.com/ninoseki/ioc-extractor
+.. _Cyobstract: https://github.com/cmu-sei/cyobstract
