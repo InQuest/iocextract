@@ -374,6 +374,11 @@ out the `defang`_  and `indicators-of-compromise`_ tags on GitHub, as well as:
 * `ioc-extractor`_ in JS, and
 * `Cyobstract`_ in Python.
 
+If you'd like to automate IOC extraction, enrichment, export, and more, check
+out `ThreatIngestor`_.
+
+If you're working with YARA rules, you may be interested in `plyara`_.
+
 Changelog
 ---------
 
@@ -403,3 +408,4 @@ released under a "BSD-New" (aka "BSD 3-Clause") license.
 .. _indicators-of-compromise: https://github.com/topics/indicators-of-compromise
 .. _ioc-extractor: https://github.com/ninoseki/ioc-extractor
 .. _Cyobstract: https://github.com/cmu-sei/cyobstract
+.. _plyara: https://github.com/plyara/plyara
