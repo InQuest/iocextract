@@ -200,6 +200,7 @@ This library currently supports the following IOCs:
     * SHA256
     * SHA512
 * Custom regex
+    * With exactly one capture group
 
 For IPv4 addresses, the following defang techniques are supported:
 
