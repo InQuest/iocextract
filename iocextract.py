@@ -312,7 +312,8 @@ def extract_encoded_urls(data, refang=False, strip=False):
             yield url.group(1)
 
     for url in B64ENCODED_URL_RE.finditer(data):
-        url = url.group(1)
+        # Strip whitespace.
+        url = ''.join(url.group(1).split())
 
         # Truncate the string if it's not a multiple of 3 bytes long.
         # We don't care about the end of the string since it's probably garbage.

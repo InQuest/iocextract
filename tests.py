@@ -826,6 +826,17 @@ class TestExtractors(unittest.TestCase):
         for content in content_list:
             self.assertEqual(list(iocextract.extract_urls(content, refang=True))[0], 'http://example.com')
 
+    def test_b64_url_extraction_whitespace(self):
+        content_list = [
+            'aHR0cDovL2V4 YW1wbGUuY29t',
+            'aHR0cD\r\n                    ovL2V4Y\r\n   W1wbGUuY29tIA==',
+            'aHR0c\t\t\t\t\t\tDovL      2V4YW1wbGUuY29tI  CA=',
+            'a H R 0 c D o v L 2 V 4 Y W 1 w b G U u Y 2 9 t I C A g ',
+        ]
+
+        for content in content_list:
+            self.assertEqual(list(iocextract.extract_urls(content, refang=True))[0], 'http://example.com')
+
     def test_extract_custom_extracts_from_list(self):
         regex_list = [
             r'(test\d)',
