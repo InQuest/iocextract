@@ -144,11 +144,11 @@ over the IOCs more than once, you will have to save the results as a list::
 A command-line tool is also included::
 
     $ iocextract -h
-    usage: iocextract [-h] [--input INPUT] [--output OUTPUT] [--extract-ips]
-                      [--extract-ipv4s] [--extract-ipv6s] [--extract-urls]
-                      [--extract-yara-rules] [--extract-hashes]
-                      [--custom-regex REGEX_FILE] [--refang] [--strip-urls]
-                      [--wide]
+    usage: iocextract [-h] [--input INPUT] [--output OUTPUT] [--extract-emails]
+                  [--extract-ips] [--extract-ipv4s] [--extract-ipv6s]
+                  [--extract-urls] [--extract-yara-rules] [--extract-hashes]
+                  [--custom-regex REGEX_FILE] [--refang] [--strip-urls]
+                  [--wide]
 
     Advanced Indicator of Compromise (IOC) extractor. If no arguments are
     specified, the default behavior is to extract all IOCs.
@@ -157,6 +157,7 @@ A command-line tool is also included::
       -h, --help            show this help message and exit
       --input INPUT         default: stdin
       --output OUTPUT       default: stdout
+      --extract-emails
       --extract-ips
       --extract-ipv4s
       --extract-ipv6s
@@ -166,13 +167,11 @@ A command-line tool is also included::
       --custom-regex REGEX_FILE
                             file with custom regex strings, one per line, with one
                             capture group each
-
       --refang              default: no
       --strip-urls          remove possible garbage from the end of urls. default:
                             no
       --wide                preprocess input to allow wide-encoded character
                             matches. default: no
-
 
 Only URLs, emails, and IPv4 addresses can be "refanged".
 
