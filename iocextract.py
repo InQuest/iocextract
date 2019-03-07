@@ -12,6 +12,7 @@ import itertools
 import argparse
 import binascii
 import base64
+
 try:
     # python3
     from urllib.parse import urlparse, unquote
@@ -20,8 +21,10 @@ except ImportError:
     from urlparse import urlparse
     from urllib import unquote
 
+
 import ipaddress
 import regex as re
+
 
 # Reusable end punctuation regex.
 END_PUNCTUATION = r"[\.\?>\"'\)!,}:;\u201d\u2019\uff1e\uff1c\]]*"
@@ -134,7 +137,7 @@ URLENCODED_URL_RE = re.compile(r"""
 B64ENCODED_URL_RE = re.compile(r"""
         (
             # b64re '([hH][tT][tT][pP][sS]|[hH][tT][tT][pP]|[fF][tT][pP])://'
-            # modified to ignore whitespace
+            # Modified to ignore whitespace.
             (?:
                 [\x2b\x2f-\x39A-Za-z]\s*[\x2b\x2f-\x39A-Za-z]\s*[\x31\x35\x39BFJNRVZdhlptx]\s*[Gm]\s*[Vd]\s*[FH]\s*[A]\s*\x36\s*L\s*y\s*[\x2b\x2f\x38-\x39]\s*|
                 [\x2b\x2f-\x39A-Za-z]\s*[\x2b\x2f-\x39A-Za-z]\s*[\x31\x35\x39BFJNRVZdhlptx]\s*[Io]\s*[Vd]\s*[FH]\s*[R]\s*[Qw]\s*[O]\s*i\s*\x38\s*v\s*[\x2b\x2f-\x39A-Za-z]\s*|
@@ -146,7 +149,7 @@ B64ENCODED_URL_RE = re.compile(r"""
                 [Sa]\s*[FH]\s*[R]\s*[\x30U]\s*[Uc]\s*[D]\s*o\s*v\s*L\s*[\x2b\x2f-\x39w-z]\s*|
                 [Sa]\s*[FH]\s*[R]\s*[\x30U]\s*[Uc]\s*[FH]\s*[M]\s*\x36\s*L\s*y\s*[\x2b\x2f\x38-\x39]\s*
             )
-            # up to 260 characters (pre-encoding, reasonable URL length)
+            # Up to 260 characters (pre-encoding, reasonable URL length).
             [A-Za-z0-9+/=\s]{1,357}
         )
         (?=[^A-Za-z0-9+/=\s]|$)
@@ -254,6 +257,7 @@ def extract_iocs(data, refang=False, strip=False):
         extract_yara_rules(data)
     )
 
+
 def extract_urls(data, refang=False, strip=False):
     """Extract URLs.
 
@@ -266,6 +270,7 @@ def extract_urls(data, refang=False, strip=False):
         extract_unencoded_urls(data, refang=refang, strip=strip),
         extract_encoded_urls(data, refang=refang, strip=strip),
     )
+
 
 def extract_unencoded_urls(data, refang=False, strip=False):
     """Extract only unencoded URLs.
@@ -290,6 +295,7 @@ def extract_unencoded_urls(data, refang=False, strip=False):
             url = re.split(URL_SPLIT_STR, url)[0]
 
         yield url
+
 
 def extract_encoded_urls(data, refang=False, strip=False):
     """Extract only encoded URLs.
@@ -335,6 +341,7 @@ def extract_encoded_urls(data, refang=False, strip=False):
 
         yield url
 
+
 def extract_ips(data, refang=False):
     """Extract IP addresses.
 
@@ -349,6 +356,7 @@ def extract_ips(data, refang=False):
         extract_ipv6s(data),
     )
 
+
 def extract_ipv4s(data, refang=False):
     """Extract IPv4 addresses.
 
@@ -362,6 +370,7 @@ def extract_ipv4s(data, refang=False):
         else:
             yield ip_address.group(0)
 
+
 def extract_ipv6s(data):
     """Extract IPv6 addresses.
 
@@ -372,6 +381,7 @@ def extract_ipv6s(data):
     """
     for ip_address in IPV6_RE.finditer(data):
         yield ip_address.group(0)
+
 
 def extract_emails(data, refang=False):
     """Extract email addresses.
@@ -387,6 +397,7 @@ def extract_emails(data, refang=False):
             email = email.group(1)
 
         yield email
+
 
 def extract_hashes(data):
     """Extract MD5/SHA hashes.
@@ -404,6 +415,7 @@ def extract_hashes(data):
         extract_sha512_hashes(data)
     )
 
+
 def extract_md5_hashes(data):
     """Extract MD5 hashes.
 
@@ -412,6 +424,7 @@ def extract_md5_hashes(data):
     """
     for md5 in MD5_RE.finditer(data):
         yield md5.group(1)
+
 
 def extract_sha1_hashes(data):
     """Extract SHA1 hashes.
@@ -422,6 +435,7 @@ def extract_sha1_hashes(data):
     for sha1 in SHA1_RE.finditer(data):
         yield sha1.group(1)
 
+
 def extract_sha256_hashes(data):
     """Extract SHA256 hashes.
 
@@ -430,6 +444,7 @@ def extract_sha256_hashes(data):
     """
     for sha256 in SHA256_RE.finditer(data):
         yield sha256.group(1)
+
 
 def extract_sha512_hashes(data):
     """Extract SHA512 hashes.
@@ -440,6 +455,7 @@ def extract_sha512_hashes(data):
     for sha512 in SHA512_RE.finditer(data):
         yield sha512.group(1)
 
+
 def extract_yara_rules(data):
     """Extract YARA rules.
 
@@ -448,6 +464,7 @@ def extract_yara_rules(data):
     """
     for yara_rule in YARA_PARSE_RE.finditer(data):
         yield yara_rule.group(1).strip()
+
 
 def extract_custom_iocs(data, regex_list):
     """Extract using custom regex strings.
@@ -482,7 +499,6 @@ def extract_custom_iocs(data, regex_list):
     :param regex_list: List of strings to treat as regex and match against data.
     :rtype: Iterator[:class:`str`]
     """
-
     # Compile all the regex strings first, so we can error out quickly.
     regex_objects = []
     for regex_string in regex_list:
@@ -493,16 +509,17 @@ def extract_custom_iocs(data, regex_list):
         for ioc in regex_object.finditer(data):
             yield ioc.group(1)
 
+
 def _is_ipv6_url(url):
     """URL network location is an IPv6 address, not a domain.
 
     :param url: String URL
     :rtype: bool
     """
-    # fix urlparse exception
+    # Fix urlparse exception.
     parsed = urlparse(url)
 
-    # Handle RFC 2732 IPv6 URLs with and without port, as well as non-RFC IPv6 URLs
+    # Handle RFC 2732 IPv6 URLs with and without port, as well as non-RFC IPv6 URLs.
     if ']:' in parsed.netloc:
         ipv6 = ':'.join(parsed.netloc.split(':')[:-1])
     else:
@@ -514,6 +531,7 @@ def _is_ipv6_url(url):
         return False
 
     return True
+
 
 def _refang_common(ioc):
     """Remove artifacts from common defangs.
@@ -547,6 +565,7 @@ def refang_email(email):
                                  replace('}', '').\
                                  replace('{', '')
 
+
 def refang_url(url):
     """Refang a URL.
 
@@ -569,13 +588,13 @@ def refang_url(url):
     # Since urlparse expects a scheme, make sure one exists.
     if '//' not in url:
         if '__' in url[:8]:
-            # Support http__domain and http:__domain
+            # Support http__domain and http:__domain.
             if ':__' in url[:8]:
                 url = url.replace(':__', '://', 1)
             else:
                 url = url.replace('__', '://', 1)
         elif '\\\\' in url[:8]:
-            # Support http:\\domain
+            # Support http:\\domain.
             url = url.replace('\\\\', '//', 1)
         else:
             # Support no-protocol.
@@ -628,6 +647,7 @@ def refang_url(url):
 
     return parsed.geturl()
 
+
 def refang_ipv4(ip_address):
     """Refang an IPv4 address.
 
@@ -637,6 +657,7 @@ def refang_ipv4(ip_address):
     return _refang_common(ip_address).replace('[', '').\
                                       replace(']', '').\
                                       replace('\\', '')
+
 
 def defang(ioc):
     """Defang a URL, domain, or IPv4 address.
@@ -662,6 +683,7 @@ def defang(ioc):
         defanged = '/'.join([defanged] + split_list[1:])
 
     return defanged
+
 
 def main():
     """Run as a commandline utility."""
@@ -732,6 +754,7 @@ def main():
                     args.output.write(u"{ioc}\n".format(ioc=ioc))
             except (IndexError, re.error) as e:
                 sys.stderr.write('Error in custom regex: {e}\n'.format(e=e))
+
 
 if __name__ == "__main__":
     main()
