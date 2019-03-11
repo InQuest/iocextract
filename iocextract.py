@@ -327,14 +327,16 @@ def extract_encoded_urls(data, refang=False, strip=False):
             url = url[:-(len(url) % 4)]
 
         if refang:
-            # Stop at the first whitespace or non-unicode character.
-            url = base64.b64decode(url).decode('utf-8', 'replace').\
-                                        split(u'\ufffd')[0].\
-                                        split()[0]
+            # Decode base64.
+            url = base64.b64decode(url).decode('utf-8', 'replace')
 
             # Remove the first 1-2 bytes if we got back extra leading characters from the base64.
             # The only valid starts are "http" or "ftp", so look for h/f case insensitive.
             url = url[re.search('[hHfF]', url).start():]
+
+            # Stop at the first whitespace or non-unicode character.
+            url = url.split(u'\ufffd')[0].\
+                      split()[0]
 
         if strip:
             url = re.split(URL_SPLIT_STR, url)[0]
