@@ -392,6 +392,14 @@ If you have a defang technique that doesn't make it through the extractor, or
 if you find any bugs, PRs and Issues_ are always welcome. The library is
 released under a "BSD-New" (aka "BSD 3-Clause") license.
 
+Who's using iocextract
+----------------------
+
+* `InQuest <https://inquest.net/>`_
+* `PacketTotal <https://www.packettotal.com/>`_
+
+Are you using it? Want to see your site listed here? Let us know!
+
 .. _Indicator of Compromise: https://en.wikipedia.org/wiki/Indicator_of_compromise
 .. _Issues: https://github.com/inquest/python-iocextract/issues
 .. _this tweet from @InQuest: https://twitter.com/InQuest/status/969469856931287041
