@@ -729,9 +729,9 @@ def main():
 
     if args.extract_emails or extract_all:
         memo["emails"] = list(extract_emails(data, refang=args.refang))
-    if args.extract_ipv4s or extract_all:
+    if args.extract_ipv4s or args.extract_ips or extract_all:
         memo["ipv4s"] = list(extract_ipv4s(data, refang=args.refang))
-    if args.extract_ipv6s or extract_all:
+    if args.extract_ipv6s or args.extract_ips or extract_all:
         memo["ipv6s"] = list(extract_ipv6s(data))
     if args.extract_urls or extract_all:
         memo["urls"] = list(extract_urls(
