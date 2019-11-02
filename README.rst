@@ -20,7 +20,7 @@ iocextract
     :target: https://pypi.python.org/pypi/iocextract
     :alt: PyPi Version
 
-Advanced `Indicator of Compromise`_ (IOC) extractor.
+Defanged `Indicator of Compromise`_ (IOC) extractor.
 
 Overview
 --------
