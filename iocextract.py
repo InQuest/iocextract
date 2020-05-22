@@ -46,6 +46,7 @@ GENERIC_URL_RE = re.compile(r"""
             (?:
                 :\/\/|
                 :\\\\|
+                \[:\]\/\/|
                 :?__
             )
 
@@ -585,6 +586,8 @@ def refang_url(url):
         url = url.replace('[dot', '[.]')
     if 'dot]' in url and '[dot]' not in url:
         url = url.replace('dot]', '[.]')
+    if '[:]' in url:
+        url = url.replace('[:]', '/')
     if '[/]' in url:
         url = url.replace('[/]', '/')
 
