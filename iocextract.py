@@ -752,10 +752,10 @@ def main():
 
     if args.json:
         ioc = json.dumps(memo, indent=4, sort_keys=True)
-        args.output.write(u"{ioc}\n".format(ioc=ioc))
     else:
         ioc = "\n".join(sum(memo.values(), []))
-        args.output.write(u"{ioc}\n".format(ioc=ioc))
+
+    args.output.write(u"{ioc}\n".format(ioc=ioc))
 
 
 if __name__ == "__main__":
