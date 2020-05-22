@@ -12,6 +12,7 @@ import itertools
 import argparse
 import binascii
 import base64
+import json
 
 try:
     # python3
@@ -712,6 +713,8 @@ def main():
                         help="remove possible garbage from the end of urls. default: no")
     parser.add_argument('--wide', action='store_true',
                         help="preprocess input to allow wide-encoded character matches. default: no")
+    parser.add_argument('--json', action='store_true')
+
     args = parser.parse_args()
 
     # Read input.
@@ -720,42 +723,39 @@ def main():
         data = data.replace('\x00', '')
 
     # By default, extract all.
-    if not (args.extract_ips or args.extract_urls or args.extract_yara_rules or args.extract_hashes or
-            args.extract_ipv4s or args.extract_ipv6s or args.extract_emails or args.custom_regex):
-        for ioc in extract_iocs(data, refang=args.refang, strip=args.strip_urls):
-            args.output.write(u"{ioc}\n".format(ioc=ioc))
+    extract_all = not (
+        args.extract_ips or args.extract_urls or args.extract_yara_rules or args.extract_hashes or args.extract_ipv4s or args.extract_ipv6s or args.extract_emails or args.custom_regex)
+    memo = {}
+
+    if args.extract_emails or extract_all:
+        memo["emails"] = list(extract_emails(data, refang=args.refang))
+    if args.extract_ipv4s or args.extract_ips or extract_all:
+        memo["ipv4s"] = list(extract_ipv4s(data, refang=args.refang))
+    if args.extract_ipv6s or args.extract_ips or extract_all:
+        memo["ipv6s"] = list(extract_ipv6s(data))
+    if args.extract_urls or extract_all:
+        memo["urls"] = list(extract_urls(
+            data, refang=args.refang, strip=args.strip_urls))
+    if args.extract_yara_rules or extract_all:
+        memo["yara_rules"] = list(extract_yara_rules(data))
+    if args.extract_hashes or extract_all:
+        memo["hashes"] = list(extract_hashes(data))
+
+    # Custom regex file, one per line.
+    if args.custom_regex:
+        regex_list = [l.strip() for l in args.custom_regex.readlines()]
+
+        try:
+            memo["custom_regex"] = list(extract_custom_iocs(data, regex_list))
+        except (IndexError, re.error) as e:
+            sys.stderr.write('Error in custom regex: {e}\n'.format(e=e))
+
+    if args.json:
+        ioc = json.dumps(memo, indent=4, sort_keys=True)
     else:
-        if args.extract_emails:
-            for ioc in extract_emails(data, refang=args.refang):
-                args.output.write(u"{ioc}\n".format(ioc=ioc))
-        if args.extract_ips:
-            for ioc in extract_ips(data, refang=args.refang):
-                args.output.write(u"{ioc}\n".format(ioc=ioc))
-        if args.extract_ipv4s:
-            for ioc in extract_ipv4s(data, refang=args.refang):
-                args.output.write(u"{ioc}\n".format(ioc=ioc))
-        if args.extract_ipv6s:
-            for ioc in extract_ipv6s(data):
-                args.output.write(u"{ioc}\n".format(ioc=ioc))
-        if args.extract_urls:
-            for ioc in extract_urls(data, refang=args.refang, strip=args.strip_urls):
-                args.output.write(u"{ioc}\n".format(ioc=ioc))
-        if args.extract_yara_rules:
-            for ioc in extract_yara_rules(data):
-                args.output.write(u"{ioc}\n".format(ioc=ioc))
-        if args.extract_hashes:
-            for ioc in extract_hashes(data):
-                args.output.write(u"{ioc}\n".format(ioc=ioc))
+        ioc = "\n".join(sum(memo.values(), []))
 
-        # Custom regex file, one per line.
-        if args.custom_regex:
-            regex_list = [l.strip() for l in args.custom_regex.readlines()]
-
-            try:
-                for ioc in extract_custom_iocs(data, regex_list):
-                    args.output.write(u"{ioc}\n".format(ioc=ioc))
-            except (IndexError, re.error) as e:
-                sys.stderr.write('Error in custom regex: {e}\n'.format(e=e))
+    args.output.write(u"{ioc}\n".format(ioc=ioc))
 
 
 if __name__ == "__main__":
