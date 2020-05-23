@@ -306,7 +306,6 @@ class TestExtractors(unittest.TestCase):
             '192[.168.1.1',
             'asda.asdasdas.acasc.example.com',
             '12.123.asdas.com',
-            'example\u1111com',
             'example .com',
         ]
 
