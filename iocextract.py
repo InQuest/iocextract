@@ -587,7 +587,7 @@ def refang_url(url):
     if 'dot]' in url and '[dot]' not in url:
         url = url.replace('dot]', '[.]')
     if '[:]' in url:
-        url = url.replace('[:]', '/')
+        url = url.replace('[:]', ':')
     if '[/]' in url:
         url = url.replace('[/]', '/')
 
