@@ -64,7 +64,7 @@ GENERIC_URL_RE = re.compile(r"""
             (?:\x20[\/\.][^\.\/\s]\S*?)*
         )
     """ + END_PUNCTUATION + r"""
-        (?=\s|$)
+        (?=\s|[^\x00-\x7F]|$)
     """, re.IGNORECASE | re.VERBOSE | re.UNICODE)
 
 # Get some obfuscated urls, main anchor is brackets around the period.
@@ -84,7 +84,7 @@ BRACKET_URL_RE = re.compile(r"""
             )+
         )
     """ + END_PUNCTUATION + r"""
-        (?=\s|$)
+        (?=\s|[^\x00-\x7F]|$)
     """, re.VERBOSE | re.UNICODE)
 
 # Get some obfuscated urls, main anchor is backslash before a period.
@@ -112,7 +112,7 @@ BACKSLASH_URL_RE = re.compile(r"""
             )*
         )
     """ + END_PUNCTUATION + r"""
-        (?=\s|$)
+        (?=\s|[^\x00-\x7F]|$)
     """, re.VERBOSE | re.UNICODE)
 
 # Get hex-encoded urls.
@@ -727,7 +727,15 @@ def main():
 
     # By default, extract all.
     extract_all = not (
-        args.extract_ips or args.extract_urls or args.extract_yara_rules or args.extract_hashes or args.extract_ipv4s or args.extract_ipv6s or args.extract_emails or args.custom_regex)
+        args.extract_ips or 
+        args.extract_urls or 
+        args.extract_yara_rules or 
+        args.extract_hashes or 
+        args.extract_ipv4s or 
+        args.extract_ipv6s or 
+        args.extract_emails or 
+        args.custom_regex
+    )
     memo = {}
 
     if args.extract_emails or extract_all:
@@ -737,8 +745,7 @@ def main():
     if args.extract_ipv6s or args.extract_ips or extract_all:
         memo["ipv6s"] = list(extract_ipv6s(data))
     if args.extract_urls or extract_all:
-        memo["urls"] = list(extract_urls(
-            data, refang=args.refang, strip=args.strip_urls))
+        memo["urls"] = list(extract_urls(data, refang=args.refang, strip=args.strip_urls))
     if args.extract_yara_rules or extract_all:
         memo["yara_rules"] = list(extract_yara_rules(data))
     if args.extract_hashes or extract_all:
