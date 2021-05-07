@@ -766,6 +766,7 @@ def main():
         ioc = "\n".join(sum(memo.values(), []))
 
     args.output.write(u"{ioc}\n".format(ioc=ioc))
+    args.output.flush()
 
 
 if __name__ == "__main__":
