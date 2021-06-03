@@ -618,6 +618,10 @@ class TestExtractors(unittest.TestCase):
         self.assertEqual(iocextract.refang_url(content), content)
         self.assertEqual(list(iocextract.extract_urls(content, refang=True))[0], content)
 
+        # HXXPS
+        for content in ['hxxps://example[.]com/test', 'hXXps://example[dot]com/test']:
+            self.assertEqual(iocextract.refang_url(content), 'https://example.com/test')
+
     def test_url_extraction_handles_punctuation(self):
         self.assertEqual(list(iocextract.extract_urls('http://example.com!'))[0], 'http://example.com')
         self.assertEqual(list(iocextract.extract_urls('http://example.com!!!!'))[0], 'http://example.com')
