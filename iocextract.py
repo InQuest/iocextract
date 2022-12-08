@@ -14,6 +14,8 @@ import binascii
 import base64
 import json
 
+from string import whitespace
+
 try:
     # python3
     from urllib.parse import urlparse, unquote
@@ -22,10 +24,8 @@ except ImportError:
     from urlparse import urlparse
     from urllib import unquote
 
-
 import ipaddress
 import regex as re
-
 
 # Reusable end punctuation regex.
 END_PUNCTUATION = r"[\.\?>\"'\)!,}:;\u201d\u2019\uff1e\uff1c\]]*"
@@ -35,6 +35,9 @@ SEPARATOR_DEFANGS = r"[\(\)\[\]{}<>\\]"
 
 # Split URLs on some characters that may be valid, but may also be garbage.
 URL_SPLIT_STR = r"[>\"'\),};]"
+
+# Checks for whitespace and trailing characters after the URL
+WS_SYNTAX_RM = re.compile(r"\s+/[a-zA-Z]")
 
 # Get basic url format, including a few obfuscation techniques, main anchor is the uri scheme.
 GENERIC_URL_RE = re.compile(r"""
@@ -287,14 +290,22 @@ def extract_unencoded_urls(data, refang=False, strip=False):
         BRACKET_URL_RE.finditer(data),
         BACKSLASH_URL_RE.finditer(data),
     )
+
     for url in unencoded_urls:
         if refang:
             url = refang_url(url.group(1))
         else:
             url = url.group(1)
 
+        # Checks for whitespace in the string
+        def found_ws(s):
+            return True in [check_s in s for check_s in whitespace]
+
         if strip:
-            url = re.split(URL_SPLIT_STR, url)[0]
+            if found_ws(url):
+                url = re.split(WS_SYNTAX_RM, url)[0]
+            else:
+                url = re.split(URL_SPLIT_STR, url)[0]
 
         yield url
 
