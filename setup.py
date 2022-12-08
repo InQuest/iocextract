@@ -26,7 +26,7 @@ setup(
               'iocextract = iocextract:main'
           ]
     },
-    license='BSD',
+    license='GPL',
     description='Advanced Indicator of Compromise (IOC) extractor.',
     long_description=README,
     url='https://github.com/InQuest/python-iocextract',
@@ -36,7 +36,7 @@ setup(
         'Intended Audience :: Developers',
         'Intended Audience :: Information Technology',
         'Intended Audience :: System Administrators',
-        'License :: OSI Approved :: BSD License',
+        'License :: OSI Approved :: GPL License',
         'Operating System :: OS Independent',
         'Programming Language :: Python',
         'Topic :: Security',
