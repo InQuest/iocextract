@@ -392,7 +392,7 @@ Contributing
 
 If you have a defang technique that doesn't make it through the extractor, or
 if you find any bugs, PRs and Issues_ are always welcome. The library is
-released under a "BSD-New" (aka "BSD 3-Clause") license.
+released under a GPL-2.0 license.
 
 Who's using iocextract
 ----------------------
