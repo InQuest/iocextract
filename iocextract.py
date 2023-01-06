@@ -256,7 +256,7 @@ def extract_iocs(data, refang=False, strip=False):
     )
 
 
-def extract_urls(data, refang=False, strip=False):
+def extract_urls(data, refang=False, strip=False, delimiter=None):
     """Extract URLs.
 
     :param data: Input text
@@ -266,7 +266,7 @@ def extract_urls(data, refang=False, strip=False):
     """
     return itertools.chain(
         extract_unencoded_urls(data, refang=refang, strip=strip),
-        extract_encoded_urls(data, refang=refang, strip=strip),
+        extract_encoded_urls(data, refang=refang, strip=strip, delimiter=delimiter),
     )
 
 
@@ -303,7 +303,7 @@ def extract_unencoded_urls(data, refang=False, strip=False):
         yield url
 
 
-def extract_encoded_urls(data, refang=False, strip=False):
+def extract_encoded_urls(data, refang=False, strip=False, delimiter=None):
     """Extract only encoded URLs.
 
     :param data: Input text
@@ -340,9 +340,11 @@ def extract_encoded_urls(data, refang=False, strip=False):
             # The only valid starts are "http" or "ftp", so look for h/f case insensitive.
             url = url[re.search('[hHfF]', url).start():]
 
+        if delimiter == "space":
+            pass
+        else:
             # Stop at the first whitespace or non-unicode character.
-            url = url.split(u'\ufffd')[0].\
-                      split()[0]
+            url = url.split(u'\ufffd')[0].split()[0]
 
         if strip:
             url = re.split(URL_SPLIT_STR, url)[0]
