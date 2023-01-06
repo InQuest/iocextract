@@ -39,36 +39,72 @@ URL_SPLIT_STR = r"[>\"'\),};]"
 # Checks for whitespace and trailing characters after the URL
 WS_SYNTAX_RM = re.compile(r"\s+/[a-zA-Z]")
 
-# Get basic url format, including a few obfuscation techniques, main anchor is the uri scheme.
-GENERIC_URL_RE = re.compile(r"""
-        (
-            # Scheme.
-            [fhstu]\S\S?[px]s?
+def url_re(open_end=False):
 
-            # One of these delimiters/defangs.
-            (?:
-                :\/\/|
-                :\\\\|
-                \[:\]\/\/|
-                :?__
-            )
+    if open_end:
+        # Get basic url format, including a few obfuscation techniques, main anchor is the uri scheme.
+        GENERIC_URL_RE = re.compile(r"""
+                (
+                    # Scheme.
+                    [fhstu]\S\S?[px]s?
 
-            # Any number of defang characters.
-            (?:
-                \x20|
-                """ + SEPARATOR_DEFANGS + r"""
-            )*
+                    # One of these delimiters/defangs.
+                    (?:
+                        :\/\/|
+                        :\\\\|
+                        \[:\]\/\/|
+                        :?__
+                    )
 
-            # Domain/path characters.
-            \w
-            \S+?
+                    # Any number of defang characters.
+                    (?:
+                        \x20|
+                        """ + SEPARATOR_DEFANGS + r"""
+                    )*
 
-            # CISCO ESA style defangs followed by domain/path characters.
-            (?:\x20[\/\.][^\.\/\s]\S*?)*
-        )
-    """ + END_PUNCTUATION + r"""
-        (?=\s|[^\x00-\x7F]|$)
-    """, re.IGNORECASE | re.VERBOSE | re.UNICODE)
+                    # Domain/path characters.
+                    \w
+                    \S+?
+
+                    # CISCO ESA style defangs followed by domain/path characters.
+                    (?:\x20[\/\.][^\.\/\s]\S*?)*
+                )
+            """ + r"""
+                (?=\s|[^\x00-\x7F]|$)
+            """, re.IGNORECASE | re.VERBOSE | re.UNICODE)
+    else:
+        # Get basic url format, including a few obfuscation techniques, main anchor is the uri scheme.
+        GENERIC_URL_RE = re.compile(r"""
+                (
+                    # Scheme.
+                    [fhstu]\S\S?[px]s?
+
+                    # One of these delimiters/defangs.
+                    (?:
+                        :\/\/|
+                        :\\\\|
+                        \[:\]\/\/|
+                        :?__
+                    )
+
+                    # Any number of defang characters.
+                    (?:
+                        \x20|
+                        """ + SEPARATOR_DEFANGS + r"""
+                    )*
+
+                    # Domain/path characters.
+                    \w
+                    \S+?
+
+                    # CISCO ESA style defangs followed by domain/path characters.
+                    (?:\x20[\/\.][^\.\/\s]\S*?)*
+                )
+            """ + END_PUNCTUATION + r"""
+                (?=\s|[^\x00-\x7F]|$)
+            """, re.IGNORECASE | re.VERBOSE | re.UNICODE)
+
+    return GENERIC_URL_RE
 
 # Get some obfuscated urls, main anchor is brackets around the period.
 BRACKET_URL_RE = re.compile(r"""
@@ -256,7 +292,7 @@ def extract_iocs(data, refang=False, strip=False):
     )
 
 
-def extract_urls(data, refang=False, strip=False):
+def extract_urls(data, refang=False, strip=False, delimiter=None, open_punc=False):
     """Extract URLs.
 
     :param data: Input text
@@ -265,12 +301,12 @@ def extract_urls(data, refang=False, strip=False):
     :rtype: :py:func:`itertools.chain`
     """
     return itertools.chain(
-        extract_unencoded_urls(data, refang=refang, strip=strip),
-        extract_encoded_urls(data, refang=refang, strip=strip),
+        extract_unencoded_urls(data, refang=refang, strip=strip, open_punc=open_punc),
+        extract_encoded_urls(data, refang=refang, strip=strip, delimiter=delimiter),
     )
 
 
-def extract_unencoded_urls(data, refang=False, strip=False):
+def extract_unencoded_urls(data, refang=False, strip=False, open_punc=False):
     """Extract only unencoded URLs.
 
     :param data: Input text
@@ -278,8 +314,9 @@ def extract_unencoded_urls(data, refang=False, strip=False):
     :param bool strip: Strip possible garbage from the end of URLs
     :rtype: Iterator[:class:`str`]
     """
+
     unencoded_urls = itertools.chain(
-        GENERIC_URL_RE.finditer(data),
+        url_re(open_punc).finditer(data),
         BRACKET_URL_RE.finditer(data),
         BACKSLASH_URL_RE.finditer(data),
     )
@@ -303,7 +340,7 @@ def extract_unencoded_urls(data, refang=False, strip=False):
         yield url
 
 
-def extract_encoded_urls(data, refang=False, strip=False):
+def extract_encoded_urls(data, refang=False, strip=False, delimiter=None):
     """Extract only encoded URLs.
 
     :param data: Input text
@@ -340,9 +377,11 @@ def extract_encoded_urls(data, refang=False, strip=False):
             # The only valid starts are "http" or "ftp", so look for h/f case insensitive.
             url = url[re.search('[hHfF]', url).start():]
 
+        if delimiter == "space":
+            pass
+        else:
             # Stop at the first whitespace or non-unicode character.
-            url = url.split(u'\ufffd')[0].\
-                      split()[0]
+            url = url.split(u'\ufffd')[0].split()[0]
 
         if strip:
             url = re.split(URL_SPLIT_STR, url)[0]
@@ -726,6 +765,7 @@ def main():
     parser.add_argument('--wide', action='store_true',
                         help="preprocess input to allow wide-encoded character matches. default: no")
     parser.add_argument('--json', action='store_true')
+    parser.add_argument('--open', action='store_true', help="Removes the end puncuation regex when extracting URLs")
 
     args = parser.parse_args()
 
@@ -755,6 +795,8 @@ def main():
         memo["ipv6s"] = list(extract_ipv6s(data))
     if args.extract_urls or extract_all:
         memo["urls"] = list(extract_urls(data, refang=args.refang, strip=args.strip_urls))
+    if args.extract_urls and args.open:
+        memo["urls"] = list(extract_urls(data, refang=args.refang, strip=args.strip_urls, open_punc=True))
     if args.extract_yara_rules or extract_all:
         memo["yara_rules"] = list(extract_yara_rules(data))
     if args.extract_hashes or extract_all:
