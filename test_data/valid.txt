@@ -41,6 +41,7 @@ http://example[.]com/[.]
 http://example[.com/
 hxxp://example[.]com/
 hxxp://example[dot]com/
+hxxps://example[.]com/
 short[.]is
 tcp://example[.]com/
 tcp://example[.]com:80/

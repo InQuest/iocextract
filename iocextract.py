@@ -160,6 +160,9 @@ B64ENCODED_URL_RE = re.compile(r"""
         (?=[^A-Za-z0-9+/=\s]|$)
     """, re.VERBOSE)
 
+# Get defanged https URL schemes.
+HTTPS_SCHEME_DEFANG_RE = re.compile('hxxps', re.IGNORECASE)
+
 # Get some valid obfuscated ip addresses.
 IPV4_RE = re.compile(r"""
         (?:^|
@@ -640,11 +643,16 @@ def refang_url(url):
     # Note: ParseResult._replace is a public member, this is safe.
     if parsed.scheme not in ['http', 'https', 'ftp']:
         if parsed.scheme.strip('s') in ['ftx', 'fxp']:
-            parsed = parsed._replace(scheme='ftp')
-            url = parsed.geturl().replace('ftp:///', 'ftp://')
+            scheme = 'ftp'
+        elif HTTPS_SCHEME_DEFANG_RE.fullmatch(parsed.scheme):
+            scheme = 'https'
         else:
-            parsed = parsed._replace(scheme='http')
-            url = parsed.geturl().replace('http:///', 'http://')
+            scheme = 'http'
+
+        parsed = parsed._replace(scheme=scheme)
+        replacee = '{}:///'.format(scheme)
+        replacement = '{}://'.format(scheme)
+        url = parsed.geturl().replace(replacee, replacement)
 
         try:
             _ = urlparse(url)
