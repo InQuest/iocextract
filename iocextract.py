@@ -442,7 +442,7 @@ def extract_ipv4s(data, refang=False):
                 return pro.group(0)
 
     for ip_address in ipv4_len().finditer(data):
-        # Iterates over any ip address with 4+ numbers after the final (3rd) octet
+        # Iterates over any ip address with 4 numbers after the final (3rd) octet
         for ip_address in ipv4_len(4).finditer(data):
             pass
         
@@ -809,6 +809,7 @@ def main():
                         help="preprocess input to allow wide-encoded character matches. default: no")
     parser.add_argument('--json', action='store_true')
     parser.add_argument('--open', action='store_true', help="Removes the end puncuation regex when extracting URLs")
+    parser.add_argument('--rm_scheme', action='store_true', help="Removes the protocol from the url (i.e. http, https, etc.)")
 
     args = parser.parse_args()
 
@@ -839,7 +840,9 @@ def main():
     if args.extract_urls or extract_all:
         memo["urls"] = list(extract_urls(data, refang=args.refang, strip=args.strip_urls))
     if args.extract_urls and args.open:
-        memo["urls"] = list(extract_urls(data, refang=args.refang, strip=args.strip_urls, open_punc=True))
+        memo["urls"] = list(extract_urls(data, refang=args.refang, strip=args.strip_urls, open_punc=args.open))
+    if args.extract_urls and args.rm_scheme:
+        memo["urls"] = list(extract_urls(data, refang=args.refang, strip=args.strip_urls, open_punc=args.open, no_scheme=args.rm_scheme))
     if args.extract_yara_rules or extract_all:
         memo["yara_rules"] = list(extract_yara_rules(data))
     if args.extract_hashes or extract_all:
