@@ -283,6 +283,7 @@ def extract_iocs(data, refang=False, strip=False):
     :param bool strip: Strip possible garbage from the end of URLs
     :rtype: :py:func:`itertools.chain`
     """
+
     return itertools.chain(
         extract_urls(data, refang=refang, strip=strip),
         extract_ips(data, refang=refang),
@@ -292,7 +293,7 @@ def extract_iocs(data, refang=False, strip=False):
     )
 
 
-def extract_urls(data, refang=False, strip=False, delimiter=None, open_punc=False):
+def extract_urls(data, refang=False, strip=False, delimiter=None, open_punc=False, no_scheme=False):
     """Extract URLs.
 
     :param data: Input text
@@ -300,13 +301,14 @@ def extract_urls(data, refang=False, strip=False, delimiter=None, open_punc=Fals
     :param bool strip: Strip possible garbage from the end of URLs
     :rtype: :py:func:`itertools.chain`
     """
+    
     return itertools.chain(
-        extract_unencoded_urls(data, refang=refang, strip=strip, open_punc=open_punc),
+        extract_unencoded_urls(data, refang=refang, strip=strip, open_punc=open_punc, no_scheme=no_scheme),
         extract_encoded_urls(data, refang=refang, strip=strip, delimiter=delimiter),
     )
 
 
-def extract_unencoded_urls(data, refang=False, strip=False, open_punc=False):
+def extract_unencoded_urls(data, refang=False, strip=False, open_punc=False, no_scheme=False):
     """Extract only unencoded URLs.
 
     :param data: Input text
@@ -323,7 +325,7 @@ def extract_unencoded_urls(data, refang=False, strip=False, open_punc=False):
 
     for url in unencoded_urls:
         if refang:
-            url = refang_url(url.group(1))
+            url = refang_url(url.group(1), no_scheme=no_scheme)
         else:
             url = url.group(1)
 
@@ -601,6 +603,7 @@ def refang_email(email):
     :param email: String email address.
     :rtype: str
     """
+    
     # Check for ' at ' and ' dot ' first.
     email = re.sub('\W[aA][tT]\W', '@', email.lower())
     email = re.sub('\W*[dD][oO][tT]\W*', '.', email)
@@ -609,16 +612,15 @@ def refang_email(email):
     return _refang_common(email).replace('[', '').\
                                  replace(']', '').\
                                  replace('{', '').\
-                                 replace('}', '').\
-                                 replace('{', '')
+                                 replace('}', '')
 
-
-def refang_url(url):
+def refang_url(url, no_scheme=False):
     """Refang a URL.
 
     :param url: String URL
     :rtype: str
     """
+
     # First fix urlparse errors.
     # Fix ipv6 parsing exception.
     if '[.' in url and '[.]' not in url:
@@ -647,7 +649,8 @@ def refang_url(url):
             url = url.replace('\\\\', '//', 1)
         else:
             # Support no-protocol.
-            url = 'http://' + url
+            # url = 'http://' + url
+            pass
 
     # Refang (/), since it's not entirely in the netloc.
     url = url.replace('(/)', '/')
@@ -676,7 +679,10 @@ def refang_url(url):
         elif HTTPS_SCHEME_DEFANG_RE.fullmatch(parsed.scheme):
             scheme = 'https'
         else:
-            scheme = 'http'
+            if no_scheme:
+                scheme = ''
+            else:
+                scheme = 'http'
 
         parsed = parsed._replace(scheme=scheme)
         replacee = '{}:///'.format(scheme)
@@ -708,6 +714,7 @@ def refang_ipv4(ip_address):
     :param ip_address: String IPv4 address.
     :rtype: str
     """
+
     return _refang_common(ip_address).replace('[', '').\
                                       replace(']', '').\
                                       replace('\\', '')
@@ -719,6 +726,7 @@ def defang(ioc):
     :param ioc: String URL, domain, or IPv4 address.
     :rtype: str
     """
+
     # If it's a url, defang just the scheme and netloc.
     try:
         parsed = urlparse(ioc)
