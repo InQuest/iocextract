@@ -190,17 +190,35 @@ B64ENCODED_URL_RE = re.compile(r"""
 HTTPS_SCHEME_DEFANG_RE = re.compile('hxxps', re.IGNORECASE)
 
 # Get some valid obfuscated ip addresses.
-IPV4_RE = re.compile(r"""
-        (?:^|
-            (?![^\d\.])
-        )
-        (?:
+def ipv4_len(ip_len=3):
+    if ip_len == 3:
+        IPV4_RE = re.compile(r"""
+                (?:^|
+                    (?![^\d\.])
+                )
+                (?:
+                    (?:[1-9]?\d|1\d\d|2[0-4]\d|25[0-5])
+                    [\[\(\\]*?\.[\]\)]*?
+                ){3}
+                (?:[1-9]?\d|1\d\d|2[0-4]\d|25[0-5])
+                (?:(?=[^\d\.])|$)
+            """, re.VERBOSE)
+
+    elif ip_len == 4:
+        IPV4_RE = re.compile(r"""
+            (?:^|
+                (?![^\d\.])
+            )
+            (?:
+                (?:[1-9]?\d|1\d\d|2[0-4]\d|25[0-5])
+                [\[\(\\]*?\.[\]\)]*?
+            ){4}
+            ([01]?[0-9]?[0-9]|2[0-4][0-9]|25[0-5])
             (?:[1-9]?\d|1\d\d|2[0-4]\d|25[0-5])
-            [\[\(\\]*?\.[\]\)]*?
-        ){3}
-        (?:[1-9]?\d|1\d\d|2[0-4]\d|25[0-5])
-        (?:(?=[^\d\.])|$)
-    """, re.VERBOSE)
+            (?:(?=[^\d\.])|$)
+        """, re.VERBOSE)
+
+    return IPV4_RE
 
 # Experimental IPv6 regex, will not catch everything but should be sufficent for now.
 IPV6_RE = re.compile(r"""
@@ -413,11 +431,28 @@ def extract_ipv4s(data, refang=False):
     :param bool refang: Refang output?
     :rtype: Iterator[:class:`str`]
     """
-    for ip_address in IPV4_RE.finditer(data):
+
+    def ipv4_str(data):
+        protocol_str = re.compile(r"https|http|ftp")
+
+        for pro in protocol_str.finditer(data):
+            if refang:
+                return refang_ipv4(pro.group(0))
+            else:
+                return pro.group(0)
+
+    for ip_address in ipv4_len().finditer(data):
+        # Iterates over any ip address with 4+ numbers after the final (3rd) octet
+        for ip_address in ipv4_len(4).finditer(data):
+            pass
+        
         if refang:
             yield refang_ipv4(ip_address.group(0))
         else:
             yield ip_address.group(0)
+
+        if ipv4_str(data) != None:
+            yield ipv4_str(data)
 
 
 def extract_ipv6s(data):
