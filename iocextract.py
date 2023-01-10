@@ -230,6 +230,26 @@ EMAIL_RE = re.compile(r"""
         (
             [a-z0-9_.+-]+
             [\(\[{\x20]*
+            (?:
+                (?:
+                    (?:
+                        \x20*
+                        """ + SEPARATOR_DEFANGS + r"""
+                        \x20*
+                    )*
+                    \.
+                    (?:
+                        \x20*
+                        """ + SEPARATOR_DEFANGS + r"""
+                        \x20*
+                    )*
+                    |
+                    \W+dot\W+
+                )
+                [a-z0-9-]+?
+            )*
+            [a-z0-9_.+-]+
+            [\(\[{\x20]*
             (?:@|\Wat\W)
             [\)\]}\x20]*
             [a-z0-9-]+
@@ -463,6 +483,7 @@ def extract_ipv6s(data):
     :param data: Input text
     :rtype: Iterator[:class:`str`]
     """
+
     for ip_address in IPV6_RE.finditer(data):
         yield ip_address.group(0)
 
@@ -474,7 +495,9 @@ def extract_emails(data, refang=False):
     :param bool refang: Refang output?
     :rtype: Iterator[:class:`str`]
     """
+
     for email in EMAIL_RE.finditer(data):
+        
         if refang:
             email = refang_email(email.group(1))
         else:
@@ -492,6 +515,7 @@ def extract_hashes(data):
     :param data: Input text
     :rtype: :py:func:`itertools.chain`
     """
+
     return itertools.chain(
         extract_md5_hashes(data),
         extract_sha1_hashes(data),
@@ -506,6 +530,7 @@ def extract_md5_hashes(data):
     :param data: Input text
     :rtype: Iterator[:class:`str`]
     """
+
     for md5 in MD5_RE.finditer(data):
         yield md5.group(1)
 
@@ -516,6 +541,7 @@ def extract_sha1_hashes(data):
     :param data: Input text
     :rtype: Iterator[:class:`str`]
     """
+
     for sha1 in SHA1_RE.finditer(data):
         yield sha1.group(1)
 
@@ -526,6 +552,7 @@ def extract_sha256_hashes(data):
     :param data: Input text
     :rtype: Iterator[:class:`str`]
     """
+
     for sha256 in SHA256_RE.finditer(data):
         yield sha256.group(1)
 
@@ -536,6 +563,7 @@ def extract_sha512_hashes(data):
     :param data: Input text
     :rtype: Iterator[:class:`str`]
     """
+
     for sha512 in SHA512_RE.finditer(data):
         yield sha512.group(1)
 
@@ -546,6 +574,7 @@ def extract_yara_rules(data):
     :param data: Input text
     :rtype: Iterator[:class:`str`]
     """
+
     for yara_rule in YARA_PARSE_RE.finditer(data):
         yield yara_rule.group(1).strip()
 
@@ -583,6 +612,7 @@ def extract_custom_iocs(data, regex_list):
     :param regex_list: List of strings to treat as regex and match against data.
     :rtype: Iterator[:class:`str`]
     """
+
     # Compile all the regex strings first, so we can error out quickly.
     regex_objects = []
     for regex_string in regex_list:
@@ -600,6 +630,7 @@ def _is_ipv6_url(url):
     :param url: String URL
     :rtype: bool
     """
+
     # Fix urlparse exception.
     parsed = urlparse(url)
 
@@ -623,6 +654,7 @@ def _refang_common(ioc):
     :param ioc: String IP/Email Address or URL netloc.
     :rtype: str
     """
+    
     return ioc.replace('[dot]', '.').\
                replace('(dot)', '.').\
                replace('[.]', '.').\
@@ -813,8 +845,9 @@ def main():
 
     args = parser.parse_args()
 
-    # Read input.
+    # Read user unput
     data = args.input.read()
+    
     if args.wide:
         data = data.replace('\x00', '')
 
@@ -829,6 +862,7 @@ def main():
         args.extract_emails or 
         args.custom_regex
     )
+
     memo = {}
 
     if args.extract_emails or extract_all:
@@ -840,9 +874,9 @@ def main():
     if args.extract_urls or extract_all:
         memo["urls"] = list(extract_urls(data, refang=args.refang, strip=args.strip_urls))
     if args.extract_urls and args.open:
-        memo["urls"] = list(extract_urls(data, refang=args.refang, strip=args.strip_urls, open_punc=args.open))
+        memo["urls_open_punc"] = list(extract_urls(data, refang=args.refang, strip=args.strip_urls, open_punc=args.open))
     if args.extract_urls and args.rm_scheme:
-        memo["urls"] = list(extract_urls(data, refang=args.refang, strip=args.strip_urls, open_punc=args.open, no_scheme=args.rm_scheme))
+        memo["urls_no_protocol"] = list(extract_urls(data, refang=args.refang, strip=args.strip_urls, open_punc=args.open, no_scheme=args.rm_scheme))
     if args.extract_yara_rules or extract_all:
         memo["yara_rules"] = list(extract_yara_rules(data))
     if args.extract_hashes or extract_all:
