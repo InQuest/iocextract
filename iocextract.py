@@ -485,7 +485,9 @@ def extract_ipv6s(data):
     """
 
     for ip_address in IPV6_RE.finditer(data):
-        yield ip_address.group(0)
+        # Sets a minimal standard for IPv6 (0:0:0:0:0:0:0:0)
+        if len(data) >= 15:
+            yield ip_address.group(0)
 
 
 def extract_emails(data, refang=False):
