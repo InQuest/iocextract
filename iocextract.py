@@ -822,28 +822,28 @@ def main():
         description="""Advanced Indicator of Compromise (IOC) extractor.
                        If no arguments are specified, the default behavior is
                        to extract all IOCs.""")
-    parser.add_argument('--input', type=lambda x: io.open(x, 'r', encoding='utf-8', errors='ignore'),
+    parser.add_argument('-i', '--input', type=lambda x: io.open(x, 'r', encoding='utf-8', errors='ignore'),
                         default=io.open(0, 'r', encoding='utf-8', errors='ignore'), help="default: stdin")
-    parser.add_argument('--output', type=lambda x: io.open(x, 'w', encoding='utf-8', errors='ignore'),
+    parser.add_argument('-o', '--output', type=lambda x: io.open(x, 'w', encoding='utf-8', errors='ignore'),
                         default=io.open(1, 'w', encoding='utf-8', errors='ignore'), help="default: stdout")
-    parser.add_argument('--extract-emails', action='store_true')
-    parser.add_argument('--extract-ips', action='store_true')
-    parser.add_argument('--extract-ipv4s', action='store_true')
-    parser.add_argument('--extract-ipv6s', action='store_true')
-    parser.add_argument('--extract-urls', action='store_true')
-    parser.add_argument('--extract-yara-rules', action='store_true')
-    parser.add_argument('--extract-hashes', action='store_true')
-    parser.add_argument('--custom-regex', type=lambda x: io.open(x, 'r', encoding='utf-8', errors='ignore'),
+    parser.add_argument('-ee', '--extract-emails', action='store_true')
+    parser.add_argument('-ip', '--extract-ips', action='store_true')
+    parser.add_argument('-ip4', '--extract-ipv4s', action='store_true')
+    parser.add_argument('-ip6', '--extract-ipv6s', action='store_true')
+    parser.add_argument('-u', '--extract-urls', action='store_true')
+    parser.add_argument('-y', '--extract-yara-rules', action='store_true')
+    parser.add_argument('-ha', '--extract-hashes', action='store_true')
+    parser.add_argument('-cr', '--custom-regex', type=lambda x: io.open(x, 'r', encoding='utf-8', errors='ignore'),
                         metavar='REGEX_FILE',
                         help="file with custom regex strings, one per line, with one capture group each")
-    parser.add_argument('--refang', action='store_true', help="default: no")
-    parser.add_argument('--strip-urls', action='store_true',
+    parser.add_argument('-r', '--refang', action='store_true', help="default: no")
+    parser.add_argument('-su', '--strip-urls', action='store_true',
                         help="remove possible garbage from the end of urls. default: no")
-    parser.add_argument('--wide', action='store_true',
+    parser.add_argument('-w', '--wide', action='store_true',
                         help="preprocess input to allow wide-encoded character matches. default: no")
-    parser.add_argument('--json', action='store_true')
-    parser.add_argument('--open', action='store_true', help="Removes the end puncuation regex when extracting URLs")
-    parser.add_argument('--rm_scheme', action='store_true', help="Removes the protocol from the url (i.e. http, https, etc.)")
+    parser.add_argument('-j', '--json', action='store_true')
+    parser.add_argument('-op', '--open', action='store_true', help="Removes the end puncuation regex when extracting URLs")
+    parser.add_argument('-rm', '--rm_scheme', action='store_true', help="Removes the protocol from the url (i.e. http, https, etc.)")
 
     args = parser.parse_args()
 
@@ -875,10 +875,10 @@ def main():
         memo["ipv6s"] = list(extract_ipv6s(data))
     if args.extract_urls or extract_all:
         memo["urls"] = list(extract_urls(data, refang=args.refang, strip=args.strip_urls))
-    if args.extract_urls and args.open:
-        memo["urls_open_punc"] = list(extract_urls(data, refang=args.refang, strip=args.strip_urls, open_punc=args.open))
-    if args.extract_urls and args.rm_scheme:
-        memo["urls_no_protocol"] = list(extract_urls(data, refang=args.refang, strip=args.strip_urls, open_punc=args.open, no_scheme=args.rm_scheme))
+    if args.open:
+        memo["open_punc"] = list(extract_urls(data, refang=args.refang, strip=args.strip_urls, open_punc=args.open))
+    if args.rm_scheme:
+        memo["no_protocol"] = list(extract_urls(data, refang=args.refang, strip=args.strip_urls, open_punc=args.open, no_scheme=args.rm_scheme))
     if args.extract_yara_rules or extract_all:
         memo["yara_rules"] = list(extract_yara_rules(data))
     if args.extract_hashes or extract_all:
