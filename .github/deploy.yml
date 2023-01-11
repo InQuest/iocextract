@@ -1,0 +1,38 @@
+name: iocextract-publish
+
+on:
+  push:
+    branches:
+      - main
+      - master
+
+jobs:
+  pre-deploy:
+    runs-on: ubuntu-20.04
+
+    steps:
+      - name: Install dependencies
+        run: |
+          pip install setuptools build
+      - name: Building package
+        run: python -m build
+      - name: Publishing package to Test PyPI
+        uses: pypa/gh-action-pypi-publish@release/v1
+        with:
+          password: ${{ secrets.TEST_PYPI_API_TOKEN }}
+          repository_url: https://test.pypi.org/legacy/
+
+  deploy:
+    runs-on: ubuntu-20.04
+
+    steps:
+      - name: Install dependencies
+        run: |
+          pip install setuptools build
+      - name: Building packages
+        run: python -m build
+      - name: Publishing package to PyPI
+        uses: pypa/gh-action-pypi-publish@release/v1
+        with:
+          user: __token__
+          password: ${{ secrets.PYPI_API_TOKEN }}
