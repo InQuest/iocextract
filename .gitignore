@@ -4,5 +4,6 @@
 *.egg-info/
 build/
 dist/
-_build/
-docs-dist/
+
+# Sphinx documentation
+docs/_build/
