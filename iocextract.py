@@ -331,7 +331,7 @@ def extract_iocs(data, refang=False, strip=False):
     )
 
 
-def extract_urls(data, refang=False, strip=False, delimiter=None, open_punc=False, no_scheme=False):
+def extract_urls(data, refang=False, strip=False, delimiter=None, open_punc=False, no_scheme=False, defang_data=False):
     """Extract URLs.
 
     :param data: Input text
@@ -339,14 +339,14 @@ def extract_urls(data, refang=False, strip=False, delimiter=None, open_punc=Fals
     :param bool strip: Strip possible garbage from the end of URLs
     :rtype: :py:func:`itertools.chain`
     """
-    
+
     return itertools.chain(
-        extract_unencoded_urls(data, refang=refang, strip=strip, open_punc=open_punc, no_scheme=no_scheme),
+        extract_unencoded_urls(data, refang=refang, strip=strip, open_punc=open_punc, no_scheme=no_scheme, defang_data=defang_data),
         extract_encoded_urls(data, refang=refang, strip=strip, delimiter=delimiter),
     )
 
 
-def extract_unencoded_urls(data, refang=False, strip=False, open_punc=False, no_scheme=False):
+def extract_unencoded_urls(data, refang=False, strip=False, open_punc=False, no_scheme=False, defang_data=False):
     """Extract only unencoded URLs.
 
     :param data: Input text
@@ -355,29 +355,35 @@ def extract_unencoded_urls(data, refang=False, strip=False, open_punc=False, no_
     :rtype: Iterator[:class:`str`]
     """
 
-    unencoded_urls = itertools.chain(
-        url_re(open_punc).finditer(data),
-        BRACKET_URL_RE.finditer(data),
-        BACKSLASH_URL_RE.finditer(data),
-    )
+    if "[" not in data:
+        if defang_data:
+            data = str(data).replace(".", "[.]")
 
-    for url in unencoded_urls:
-        if refang:
-            url = refang_url(url.group(1), no_scheme=no_scheme)
-        else:
-            url = url.group(1)
+        yield data
+    else:
+        unencoded_urls = itertools.chain(
+            url_re(open_punc).finditer(data),
+            BRACKET_URL_RE.finditer(data),
+            BACKSLASH_URL_RE.finditer(data),
+        )
 
-        # Checks for whitespace in the string
-        def found_ws(s):
-            return True in [check_s in s for check_s in whitespace]
-
-        if strip:
-            if found_ws(url):
-                url = re.split(WS_SYNTAX_RM, url)[0]
+        for url in unencoded_urls:
+            if refang:
+                url = refang_url(url.group(1), no_scheme=no_scheme)
             else:
-                url = re.split(URL_SPLIT_STR, url)[0]
+                url = url.group(1)
 
-        yield url
+            # Checks for whitespace in the string
+            def found_ws(s):
+                return True in [check_s in s for check_s in whitespace]
+
+            if strip:
+                if found_ws(url):
+                    url = re.split(WS_SYNTAX_RM, url)[0]
+                else:
+                    url = re.split(URL_SPLIT_STR, url)[0]
+
+            yield url
 
 
 def extract_encoded_urls(data, refang=False, strip=False, delimiter=None):
