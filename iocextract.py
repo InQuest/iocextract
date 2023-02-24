@@ -15,6 +15,7 @@ import base64
 import json
 
 from string import whitespace
+from pathlib import Path
 
 try:
     # python3
@@ -331,7 +332,7 @@ def extract_iocs(data, refang=False, strip=False):
     )
 
 
-def extract_urls(data, refang=False, strip=False, delimiter=None, open_punc=False, no_scheme=False):
+def extract_urls(data, refang=False, strip=False, delimiter=None, open_punc=False, no_scheme=False, defang_data=False):
     """Extract URLs.
 
     :param data: Input text
@@ -339,14 +340,14 @@ def extract_urls(data, refang=False, strip=False, delimiter=None, open_punc=Fals
     :param bool strip: Strip possible garbage from the end of URLs
     :rtype: :py:func:`itertools.chain`
     """
-    
+
     return itertools.chain(
-        extract_unencoded_urls(data, refang=refang, strip=strip, open_punc=open_punc, no_scheme=no_scheme),
+        extract_unencoded_urls(data, refang=refang, strip=strip, open_punc=open_punc, no_scheme=no_scheme, defang_data=defang_data),
         extract_encoded_urls(data, refang=refang, strip=strip, delimiter=delimiter),
     )
 
 
-def extract_unencoded_urls(data, refang=False, strip=False, open_punc=False, no_scheme=False):
+def extract_unencoded_urls(data, refang=False, strip=False, open_punc=False, no_scheme=False, defang_data=False):
     """Extract only unencoded URLs.
 
     :param data: Input text
@@ -355,29 +356,35 @@ def extract_unencoded_urls(data, refang=False, strip=False, open_punc=False, no_
     :rtype: Iterator[:class:`str`]
     """
 
-    unencoded_urls = itertools.chain(
-        url_re(open_punc).finditer(data),
-        BRACKET_URL_RE.finditer(data),
-        BACKSLASH_URL_RE.finditer(data),
-    )
+    if "[" not in data:
+        if defang_data:
+            data = str(data).replace(".", "[.]")
 
-    for url in unencoded_urls:
-        if refang:
-            url = refang_url(url.group(1), no_scheme=no_scheme)
-        else:
-            url = url.group(1)
+        yield data
+    else:
+        unencoded_urls = itertools.chain(
+            url_re(open_punc).finditer(data),
+            BRACKET_URL_RE.finditer(data),
+            BACKSLASH_URL_RE.finditer(data),
+        )
 
-        # Checks for whitespace in the string
-        def found_ws(s):
-            return True in [check_s in s for check_s in whitespace]
-
-        if strip:
-            if found_ws(url):
-                url = re.split(WS_SYNTAX_RM, url)[0]
+        for url in unencoded_urls:
+            if refang:
+                url = refang_url(url.group(1), no_scheme=no_scheme)
             else:
-                url = re.split(URL_SPLIT_STR, url)[0]
+                url = url.group(1)
 
-        yield url
+            # Checks for whitespace in the string
+            def found_ws(s):
+                return True in [check_s in s for check_s in whitespace]
+
+            if strip:
+                if found_ws(url):
+                    url = re.split(WS_SYNTAX_RM, url)[0]
+                else:
+                    url = re.split(URL_SPLIT_STR, url)[0]
+
+            yield url
 
 
 def extract_encoded_urls(data, refang=False, strip=False, delimiter=None):
@@ -844,12 +851,23 @@ def main():
     parser.add_argument('-j', '--json', action='store_true')
     parser.add_argument('-op', '--open', action='store_true', help="Removes the end puncuation regex when extracting URLs")
     parser.add_argument('-rm', '--rm_scheme', action='store_true', help="Removes the protocol from the url (i.e. http, https, etc.)")
+    parser.add_argument('-d', '--dir', action='store_true', help="Extract IOCs from all files within a directory")
+    parser.add_argument('-dn', '--dirname', help="Path of the directory to extract IOCs")
 
     args = parser.parse_args()
 
-    # Read user unput
-    data = args.input.read()
+    dir_db = []
+
+    if args.dir:
+        dir_path = Path(args.dirname).glob("**/*.txt")
+        
+        for path in dir_path:
+            dir_db.append(str(path))
     
+    if not args.dir:
+        # Read user unput
+        data = args.input.read()
+        
     if args.wide:
         data = data.replace('\x00', '')
 
@@ -867,40 +885,79 @@ def main():
 
     memo = {}
 
-    if args.extract_emails or extract_all:
-        memo["emails"] = list(extract_emails(data, refang=args.refang))
-    if args.extract_ipv4s or args.extract_ips or extract_all:
-        memo["ipv4s"] = list(extract_ipv4s(data, refang=args.refang))
-    if args.extract_ipv6s or args.extract_ips or extract_all:
-        memo["ipv6s"] = list(extract_ipv6s(data))
-    if args.extract_urls or extract_all:
-        memo["urls"] = list(extract_urls(data, refang=args.refang, strip=args.strip_urls))
-    if args.open:
-        memo["open_punc"] = list(extract_urls(data, refang=args.refang, strip=args.strip_urls, open_punc=args.open))
-    if args.rm_scheme:
-        memo["no_protocol"] = list(extract_urls(data, refang=args.refang, strip=args.strip_urls, open_punc=args.open, no_scheme=args.rm_scheme))
-    if args.extract_yara_rules or extract_all:
-        memo["yara_rules"] = list(extract_yara_rules(data))
-    if args.extract_hashes or extract_all:
-        memo["hashes"] = list(extract_hashes(data))
+    if args.dir:
+        for d in dir_db:
+            with open(d, "r") as f:
+                data = f.read()
 
-    # Custom regex file, one per line.
-    if args.custom_regex:
-        regex_list = [l.strip() for l in args.custom_regex.readlines()]
+            if args.extract_emails or extract_all:
+                memo["emails"] = list(extract_emails(data, refang=args.refang))
+            if args.extract_ipv4s or args.extract_ips or extract_all:
+                memo["ipv4s"] = list(extract_ipv4s(data, refang=args.refang))
+            if args.extract_ipv6s or args.extract_ips or extract_all:
+                memo["ipv6s"] = list(extract_ipv6s(data))
+            if args.extract_urls or extract_all:
+                memo["urls"] = list(extract_urls(data, refang=args.refang, strip=args.strip_urls))
+            if args.open:
+                memo["open_punc"] = list(extract_urls(data, refang=args.refang, strip=args.strip_urls, open_punc=args.open))
+            if args.rm_scheme:
+                memo["no_protocol"] = list(extract_urls(data, refang=args.refang, strip=args.strip_urls, open_punc=args.open, no_scheme=args.rm_scheme))
+            if args.extract_yara_rules or extract_all:
+                memo["yara_rules"] = list(extract_yara_rules(data))
+            if args.extract_hashes or extract_all:
+                memo["hashes"] = list(extract_hashes(data))
 
-        try:
-            memo["custom_regex"] = list(extract_custom_iocs(data, regex_list))
-        except (IndexError, re.error) as e:
-            sys.stderr.write('Error in custom regex: {e}\n'.format(e=e))
+            # Custom regex file, one per line.
+            if args.custom_regex:
+                regex_list = [l.strip() for l in args.custom_regex.readlines()]
 
-    if args.json:
-        ioc = json.dumps(memo, indent=4, sort_keys=True)
+                try:
+                    memo["custom_regex"] = list(extract_custom_iocs(data, regex_list))
+                except (IndexError, re.error) as e:
+                    sys.stderr.write('Error in custom regex: {e}\n'.format(e=e))
+
+            if args.json:
+                ioc = json.dumps(memo, indent=4, sort_keys=True)
+            else:
+                ioc = "\n".join(sum(memo.values(), []))
+
+            args.output.write(u"{ioc}\n".format(ioc=ioc))
+            args.output.flush()
+
     else:
-        ioc = "\n".join(sum(memo.values(), []))
+        if args.extract_emails or extract_all:
+            memo["emails"] = list(extract_emails(data, refang=args.refang))
+        if args.extract_ipv4s or args.extract_ips or extract_all:
+            memo["ipv4s"] = list(extract_ipv4s(data, refang=args.refang))
+        if args.extract_ipv6s or args.extract_ips or extract_all:
+            memo["ipv6s"] = list(extract_ipv6s(data))
+        if args.extract_urls or extract_all:
+            memo["urls"] = list(extract_urls(data, refang=args.refang, strip=args.strip_urls))
+        if args.open:
+            memo["open_punc"] = list(extract_urls(data, refang=args.refang, strip=args.strip_urls, open_punc=args.open))
+        if args.rm_scheme:
+            memo["no_protocol"] = list(extract_urls(data, refang=args.refang, strip=args.strip_urls, open_punc=args.open, no_scheme=args.rm_scheme))
+        if args.extract_yara_rules or extract_all:
+            memo["yara_rules"] = list(extract_yara_rules(data))
+        if args.extract_hashes or extract_all:
+            memo["hashes"] = list(extract_hashes(data))
 
-    args.output.write(u"{ioc}\n".format(ioc=ioc))
-    args.output.flush()
+        # Custom regex file, one per line.
+        if args.custom_regex:
+            regex_list = [l.strip() for l in args.custom_regex.readlines()]
 
+            try:
+                memo["custom_regex"] = list(extract_custom_iocs(data, regex_list))
+            except (IndexError, re.error) as e:
+                sys.stderr.write('Error in custom regex: {e}\n'.format(e=e))
+
+        if args.json:
+            ioc = json.dumps(memo, indent=4, sort_keys=True)
+        else:
+            ioc = "\n".join(sum(memo.values(), []))
+
+        args.output.write(u"{ioc}\n".format(ioc=ioc))
+        args.output.flush()
 
 if __name__ == "__main__":
     main()
