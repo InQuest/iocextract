@@ -1,16 +1,15 @@
-<img
-    src="https://inquest.readthedocs.io/projects/iocextract/en/latest/_static/iocextract.png"
-    width=250
-    alt="iocextract header image"
-    style="margin-left: auto; margin-right: auto; display: block;"
+<h1 align="center">
+    <img
+        src="https://inquest.readthedocs.io/projects/iocextract/en/latest/_static/iocextract.png"
+        width="250px"
+        alt="iocextract header image"
 />
+</h1>
+
+<!-- ![Build Status (Main)](https://github.com/InQuest/python-iocextract/workflows/iocextract-build/badge.svg?branch=main) -->
+<!-- ![Build Status (Dev)](https://github.com/InQuest/python-iocextract/workflows/iocextract-build/badge.svg?branch=dev)  -->
 
 ![Developed by InQuest](https://inquest.net/images/inquest-badge.svg)
-![Build Status (Main)](https://github.com/InQuest/python-iocextract/workflows/iocextract-build/badge.svg?branch=main)
-
-<!-- Only for testing -->
-![Build Status (Dev)](https://github.com/InQuest/python-iocextract/workflows/iocextract-build/badge.svg?branch=dev) 
-
 ![Documentation Status](https://readthedocs.org/projects/iocextract/badge/?version=latest)
 ![PyPI Version](https://img.shields.io/pypi/v/iocextract.svg)
 
