@@ -18,8 +18,7 @@ jobs:
       - name: Install dependencies
         run: |
           pip install nose coverage collective.checkdocs
-          python setup.py install
       - name: Test scripts
-        run: | 
+        run: |
           nosetests --with-coverage --cover-package=iocextract --cover-xml
           python setup.py checkdocs

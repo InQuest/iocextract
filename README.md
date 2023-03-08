@@ -6,7 +6,7 @@
 />
 </h1>
 
-<!-- ![Build Status (Main)](https://github.com/InQuest/python-iocextract/workflows/iocextract-build/badge.svg?branch=main) -->
+<!-- ![Build Status (Master)](https://github.com/InQuest/python-iocextract/workflows/iocextract-build/badge.svg?branch=master) -->
 <!-- ![Build Status (Dev)](https://github.com/InQuest/python-iocextract/workflows/iocextract-build/badge.svg?branch=dev)  -->
 
 ![Developed by InQuest](https://inquest.net/images/inquest-badge.svg)
@@ -372,13 +372,44 @@ like this:
 Error in custom regex: no such group
 ```
 
+Always use a single capture group when working with custom regex. Here's a quick example:
+
+```python
+[
+    r'(my regex)',  # This yields 'my regex' if the pattern matches
+    r'my (re)gex',  # This yields 're' if the pattern matches
+]
+```
+
+Using more than a single capture group can cause unexpected results. Check out this example:
+
+```python
+[
+    r'my regex',  # This doesn't yield anything
+    r'(my) (re)gex',  # This yields 'my' if the pattern matches
+]
+```
+
+Why? Because the result will always yield only the first *group* match from each regex.
+
+For more complicated regex queries, you can combine capture and non-capture groups like so:
+
+```python
+[
+    r'(?:my|your) (re)gex',  # This yields 're' if the pattern matches
+]
+```
+
+You can now compare the `(?: )` syntax for noncapture groups vs the `( )` syntax for the capture group.
+
+
 Related Projects
 ----------------
 
 If iocextract doesn't fit your use case, several similar projects exist. Check
 out the [defang](https://github.com/topics/defang)  and [indicators-of-compromise](https://github.com/topics/indicators-of-compromise) tags on GitHub, as well as:
 
-* [Cacador](https://github.com/sroberts/cacador) in Go,
+* [Cacador](https://github.com/sroberts/cacador) in Go
 * [ioc-extractor](https://github.com/ninoseki/ioc-extractor) in JavaScript
 * [Cyobstract](https://github.com/cmu-sei/cyobstract) in Python
 * [Mercy](https://github.com/azazelm3dj3d/mercy) in Rust
