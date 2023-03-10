@@ -6,10 +6,8 @@
 />
 </h1>
 
-<!-- ![Build Status (Master)](https://github.com/InQuest/python-iocextract/workflows/iocextract-build/badge.svg?branch=master) -->
-<!-- ![Build Status (Dev)](https://github.com/InQuest/python-iocextract/workflows/iocextract-build/badge.svg?branch=dev)  -->
-
 ![Developed by InQuest](https://inquest.net/images/inquest-badge.svg)
+![Build Status](https://github.com/InQuest/python-iocextract/workflows/iocextract-build/badge.svg)
 ![Documentation Status](https://readthedocs.org/projects/iocextract/badge/?version=latest)
 ![PyPI Version](https://img.shields.io/pypi/v/iocextract.svg)
 
