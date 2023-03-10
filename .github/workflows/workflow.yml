@@ -15,10 +15,11 @@ jobs:
         uses: actions/setup-python@v4
         with:
           python-version: ${{ matrix.python-version }}
-      - name: Install dependencies
+      - name: Installing dependencies
         run: |
           pip install nose collective.checkdocs
-      - name: Test scripts
+          pip install -r requirements.txt
+      - name: Running tests
         run: |
           nosetests tests.py
           python setup.py checkdocs
