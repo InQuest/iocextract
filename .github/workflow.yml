@@ -17,8 +17,8 @@ jobs:
           python-version: ${{ matrix.python-version }}
       - name: Install dependencies
         run: |
-          pip install nose coverage collective.checkdocs
+          pip install nose collective.checkdocs
       - name: Test scripts
         run: |
-          nosetests --with-coverage --cover-package=iocextract --cover-xml
+          nosetests tests.py
           python setup.py checkdocs

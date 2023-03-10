@@ -125,9 +125,9 @@ import iocextract
 
 content = \
 """
-    I really love example[.]com!
-    All the bots are on hxxp://example.com/bad/url these days.
-    C2: tcp://example[.]com:8989/bad
+I really love example[.]com!
+All the bots are on hxxp://example.com/bad/url these days.
+C2: tcp://example[.]com:8989/bad
 """
 
 for url in iocextract.extract_urls(content):
@@ -167,10 +167,10 @@ import iocextract
 
 content = \
 """
-    http://example.com/bad/url
-    http://example.com:8989/bad
-    http://example.com
-    http://example.com:8989/bad
+http://example.com/bad/url
+http://example.com:8989/bad
+http://example.com
+http://example.com:8989/bad
 """
 
 for url in iocextract.extract_urls(content, defang_data=False):
@@ -194,9 +194,9 @@ import iocextract
 
 content = \
 """
-    I really love example[.]com!
-    All the bots are on hxxp://example.com/bad/url these days.
-    C2: tcp://example[.]com:8989/bad
+I really love example[.]com!
+All the bots are on hxxp://example.com/bad/url these days.
+C2: tcp://example[.]com:8989/bad
 """
 
 print(list(iocextract.extract_urls(content)))
@@ -425,7 +425,7 @@ Contributing
 If you have a defang technique that doesn't make it through the extractor, or if you find any bugs, Pull Requests and Issues are always welcome. The library is released under a GPL-2.0 [license](https://github.com/InQuest/python-iocextract/blob/master/LICENSE).
 
 Who's using iocextract?
-----------------------
+-----------------------
 
 - [InQuest](https://inquest.net)
 - [PacketTotal](https://www.packettotal.com)
