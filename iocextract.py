@@ -397,7 +397,7 @@ def extract_unencoded_urls(data, refang=False, strip=False, open_punc=False, no_
 
             yield url
 
-def extract_encoded_urls(data, refang=False, strip=False, delimiter=None):
+def extract_encoded_urls(data, refang=False, strip=False, delimiter=None, parse_json=False):
     """
     Extract only encoded URLs!
 
@@ -405,6 +405,7 @@ def extract_encoded_urls(data, refang=False, strip=False, delimiter=None):
     :param bool refang: Refang output
     :param bool strip: Strip possible garbage from the end of URLs
     :param bool delimiter: Continue extracting even after whitespace is detected
+    :param bool parse_json: Allows you to recursively parse JSON data to locate base64 strings
     :rtype: Iterator[:class:`str`]
     """
 
@@ -447,6 +448,37 @@ def extract_encoded_urls(data, refang=False, strip=False, delimiter=None):
             url = re.split(URL_SPLIT_STR, url)[0]
 
         yield url
+
+    def validate_base64(b64_data):
+        """
+        Validate a string is Base64 encoded.
+
+        :param b64_data: Input base64 string
+        """
+
+        try:
+            if isinstance(b64_data, str):
+                base64_bytes = bytes(b64_data, "ascii")
+            elif isinstance(b64_data, bytes):
+                base64_bytes = b64_data
+            else:
+                raise ValueError("Data type should be a string or bytes")
+            
+            return base64.b64encode(base64.b64decode(base64_bytes)) == base64_bytes
+        except Exception:
+            return False
+        
+    if parse_json:
+        try:
+            try:
+                for json_data in json.loads(data):
+                    for _, value in json_data.items():
+                        if validate_base64(value):
+                            yield base64.b64decode(value).decode("ascii")
+            except json.decoder.JSONDecodeError:
+                pass
+        except AttributeError:
+            pass
 
 def extract_ips(data, refang=False):
     """
