@@ -42,11 +42,7 @@ The `iocextract` package is a library and command line interface (CLI) for extra
 The Problem
 -----------
 
-It is common practice for malware analysts or endpoint software to "defang" IOCs
-such as URLs and IP addresses, in order to prevent accidental exposure to live
-malicious content. Being able to extract and aggregate these IOCs is often valuable
-for analysts. Unfortunately, existing "IOC extraction" tools often pass right by them,
-as they are not caught by standard regex.
+It is common practice for malware analysts or endpoint software to "defang" IOCs such as URLs and IP addresses, in order to prevent accidental exposure to live malicious content. Being able to extract and aggregate these IOCs is often valuable for analysts. Unfortunately, existing "IOC extraction" tools often pass right by them, as they are not caught by standard regex.
 
 For example, the simple defanging technique of surrounding periods with brackets:
 ```
@@ -58,10 +54,7 @@ Existing tools that use a simple IP address regex will ignore this IOC entirely.
 Our Solution
 ------------
 
-By combining specially crafted regex with some custom post-processing, we are
-able to both detect and deobfuscate "defanged" IOCs. This saves time and effort
-for the analyst, who might otherwise have to manually find and convert IOCs into
-machine-readable format.
+By combining specially crafted regex with some custom post-processing, we are able to both detect and deobfuscate "defanged" IOCs. This saves time and effort for the analyst, who might otherwise have to manually find and convert IOCs into machine-readable format.
 
 Example Use Case
 -----------------
@@ -84,14 +77,12 @@ hotfixmsupload[.]com
 cdnverify[.]net
 ```
 
-Passing in `refang=True` at extraction time would remove the obfuscation, but
-since these are real IOCs, let's leave them defanged in our documentation.
+Passing in `refang=True` at extraction time would remove the obfuscation, but since these are real IOCs, let's leave them defanged in our documentation.
 
 Installation
 ============
 
-You may need to install the Python development headers in order to install the
-`regex` dependency. On Ubuntu/Debian-based systems, try:
+You may need to install the Python development headers in order to install the `regex` dependency. On Ubuntu/Debian-based systems, try:
 
 ```bash
 sudo apt-get install python-dev
@@ -103,8 +94,7 @@ Then install `iocextract` from pip:
 pip install iocextract
 ```
 
-If you have problems installing on Windows, try installing `regex` directly
-by downloading the [appropriate wheel from PyPI](https://pypi.org/project/regex/#files) and running e.g.:
+If you have problems installing on Windows, try installing `regex` directly by downloading the [appropriate wheel from PyPI](https://pypi.org/project/regex/#files) and installing via `pip`:
 
 ```bash
 pip install regex-2018.06.21-cp27-none-win_amd64.whl
@@ -141,8 +131,7 @@ for url in iocextract.extract_urls(content):
 
 NOTE: Some URLs may show up twice if they are caught by multiple regexes.
 
-If you want, you can also "refang", or remove common obfuscation methods from
-IOCs:
+If you want, you can also "refang", or remove common obfuscation methods from IOCs:
 
 ```python
 import iocextract
@@ -158,7 +147,7 @@ for url in iocextract.extract_urls(content, refang=True):
     # http://example.com:8989/bad
 ```
 
-If you don't want to defang the extracted IOCs at all during ingestion, you can disable this as well:
+If you don't want to defang the extracted IOCs at all during extraction, you can disable this as well:
 
 ```python
 import iocextract
@@ -182,10 +171,7 @@ for url in iocextract.extract_urls(content, defang_data=False):
     # http://example.com:8989/bad
 ```
 
-All `extract_*` functions in this library return iterators, not lists. The
-benefit of this behavior is that `iocextract` can process extremely large
-inputs, with a very low overhead. However, if for some reason you need to iterate
-over the IOCs more than once, you will have to save the results as a list:
+All `extract_*` functions in this library return iterators, not lists. The benefit of this behavior is that `iocextract` can process extremely large inputs, with a very low overhead. However, if for some reason you need to iterate over the IOCs more than once, you will have to save the results as a list:
 
 ```python
 import iocextract
@@ -240,7 +226,7 @@ Helpful Information
 ===================
 
 FAQ
-------------------------
+---
 
 Are you...
 
@@ -256,7 +242,7 @@ Note: You will most likely end up with extra garbage at the end of URLs.
 >> A. Maybe, but you should consider using the `--strip-urls` CLI flag (or the `strip=True` parameter in the library), and you may still get some extra garbage in your output. If you're extracting from HTML, consider using something like [Beautiful Soup](https://www.crummy.com/software/BeautifulSoup/) to first isolate the text content, and then pass that to iocextract, [like this](https://gist.github.com/rshipp/d399491305c5d293357a800d5a51b0aa).
 
 > Q. Extracting IOCs that have not been defanged, from binary data like executables, or very large inputs?
->> A. There is a very simplistic version of this available when running as library, but it requires the `defang_data=False` parameter and could potentially miss some of the IOCs. The regex in iocextract is designed to be flexible to catch defanged IOCs. If you're unable to collect the information you need, consider using something like [Cacador](https://github.com/sroberts/cacador) instead.
+>> A. There is a very simplistic version of this available when running as a library, but it requires the `defang_data=False` parameter and could potentially miss some of the IOCs. The regex in iocextract is designed to be flexible to catch defanged IOCs. If you're unable to collect the information you need, consider using something like [Cacador](https://github.com/sroberts/cacador) instead.
 
 More Details
 ------------
@@ -330,9 +316,7 @@ For URLs, the following defang techniques are supported:
 | URL encoded     | `http%3A%2F%2fexample%2Ecom%2Fpath`                | `http://example.com/path` |
 | Base64 encoded  | `aHR0cDovL2V4YW1wbGUuY29tL3BhdGgK`                 | `http://example.com/path` |
 
-NOTE: The tables above are not exhaustive, and other URL/defang patterns may
-also be extracted correctly. If you notice something missing or not working
-correctly, feel free to let us know via the [GitHub Issues](https://github.com/inquest/python-iocextract/issues).
+NOTE: The tables above are not exhaustive, and other URL/defang patterns may also be extracted correctly. If you notice something missing or not working correctly, feel free to let us know via the [GitHub Issues](https://github.com/inquest/python-iocextract/issues).
 
 The base64 regex was generated with [@deadpixi](https://github.com/deadpixi)'s [base64 regex tool](https://www.erlang-factory.com/upload/presentations/225/ErlangFactorySFBay2010-RobKing.pdf).
 
@@ -348,23 +332,21 @@ http://(example\.com)/
 (?:https|ftp)://(example\.com)/
 ```
 
-This custom regex file will extrac the domain `example.com` from matching
-URLs. The `(?: )` noncapture group won't be included in matches.
+This custom regex file will extrac the domain `example.com` from matching URLs. The `(?: )` noncapture group won't be included in matches.
 
-If you would like to extract the entire match, just put parentheses around your
-entire regex string, like this:
+If you would like to extract the entire match, just put parentheses around your entire regex string, like this:
 
 ```
 (https?://.*?.com)
 ```
 
 If your regex is invalid, you'll see an error message like this:
+
 ```
 Error in custom regex: missing ) at position 5
 ```
 
-If your regex does not include a capture group, you'll see an error message
-like this:
+If your regex does not include a capture group, you'll see an error message like this:
 
 ```
 Error in custom regex: no such group
@@ -404,16 +386,14 @@ You can now compare the `(?: )` syntax for noncapture groups vs the `( )` syntax
 Related Projects
 ----------------
 
-If iocextract doesn't fit your use case, several similar projects exist. Check
-out the [defang](https://github.com/topics/defang)  and [indicators-of-compromise](https://github.com/topics/indicators-of-compromise) tags on GitHub, as well as:
+If iocextract doesn't fit your use case, several similar projects exist. Check out the [defang](https://github.com/topics/defang)  and [indicators-of-compromise](https://github.com/topics/indicators-of-compromise) tags on GitHub, as well as:
 
 * [Cacador](https://github.com/sroberts/cacador) in Go
 * [ioc-extractor](https://github.com/ninoseki/ioc-extractor) in JavaScript
 * [Cyobstract](https://github.com/cmu-sei/cyobstract) in Python
 * [Mercy](https://github.com/azazelm3dj3d/mercy) in Rust
 
-If you'd like to automate IOC extraction, enrichment, export, and more, check
-out [ThreatIngestor](https://github.com/InQuest/ThreatIngestor).
+If you'd like to automate IOC extraction, enrichment, export, and more, check out [ThreatIngestor](https://github.com/InQuest/ThreatIngestor).
 
 If you're working with YARA rules, you may be interested in [plyara](https://github.com/plyara/plyara).
 

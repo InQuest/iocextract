@@ -318,10 +318,10 @@ def extract_iocs(data, refang=False, strip=False):
     Results are returned as an itertools.chain iterable object which
     lazily provides the results of the other extract_* generators.
 
-    @param - data: Input text
-    @param - refang (bool): Refang output
-    @param - strip (bool): Strip possible garbage from the end of URLs
-    @rtype - :py:func:`itertools.chain`
+    :param data: Input text
+    :param bool refang: Refang output
+    :param bool strip: Strip possible garbage from the end of URLs
+    :rtype: :py:func:`itertools.chain`
     """
 
     return itertools.chain(
@@ -336,14 +336,16 @@ def extract_urls(data, refang=False, strip=False, delimiter=False, open_punc=Fal
     """
     Extract URLs!
 
-    @param - data: Input text
-    @param - refang (bool): Refang output
-    @param - strip (bool): Strip possible garbage from the end of URLs
-    @param - delimiter (bool): Continue extracting even after whitespace is detected
-    @param - open_punc (bool): Disabled puncuation regex
-    @param - no_scheme (bool): Remove protocol (http, tcp, etc.) type in output
-    @param - defang_data (bool): Extract non-defanged IOCs
-    @rtype - :py:func:`itertools.chain`
+    NOTE: During extraction, if IPv4 addresses are present, you may extract some of those as well.
+
+    :param data: Input text
+    :param bool refang: Refang output
+    :param bool strip: Strip possible garbage from the end of URLs
+    :param bool delimiter: Continue extracting even after whitespace is detected
+    :param bool open_punc: Disabled puncuation regex
+    :param bool no_scheme: Remove protocol (http, tcp, etc.) type in output
+    :param bool defang_data: Extract non-defanged IOCs
+    :rtype: :py:func:`itertools.chain`
     """
 
     return itertools.chain(
@@ -355,13 +357,13 @@ def extract_unencoded_urls(data, refang=False, strip=False, open_punc=False, no_
     """
     Extract only unencoded URLs!
 
-    @param - data: Input text
-    @param - refang (bool): Refang output
-    @param - strip (bool): Strip possible garbage from the end of URLs
-    @param - open_punc (bool): Disabled puncuation regex
-    @param - no_scheme (bool): Remove protocol (http, tcp, etc.) type in output
-    @param - defang_data (bool): Extract non-defanged IOCs
-    @rtype - Iterator[:class:`str`]
+    :param data: Input text
+    :param bool refang: Refang output
+    :param bool strip: Strip possible garbage from the end of URLs
+    :param bool open_punc: Disabled puncuation regex
+    :param bool no_scheme: Remove protocol (http, tcp, etc.) type in output
+    :param bool defang_data: Extract non-defanged IOCs
+    :rtype: Iterator[:class:`str`]
     """
 
     if "[" not in data:
@@ -399,11 +401,11 @@ def extract_encoded_urls(data, refang=False, strip=False, delimiter=None):
     """
     Extract only encoded URLs!
 
-    @param - data: Input text
-    @param - refang (bool): Refang output
-    @param - strip (bool): Strip possible garbage from the end of URLs
-    @param - delimiter (bool): Continue extracting even after whitespace is detected
-    @rtype - Iterator[:class:`str`]
+    :param data: Input text
+    :param bool refang: Refang output
+    :param bool strip: Strip possible garbage from the end of URLs
+    :param bool delimiter: Continue extracting even after whitespace is detected
+    :rtype: Iterator[:class:`str`]
     """
 
     for url in HEXENCODED_URL_RE.finditer(data):
@@ -452,9 +454,9 @@ def extract_ips(data, refang=False):
 
     Includes both IPv4 and IPv6 addresses.
 
-    @param - data: Input text
-    @param - refang (bool): Refang output
-    @rtype - :py:func:`itertools.chain`
+    :param data: Input text
+    :param bool refang: Refang output
+    :rtype: :py:func:`itertools.chain`
     """
     return itertools.chain(
         extract_ipv4s(data, refang=refang),
@@ -465,9 +467,9 @@ def extract_ipv4s(data, refang=False):
     """
     Extract IPv4 addresses!
 
-    @param - data: Input text
-    @param - refang (bool): Refang output
-    @rtype - Iterator[:class:`str`]
+    :param data: Input text
+    :param bool refang: Refang output
+    :rtype: Iterator[:class:`str`]
     """
 
     def ipv4_str(data):
@@ -498,8 +500,8 @@ def extract_ipv6s(data):
 
     Not guaranteed to catch all valid IPv6 addresses.
 
-    @param - data: Input text
-    @rtype - Iterator[:class:`str`]
+    :param data: Input text
+    :rtype: Iterator[:class:`str`]
     """
 
     for ip_address in IPV6_RE.finditer(data):
@@ -511,9 +513,9 @@ def extract_emails(data, refang=False):
     """
     Extract email addresses!
 
-    @param - data: Input text
-    @param - refang (bool): Refang output
-    @rtype - Iterator[:class:`str`]
+    :param data: Input text
+    :param bool refang: Refang output
+    :rtype: Iterator[:class:`str`]
     """
 
     for email in EMAIL_RE.finditer(data):
@@ -530,8 +532,8 @@ def extract_hashes(data):
 
     Results are returned as an itertools.chain iterable object which lazily provides the results of the other extract_*_hashes generators.
 
-    @param - data: Input text
-    @rtype - :py:func:`itertools.chain`
+    :param data: Input text
+    :rtype: :py:func:`itertools.chain`
     """
 
     return itertools.chain(
@@ -546,8 +548,8 @@ def extract_md5_hashes(data):
     """
     Extract MD5 hashes!
 
-    @param - data: Input text
-    @rtype - Iterator[:class:`str`]
+    :param data: Input text
+    :rtype: Iterator[:class:`str`]
     """
 
     for md5 in MD5_RE.finditer(data):
@@ -557,8 +559,8 @@ def extract_sha1_hashes(data):
     """
     Extract SHA1 hashes!
 
-    @param - data: Input text
-    @rtype - Iterator[:class:`str`]
+    :param data: Input text
+    :rtype: Iterator[:class:`str`]
     """
 
     for sha1 in SHA1_RE.finditer(data):
@@ -569,8 +571,8 @@ def extract_sha256_hashes(data):
     """
     Extract SHA256 hashes!
 
-    @param - data: Input text
-    @rtype - Iterator[:class:`str`]
+    :param data: Input text
+    :rtype: Iterator[:class:`str`]
     """
 
     for sha256 in SHA256_RE.finditer(data):
@@ -581,8 +583,8 @@ def extract_sha512_hashes(data):
     """
     Extract SHA512 hashes!
 
-    @param - data: Input text
-    @rtype - Iterator[:class:`str`]
+    :param data: Input text
+    :rtype: Iterator[:class:`str`]
     """
 
     for sha512 in SHA512_RE.finditer(data):
@@ -593,8 +595,8 @@ def extract_yara_rules(data):
     """
     Extract YARA rules!
 
-    @param - data: Input text
-    @rtype - Iterator[:class:`str`]
+    :param data: Input text
+    :rtype: Iterator[:class:`str`]
     """
 
     for yara_rule in YARA_PARSE_RE.finditer(data):
@@ -606,9 +608,9 @@ def extract_custom_iocs(data, regex_list):
 
     Need help? Check out the README: https://github.com/inquest/python-iocextract#custom-regex
 
-    @param - data: Input text
-    @param - regex_list: List of strings to treat as regex and match against data
-    @rtype - Iterator[:class:`str`]
+    :param data: Input text
+    :param regex_list: List of strings to treat as regex and match against data
+    :rtype: Iterator[:class:`str`]
     """
 
     # Compile all the regex strings first, so we can error out quickly
@@ -626,8 +628,8 @@ def _is_ipv6_url(url):
     """
     URL network location is an IPv6 address, not a domain.
 
-    @param - url: String URL
-    @rtype - bool
+    :param url: String URL
+    :rtype: bool
     """
 
     # Fix urlparse exception.
@@ -650,8 +652,8 @@ def _refang_common(ioc):
     """
     Remove artifacts from common defangs!
 
-    @param - ioc: String IP/Email Address or URL netloc
-    @rtype - str
+    :param ioc: String IP/Email Address or URL netloc
+    :rtype: str
     """
     
     return ioc.replace('[dot]', '.').\
@@ -667,8 +669,8 @@ def refang_email(email):
     """
     Refang an email address!
 
-    @param - email: String email address
-    @rtype - str
+    :param email: String email address
+    :rtype: str
     """
     
     # Check for ' at ' and ' dot ' first
@@ -685,8 +687,8 @@ def refang_url(url, no_scheme=False):
     """
     Refang a URL!
 
-    @param - url: String URL
-    @rtype - str
+    :param url: String URL
+    :rtype: str
     """
 
     # First fix urlparse errors
@@ -778,8 +780,8 @@ def refang_ipv4(ip_address):
     """
     Refang an IPv4 address!
 
-    @param - ip_address: String IPv4 address
-    @rtype - str
+    :param ip_address: String IPv4 address
+    :rtype: str
     """
 
     return _refang_common(ip_address).replace('[', '').\
@@ -791,8 +793,8 @@ def defang(ioc):
     """
     Defang a URL, domain, or IPv4 address!
 
-    @param - ioc: String URL, domain, or IPv4 address
-    @rtype - str
+    :param ioc: String URL, domain, or IPv4 address
+    :rtype: str
     """
 
     # If it's a url, defang just the scheme and netloc
