@@ -395,7 +395,6 @@ If iocextract doesn't fit your usecase, several similar projects exist. Check ou
 * `Cacador`_ in Go
 * `ioc-extractor`_ in JavaScript
 * `Cyobstract`_ in Python
-* `Mercy`_ in Rust
 
 If you'd like to automate IOC extraction, enrichment, export, and more, check out `ThreatIngestor`_.
 
@@ -430,5 +429,4 @@ Are you using it? Want to see your site listed here? Let us know!
 .. _indicators-of-compromise: https://github.com/topics/indicators-of-compromise
 .. _ioc-extractor: https://github.com/ninoseki/ioc-extractor
 .. _Cyobstract: https://github.com/cmu-sei/cyobstract
-.. _Mercy: https://github.com/azazelm3dj3d/mercy
 .. _plyara: https://github.com/plyara/plyara
