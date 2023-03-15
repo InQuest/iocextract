@@ -1,7 +1,7 @@
 import os
 from setuptools import setup
 
-with open("README.md", "r", encoding = "utf-8") as fh:
+with open("README.md", "r") as fh:
     README = fh.read()
 
 # allow setup.py to be run from any path
