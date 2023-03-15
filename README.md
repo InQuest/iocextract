@@ -8,7 +8,7 @@
 
 ![Developed by InQuest](https://inquest.net/images/inquest-badge.svg)
 ![Build Status](https://github.com/InQuest/python-iocextract/workflows/iocextract-build/badge.svg)
-![Documentation Status](https://readthedocs.org/projects/iocextract/badge/?version=latest)
+[![Documentation Status](https://readthedocs.org/projects/iocextract/badge/?version=latest)](https://inquest.readthedocs.io/projects/iocextract/en/latest/?badge=latest)
 ![PyPI Version](https://img.shields.io/pypi/v/iocextract.svg)
 
 iocextract
