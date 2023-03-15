@@ -1,9 +1,21 @@
-*.py[cdo]
-.coverage
-*.xml
+# Distribution
 *.egg-info/
 build/
 dist/
 
-# Sphinx documentation
+# Testing
+.coverage
+*.xml
+
+# VS Code
+.vscode/
+
+# Sphinx docs
 docs/_build/
+
+# macOS
+.DS_Store
+
+# Misc
+__pycache__/
+*.py[cdo]

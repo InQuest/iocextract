@@ -113,11 +113,6 @@ div.documentwrapper {
 /* SIDE BAR LEVEL ----------------------------------------------------------- */
 /* -------------------------------------------------------------------------- */
 
-/*div.sphinxsidebarwrapper h1.logo {
-  background: transparent url(inquest-magnifying-glass@2x.png) left 5px no-repeat;
-  padding-left: 40px;
-}*/
-
 div.sphinxsidebarwrapper img.logo {
   height: 128px;
   width: 128px;
@@ -132,7 +127,6 @@ div.sphinxsidebar hr {
 }
 
 @media screen and (max-width: 875px) {
-  /* 'narrow_sidebar_fg': '#1f292f' doesn't work */
   div.sphinxsidebar h3,
   div.sphinxsidebar h4,
   div.sphinxsidebar p,
@@ -157,6 +151,7 @@ div.body {
 /* -------------------------------------------------------------------------- */
 /* BLOCKS ------------------------------------------------------------------- */
 /* -------------------------------------------------------------------------- */
+
 .note,
 .warning {
   border-radius: 5px;
@@ -189,6 +184,7 @@ div.body {
 /* -------------------------------------------------------------------------- */
 /* CUSTOM BLOCKS ------------------------------------------------------------ */
 /* -------------------------------------------------------------------------- */
+
 .responsive-table {
   overflow-x: auto;
 }
@@ -196,8 +192,9 @@ div.body {
 /* -------------------------------------------------------------------------- */
 /* SOCIAL ICONS ------------------------------------------------------------- */
 /* -------------------------------------------------------------------------- */
+
 svg.icon {
-    height: 15px;
-    width: 15px;
-    vertical-align: middle;
+  height: 15px;
+  width: 15px;
+  vertical-align: middle;
 }
