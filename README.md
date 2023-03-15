@@ -391,7 +391,6 @@ If iocextract doesn't fit your use case, several similar projects exist. Check o
 * [Cacador](https://github.com/sroberts/cacador) in Go
 * [ioc-extractor](https://github.com/ninoseki/ioc-extractor) in JavaScript
 * [Cyobstract](https://github.com/cmu-sei/cyobstract) in Python
-* [Mercy](https://github.com/azazelm3dj3d/mercy) in Rust
 
 If you'd like to automate IOC extraction, enrichment, export, and more, check out [ThreatIngestor](https://github.com/InQuest/ThreatIngestor).
 
