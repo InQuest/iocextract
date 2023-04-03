@@ -1,18 +1,10 @@
-<h1 align="center">
-    <img
-        src="https://inquest.readthedocs.io/projects/iocextract/en/latest/_static/iocextract.png"
-        width="250px"
-        alt="iocextract header image"
-/>
-</h1>
+iocextract
+==========
 
 ![Developed by InQuest](https://inquest.net/images/inquest-badge.svg)
 ![Build Status](https://github.com/InQuest/python-iocextract/workflows/iocextract-build/badge.svg)
 [![Documentation Status](https://readthedocs.org/projects/iocextract/badge/?version=latest)](https://inquest.readthedocs.io/projects/iocextract/en/latest/?badge=latest)
 ![PyPI Version](https://img.shields.io/pypi/v/iocextract.svg)
-
-iocextract
-==========
 
 [**Indicator of Compromise**](https://en.wikipedia.org/wiki/Indicator_of_compromise) (IOC) extractor for some of the most commonly ingested artifacts.
 
