@@ -688,16 +688,16 @@ class TestExtractors(unittest.TestCase):
         self.assertEqual(list(iocextract.extract_ips('10[.]10(.10\.10', refang=True))[0], '10.10.10.10')
 
     def test_defang(self):
-        self.assertEqual(iocextract.defang('http://example.com/some/lo.ng/path.ext/'), 'hxxp://example[.]com/some/lo.ng/path.ext/')
-        self.assertEqual(iocextract.defang('http://example.com/path.ext'), 'hxxp://example[.]com/path.ext')
-        self.assertEqual(iocextract.defang('http://127.0.0.1/path.ext'), 'hxxp://127[.]0[.]0[.]1/path.ext')
-        self.assertEqual(iocextract.defang('http://example.com/'), 'hxxp://example[.]com/')
-        self.assertEqual(iocextract.defang('https://example.com/'), 'hxxps://example[.]com/')
-        self.assertEqual(iocextract.defang('ftp://example.com/'), 'fxp://example[.]com/')
-        self.assertEqual(iocextract.defang('example.com'), 'example[.]com')
-        self.assertEqual(iocextract.defang('example.com/'), 'example[.]com/')
-        self.assertEqual(iocextract.defang('example.com/some/lo.ng/path.ext/'), 'example[.]com/some/lo.ng/path.ext/')
-        self.assertEqual(iocextract.defang('127.0.0.1'), '127[.]0[.]0[.]1')
+        self.assertEqual(iocextract.defang_data('http://example.com/some/lo.ng/path.ext/'), 'hxxp://example[.]com/some/lo.ng/path.ext/')
+        self.assertEqual(iocextract.defang_data('http://example.com/path.ext'), 'hxxp://example[.]com/path.ext')
+        self.assertEqual(iocextract.defang_data('http://127.0.0.1/path.ext'), 'hxxp://127[.]0[.]0[.]1/path.ext')
+        self.assertEqual(iocextract.defang_data('http://example.com/'), 'hxxp://example[.]com/')
+        self.assertEqual(iocextract.defang_data('https://example.com/'), 'hxxps://example[.]com/')
+        self.assertEqual(iocextract.defang_data('ftp://example.com/'), 'fxp://example[.]com/')
+        self.assertEqual(iocextract.defang_data('example.com'), 'example[.]com')
+        self.assertEqual(iocextract.defang_data('example.com/'), 'example[.]com/')
+        self.assertEqual(iocextract.defang_data('example.com/some/lo.ng/path.ext/'), 'example[.]com/some/lo.ng/path.ext/')
+        self.assertEqual(iocextract.defang_data('127.0.0.1'), '127[.]0[.]0[.]1')
 
     def test_email_refang(self):
         content_list = [
