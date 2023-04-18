@@ -4,8 +4,8 @@ iocextract
 .. image:: https://inquest.net/images/inquest-badge.svg
     :target: https://inquest.net/
     :alt: Developed by InQuest
-.. image:: https://github.com/InQuest/python-iocextract/workflows/iocextract-build/badge.svg
-    :target: https://github.com/InQuest/python-iocextract/workflows/iocextract-build/
+.. image:: https://github.com/InQuest/iocextract/workflows/iocextract-build/badge.svg
+    :target: https://github.com/InQuest/iocextract/workflows/iocextract-build/
     :alt: Build Status
 .. image:: https://readthedocs.org/projects/iocextract/badge/?version=latest
     :target: https://inquest.readthedocs.io/projects/iocextract/en/latest/
@@ -123,7 +123,7 @@ If you don't want to defang the extracted IOCs at all during extraction, you can
     http://example.com:8989/bad
     """
 
-    for url in iocextract.extract_urls(content, defang_data=False):
+    for url in iocextract.extract_urls(content, defang=False):
         print(url)
 
         # Output
@@ -205,7 +205,7 @@ Maybe, but you should consider using the ``--strip-urls`` CLI flag (or the ``str
 
 **Extracting IOCs that have not been defanged, from binary data like executables, or very large inputs?**
 
-There is a very simplistic version of this available when running as a library, but it requires the ``defang_data=False`` parameter and could potentially miss some of the IOCs. The regex in iocextract is designed to be flexible to catch defanged IOCs. If you're unable to collect the information you need, consider using something like `Cacador`_ instead.
+There is a very simplistic version of this available when running as a library, but it requires the ``defang=False`` parameter and could potentially miss some of the IOCs. The regex in iocextract is designed to be flexible to catch defanged IOCs. If you're unable to collect the information you need, consider using something like `Cacador`_ instead.
 
 More Details
 ------------
@@ -414,7 +414,7 @@ Who's using iocextract
 Are you using it? Want to see your site listed here? Let us know!
 
 .. _Indicator of Compromise: https://en.wikipedia.org/wiki/Indicator_of_compromise
-.. _Issues: https://github.com/inquest/python-iocextract/issues
+.. _Issues: https://github.com/inquest/iocextract/issues
 .. _this tweet from @InQuest: https://twitter.com/InQuest/status/969469856931287041
 .. _Cisco ESA: https://www.cisco.com/c/en/us/support/docs/security/email-security-appliance/118775-technote-esa-00.html
 .. _appropriate wheel from PyPI: https://pypi.org/project/regex/#files
