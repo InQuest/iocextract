@@ -577,7 +577,7 @@ class TestExtractors(unittest.TestCase):
             self.assertEqual(list(iocextract.extract_ipv4s(content, refang=True))[0], '111.111.111.111')
             self.assertEqual(iocextract.refang_ipv4(content), '111.111.111.111')
 
-    def test_refang_url(self):
+    def test_refang_data(self):
         content_list = [
             'http://example.com/test',
             'http:// example .com /test',
@@ -599,18 +599,18 @@ class TestExtractors(unittest.TestCase):
         ]
 
         for content in content_list:
-            self.assertEqual(iocextract.refang_url(content), 'http://example.com/test')
+            self.assertEqual(iocextract.refang_data(content), 'http://example.com/test')
 
-        self.assertEqual(iocextract.refang_url('ftx://example.com/test'), 'ftp://example.com/test')
+        self.assertEqual(iocextract.refang_data('ftx://example.com/test'), 'ftp://example.com/test')
 
         # IPv6 works as expected
         content = 'http://[2001:db8:85a3:0:0:8a2e:370:7334]:80/test'
-        self.assertEqual(iocextract.refang_url(content), content)
+        self.assertEqual(iocextract.refang_data(content), content)
         self.assertEqual(list(iocextract.extract_urls(content, refang=True))[0], content)
 
         # HXXPS
         for content in ['hxxps://example[.]com/test', 'hXXps://example[dot]com/test']:
-            self.assertEqual(iocextract.refang_url(content), 'https://example.com/test')
+            self.assertEqual(iocextract.refang_data(content), 'https://example.com/test')
 
     def test_url_extraction_handles_punctuation(self):
         self.assertEqual(list(iocextract.extract_urls('example[.]com!'))[0], 'example[.]com')
@@ -657,8 +657,8 @@ class TestExtractors(unittest.TestCase):
 
     def test_refang_never_excepts_from_urlparse(self):
         try:
-            iocextract.refang_url('hxxp__test]')
-            iocextract.refang_url('CDATA[^h00ps://test.com/]]>')
+            iocextract.refang_data('hxxp__test]')
+            iocextract.refang_data('CDATA[^h00ps://test.com/]]>')
         except ValueError as e:
             self.fail('Unhandled parsing error in refang: {e}'.format(e=e))
 
@@ -670,8 +670,8 @@ class TestExtractors(unittest.TestCase):
         self.assertEqual(len(list(iocextract.extract_urls('https:// test /'))), 1)
 
     def test_refang_removes_some_backslash_escaped_characters(self):
-        self.assertEqual(iocextract.refang_url('https://example\(.)com/'), 'https://example.com/')
-        self.assertEqual(iocextract.refang_url('https://example\(.\)com/test\.html'), 'https://example.com/test.html')
+        self.assertEqual(iocextract.refang_data('https://example\(.)com/'), 'https://example.com/')
+        self.assertEqual(iocextract.refang_data('https://example\(.\)com/test\.html'), 'https://example.com/test.html')
 
     def test_ip_regex_allows_multiple_brackets(self):
         self.assertEqual(list(iocextract.extract_ips('10.10.10.]]]10', refang=True))[0], '10.10.10.10')
@@ -732,7 +732,7 @@ class TestExtractors(unittest.TestCase):
 
         for content in content_list:
             self.assertEqual(list(iocextract.extract_urls(content, refang=True))[0], 'http://example.com/test.htm')
-            self.assertEqual(iocextract.refang_url(content), 'http://example.com/test.htm')
+            self.assertEqual(iocextract.refang_data(content), 'http://example.com/test.htm')
 
     def test_b64_url_extraction_just_url(self):
         content_list = [

@@ -90,7 +90,7 @@ html_theme_options = {
     'logo_name': 'true',
     'description': 'Advanced Indicator of Compromise (IOC) extractor.',
     'github_user': 'InQuest',
-    'github_repo': 'python-iocextract',
+    'github_repo': 'iocextract',
     'github_type': 'star',
     'show_powered_by': 'false',
     'page_width': 'auto',

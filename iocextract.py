@@ -401,7 +401,7 @@ def extract_urls(
     delimiter=False,
     open_punc=False,
     no_scheme=False,
-    defang_data=False,
+    defang=False,
 ):
     """
     Extract URLs!
@@ -414,7 +414,7 @@ def extract_urls(
     :param bool delimiter: Continue extracting even after whitespace is detected
     :param bool open_punc: Disabled puncuation regex
     :param bool no_scheme: Remove protocol (http, tcp, etc.) type in output
-    :param bool defang_data: Extract non-defanged IOCs
+    :param bool defang: Extract non-defanged IOCs
     :rtype: :py:func:`itertools.chain`
     """
 
@@ -425,14 +425,14 @@ def extract_urls(
             strip=strip,
             open_punc=open_punc,
             no_scheme=no_scheme,
-            defang_data=defang_data,
+            defang=defang,
         ),
         extract_encoded_urls(data, refang=refang, strip=strip, delimiter=delimiter),
     )
 
 
 def extract_unencoded_urls(
-    data, refang=False, strip=False, open_punc=False, no_scheme=False, defang_data=False
+    data, refang=False, strip=False, open_punc=False, no_scheme=False, defang=False
 ):
     """
     Extract only unencoded URLs!
@@ -442,40 +442,37 @@ def extract_unencoded_urls(
     :param bool strip: Strip possible garbage from the end of URLs
     :param bool open_punc: Disabled puncuation regex
     :param bool no_scheme: Remove protocol (http, tcp, etc.) type in output
-    :param bool defang_data: Extract non-defanged IOCs
+    :param bool defang: Extract non-defanged IOCs
     :rtype: Iterator[:class:`str`]
     """
 
-    if "[" not in data:
-        if defang_data:
-            data = str(data).replace(".", "[.]")
+    unencoded_urls = itertools.chain(
+        url_re(open_punc).finditer(data),
+        BRACKET_URL_RE.finditer(data),
+        BACKSLASH_URL_RE.finditer(data),
+    )
 
-        yield data
-
-    else:
-        unencoded_urls = itertools.chain(
-            url_re(open_punc).finditer(data),
-            BRACKET_URL_RE.finditer(data),
-            BACKSLASH_URL_RE.finditer(data),
-        )
-
-        for url in unencoded_urls:
+    for url in unencoded_urls:
+        if refang or defang:
             if refang:
-                url = refang_url(url.group(1), no_scheme=no_scheme)
+                url = refang_data(url.group(1), no_scheme=no_scheme)
+
+            if defang:
+                url = defang_data(url.group(1))
+        else:
+            url = url.group(1)
+
+        # Checks for whitespace in the string
+        def found_ws(s):
+            return True in [check_s in s for check_s in whitespace]
+
+        if strip:
+            if found_ws(url):
+                url = re.split(WS_SYNTAX_RM, url)[0]
             else:
-                url = url.group(1)
+                url = re.split(URL_SPLIT_STR, url)[0]
 
-            # Checks for whitespace in the string
-            def found_ws(s):
-                return True in [check_s in s for check_s in whitespace]
-
-            if strip:
-                if found_ws(url):
-                    url = re.split(WS_SYNTAX_RM, url)[0]
-                else:
-                    url = re.split(URL_SPLIT_STR, url)[0]
-
-            yield url
+        yield url
 
 
 def extract_encoded_urls(
@@ -728,7 +725,7 @@ def extract_custom_iocs(data, regex_list):
     """
     Extract using custom regex strings!
 
-    Need help? Check out the README: https://github.com/inquest/python-iocextract#custom-regex
+    Need help? Check out the README: https://github.com/inquest/iocextract#custom-regex
 
     :param data: Input text
     :param regex_list: List of strings to treat as regex and match against data
@@ -814,7 +811,7 @@ def refang_email(email):
     )
 
 
-def refang_url(url, no_scheme=False):
+def refang_data(url, no_scheme=False):
     """
     Refang a URL!
 
@@ -923,7 +920,7 @@ def refang_ipv4(ip_address):
     )
 
 
-def defang(ioc):
+def defang_data(ioc):
     """
     Defang a URL, domain, or IPv4 address!
 
