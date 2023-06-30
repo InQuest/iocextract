@@ -8,10 +8,12 @@ Otherwise, you can iterate over the objects (e.g. in a `for` loop) normally. Eac
 """
 
 import io
+import os
 import sys
 import json
 import base64
 import argparse
+import requests
 import binascii
 import itertools
 import ipaddress
@@ -966,7 +968,6 @@ def main():
             If no arguments are specified, the default behavior is to extract all IOCs.
         """
     )
-
     parser.add_argument(
         "-i",
         "--input",
@@ -1030,6 +1031,15 @@ def main():
     parser.add_argument(
         "-dn", "--dirname", help="Path of the directory to extract IOCs"
     )
+    parser.add_argument(
+        "-ri",
+        "--remote_input",
+        action="store_true",
+        help="Extract IOCs from a remote data source",
+    )
+    parser.add_argument(
+        "-url", "--url", help="URL to extract IOCs from"
+    )
 
     args = parser.parse_args()
 
@@ -1041,7 +1051,7 @@ def main():
         for path in dir_path:
             dir_db.append(str(path))
 
-    if not args.dir:
+    if not args.dir and not args.remote_input:
         # Read user unput
         # TODO: Improve the method of data input
         data = args.input.read()
@@ -1076,9 +1086,8 @@ def main():
             if args.extract_ipv6s or args.extract_ips or extract_all:
                 memo["ipv6s"] = list(extract_ipv6s(data))
             if args.extract_urls or extract_all:
-                memo["urls"] = list(
-                    extract_urls(data, refang=args.refang, strip=args.strip_urls)
-                )
+                memo["urls"] = list(extract_urls(data, refang=args.refang, strip=args.strip_urls))
+            
             if args.open:
                 memo["open_punc"] = list(
                     extract_urls(
@@ -1088,6 +1097,7 @@ def main():
                         open_punc=args.open,
                     )
                 )
+            
             if args.rm_scheme:
                 memo["no_protocol"] = list(
                     extract_urls(
@@ -1098,8 +1108,10 @@ def main():
                         no_scheme=args.rm_scheme,
                     )
                 )
+            
             if args.extract_yara_rules or extract_all:
                 memo["yara_rules"] = list(extract_yara_rules(data))
+            
             if args.extract_hashes or extract_all:
                 memo["hashes"] = list(extract_hashes(data))
 
@@ -1119,6 +1131,77 @@ def main():
 
             args.output.write("{ioc}\n".format(ioc=ioc))
             args.output.flush()
+
+    elif args.remote_input:
+        remote_url = requests.get(args.url)
+
+        if remote_url.status_code != 200:
+            args.output.write(f"Unable to access remote host: {args.url}")
+            sys.exit(1)
+
+        d = "/tmp/url.txt"
+
+        with open(d, "w") as f:
+            f.write(remote_url.content)
+
+        with open(d, "r") as f:
+            data = f.read()
+
+        if args.extract_emails or extract_all:
+            memo["emails"] = list(extract_emails(data, refang=args.refang))
+        if args.extract_ipv4s or args.extract_ips or extract_all:
+            memo["ipv4s"] = list(extract_ipv4s(data, refang=args.refang))
+        if args.extract_ipv6s or args.extract_ips or extract_all:
+            memo["ipv6s"] = list(extract_ipv6s(data))
+        if args.extract_urls or extract_all:
+            memo["urls"] = list(extract_urls(data, refang=args.refang, strip=args.strip_urls))
+        
+        if args.open:
+            memo["open_punc"] = list(
+                extract_urls(
+                    data,
+                    refang=args.refang,
+                    strip=args.strip_urls,
+                    open_punc=args.open,
+                )
+            )
+        
+        if args.rm_scheme:
+            memo["no_protocol"] = list(
+                extract_urls(
+                    data,
+                    refang=args.refang,
+                    strip=args.strip_urls,
+                    open_punc=args.open,
+                    no_scheme=args.rm_scheme,
+                )
+            )
+        
+        if args.extract_yara_rules or extract_all:
+            memo["yara_rules"] = list(extract_yara_rules(data))
+        
+        if args.extract_hashes or extract_all:
+            memo["hashes"] = list(extract_hashes(data))
+
+        # Custom regex file, one per line
+        if args.custom_regex:
+            regex_list = [l.strip() for l in args.custom_regex.readlines()]
+
+            try:
+                memo["custom_regex"] = list(extract_custom_iocs(data, regex_list))
+            except (IndexError, re.error) as e:
+                sys.stderr.write("Error in custom regex: {e}\n".format(e=e))
+
+        if args.json:
+            ioc = json.dumps(memo, indent=4, sort_keys=True)
+        else:
+            ioc = "\n".join(sum(memo.values(), []))
+
+        args.output.write("{ioc}\n".format(ioc=ioc))
+        args.output.flush()
+
+        # Cleanup temp file
+        os.remove(d)
 
     else:
         if args.extract_emails or extract_all:
