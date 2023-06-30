@@ -1136,7 +1136,7 @@ def main():
         remote_url = requests.get(args.url)
 
         if remote_url.status_code != 200:
-            args.output.write(f"Unable to access remote host: {args.url}")
+            args.output.write("Unable to access remote host: {0}".format(args.url))
             sys.exit(1)
 
         d = "/tmp/url.txt"
