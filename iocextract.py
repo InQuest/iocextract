@@ -12,6 +12,8 @@ import os
 import sys
 import json
 import base64
+import random
+import string
 import argparse
 import requests
 import binascii
@@ -1139,12 +1141,12 @@ def main():
             args.output.write("Unable to access remote host: {0}".format(args.url))
             sys.exit(1)
 
-        d = "/tmp/url.txt"
+        file_contents = "/tmp/{0}.txt".format("".join(random.choice(string.ascii_lowercase) for _ in range(10)))
 
-        with open(d, "w") as f:
-            f.write(remote_url.content)
+        with open(file_contents, "w") as f:
+            f.write(str(remote_url.content))
 
-        with open(d, "r") as f:
+        with open(file_contents, "r") as f:
             data = f.read()
 
         if args.extract_emails or extract_all:
@@ -1201,7 +1203,7 @@ def main():
         args.output.flush()
 
         # Cleanup temp file
-        os.remove(d)
+        os.remove(file_contents)
 
     else:
         if args.extract_emails or extract_all:
