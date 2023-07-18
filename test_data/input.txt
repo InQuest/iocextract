@@ -108,3 +108,6 @@ hxxps://example[.]com/
 short[.]is
 tcp://example[.]com/
 tcp://example[.]com:80/
+123-456-7890
+123.102.1215
+(123) 456-7890

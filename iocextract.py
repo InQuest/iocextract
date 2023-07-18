@@ -375,6 +375,8 @@ YARA_PARSE_RE = re.compile(
     re.MULTILINE | re.DOTALL | re.VERBOSE,
 )
 
+TELEPHONE_RE = re.compile(r"((?:(?:\+?1\s*(?:[.-]\s*)?)?(?:\(\s*([2-9]1[02-9]|[2-9][02-8]1|[2-9][02-8][02-9])\s*\)|([2-9]1[02-9]|[2-9][02-8]1|[2-9][02-8][02-9]))\s*(?:[.-]\s*)?)?([2-9]1[02-9]|[2-9][02-9]1|[2-9][02-9]{2})\s*(?:[.-]\s*)?([0-9]{4})(?:\s*(?:#|x\.?|ext\.?|extension)\s*(\d+))?)")
+
 
 def extract_iocs(data, refang=False, strip=False):
     """
@@ -395,6 +397,7 @@ def extract_iocs(data, refang=False, strip=False):
         extract_emails(data, refang=refang),
         extract_hashes(data),
         extract_yara_rules(data),
+        extract_telephone_nums(data)
     )
 
 
@@ -645,6 +648,18 @@ def extract_emails(data, refang=False):
             email = email.group(1)
 
         yield email
+
+
+def extract_telephone_nums(data):
+    """
+    Extract telephone numbers!
+
+    :param data: Input text
+    :rtype: Iterator[:class:`str`]
+    """
+
+    for tele in TELEPHONE_RE.finditer(data):
+        yield tele.group(1)
 
 
 def extract_hashes(data):

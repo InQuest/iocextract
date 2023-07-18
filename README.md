@@ -260,6 +260,7 @@ This library currently supports the following IOCs:
     * SHA1
     * SHA256
     * SHA512
+* Telephone numbers
 * Custom regex
     * With exactly one capture group
 

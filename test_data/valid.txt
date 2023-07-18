@@ -45,3 +45,4 @@ hxxps://example[.]com/
 short[.]is
 tcp://example[.]com/
 tcp://example[.]com:80/
+456-7890

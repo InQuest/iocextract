@@ -852,3 +852,7 @@ class TestExtractors(unittest.TestCase):
         content = 'ZyBodHRwOi8vIi4kd2ViLiRpbmouIm5uU3ByZWFkIFZpYSA6ICIuJHZpc2l0b3IuIm5uS2VybmVsIFZlcnNpb24gOiAiLiRhcmFuLiJublNhZmUgTW9kZSA6ICIuJHNhZmVtb2RlOyBtYWlsKCJrYW1laGFtZS5kcmFnb25AZ21haWwuY29tIiwiU2V0b3JhbiBCb3MgIi4kc2FmZW1vZGUsJGJvZHksJGZsb2F0KTs='
 
         self.assertIn('http://".$web.$inj."nnSpread', list(iocextract.extract_urls(content, refang=True)))
+
+    def test_telephone_number_extraction(self):
+        content = "123-456-7890 (123) 456-7890 123.456.7890"
+        self.assertEqual(['456-7890', '456-7890', '456.7890'], list(iocextract.extract_telephone_nums(content)))
