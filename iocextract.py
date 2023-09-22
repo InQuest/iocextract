@@ -594,6 +594,11 @@ def extract_ipv4s(data, refang=False):
     """
 
     def ipv4_str(data):
+        """
+        Extract schemes from IPv4 addresses.
+
+        :param data: IP addresses
+        """
         protocol_str = re.compile(r"https|http|ftp")
 
         for pro in protocol_str.finditer(data):
@@ -611,9 +616,6 @@ def extract_ipv4s(data, refang=False):
             yield refang_ipv4(ip_address.group(0))
         else:
             yield ip_address.group(0)
-
-        if ipv4_str(data) != None:
-            yield ipv4_str(data)
 
 
 def extract_ipv6s(data):
@@ -922,6 +924,9 @@ def refang_data(url, no_scheme=False):
     # Fix example[.]com, but keep RFC 2732 URLs intact
     if not _is_ipv6_url(url):
         parsed = parsed._replace(netloc=parsed.netloc.replace("[", "").replace("]", ""))
+
+    if no_scheme and parsed.scheme in ['http', 'https']:
+        return parsed.netloc
 
     return parsed.geturl()
 
