@@ -631,7 +631,7 @@ class TestExtractors(unittest.TestCase):
         """
         Any url ending with a punctuation character defined in `END_PUNCTUATION` should be extracted without the punctuation.
         """
-        end_punctuation = ['.', '?', '>', '"', '\'', ')', '!', ',', '}', ':', ';', '\u201d', '\u2019', '\uff1e', '\uff1c', ']']
+        end_punctuation = ['.', '?', '>', '"', '\'', '`', ')', '!', ',', '}', ':', ';', '\u201d', '\u2019', '\uff1e', '\uff1c', ']']
         unicode_end = ['\u201d', '\u2019', '\uff1e', '\uff1c']
 
         # extracted url should not end with the punctuation

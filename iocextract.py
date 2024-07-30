@@ -35,7 +35,7 @@ except ImportError:
     from urllib import unquote
 
 # Reusable end punctuation regex
-END_PUNCTUATION = r"[\.\?>\"'\)!,}:;\u201d\u2019\uff1e\uff1c\]]*"
+END_PUNCTUATION = r"[\.\?>\"'`\)!,}:;\u201d\u2019\uff1e\uff1c\]]*"
 
 # Reusable regex for symbols commonly used to defang
 SEPARATOR_DEFANGS = r"[\(\)\[\]{}<>\\]"
