@@ -627,6 +627,25 @@ class TestExtractors(unittest.TestCase):
         self.assertEqual(list(iocextract.extract_urls('example[.]com/)'))[0], 'example[.]com/')
         self.assertEqual(list(iocextract.extract_urls('example[.]com/\''))[0], 'example[.]com/')
 
+    def test_url_extraction_end_punctuation(self):
+        """
+        Any url ending with a punctuation character defined in `END_PUNCTUATION` should be extracted without the punctuation.
+        """
+        end_punctuation = ['.', '?', '>', '"', '\'', '`', ')', '!', ',', '}', ':', ';', '\u201d', '\u2019', '\uff1e', '\uff1c', ']']
+        unicode_end = ['\u201d', '\u2019', '\uff1e', '\uff1c']
+
+        # extracted url should not end with the punctuation
+        for end in end_punctuation:
+            self.assertEqual(list(iocextract.extract_urls('https://example.com' + end))[0], 'https://example.com')
+
+        # extracted url should still contain the punctuation if it is mid-url
+        for end in end_punctuation:
+            # skip unicode punctuation
+            if end in unicode_end:
+                continue
+
+            self.assertEqual(list(iocextract.extract_urls('https://example.com/a' + end + 'b'))[0], 'https://example.com/a' + end + 'b')
+
     def test_hex_url_extraction(self):
         if sys.version_info[0] == 3:
             hexconvert = lambda x: str(binascii.hexlify(bytes(x, 'ascii')), 'ascii')
