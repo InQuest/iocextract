@@ -245,7 +245,7 @@ def ipv4_len(ip_len=3):
                 [\[\(\\]*?\.[\]\)]*?
             ){3}
             (?:[1-9]?\d|1\d\d|2[0-4]\d|25[0-5])
-            (?:(?=[^\d\.])|$)(?!\/\d)
+            (?:(?=[^\d\.])|$)(?!\/\d{1,2}(?!\d))
         """,
             re.VERBOSE,
         )
@@ -262,7 +262,7 @@ def ipv4_len(ip_len=3):
             ){4}
             ([01]?[0-9]?[0-9]|2[0-4][0-9]|25[0-5])
             (?:[1-9]?\d|1\d\d|2[0-4]\d|25[0-5])
-            (?:(?=[^\d\.])|$)(?!\/\d)
+            (?:(?=[^\d\.])|$)(?!\/\d{1,2}(?!\d))
         """,
             re.VERBOSE,
         )
@@ -611,7 +611,6 @@ def extract_ipv4s(data, refang=False):
         # Iterates over any ip address with 4 numbers after the final (3rd) octet
         for ip_address in ipv4_len(4).finditer(data):
             pass
-
         if refang:
             yield refang_ipv4(ip_address.group(0))
         else:
